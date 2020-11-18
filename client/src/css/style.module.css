@@ -1,0 +1,122 @@
+﻿.divTable {
+    float: left;
+    font-size: 20px;
+}
+
+.divCanvas {
+    float: left;
+    width: 500px;
+    height: 688px;
+}
+
+.divSettings {
+    float: left;
+    width: 350px;
+    height: 688px;
+    background-color: #c9c9c9;
+}
+
+.innerSettings {
+    margin-left: auto;
+    margin-right: auto;
+    width: 300px;
+    background-color: #b9b9b9;
+}
+
+.dice {
+    border: 5px solid red;
+}
+
+.playerBarActive {
+    margin-top: 15px;
+    width: 296px;
+    height: 56px;
+    border: 2px solid #595959;
+    background-color: #898989;
+    cursor: pointer;
+}
+
+.playerBarActive h2 {
+    margin: auto;
+    padding-left: 10px;
+    float: left;
+    line-height: 60px;
+}
+
+.playerBarActive img {
+    float: right;
+    width: 56px;
+    height: 56px;
+}
+
+.playerBarDisabled {
+    margin-top: 15px;
+    width: 296px;
+    height: 56px;
+    border: 2px solid #595959;
+    background-color: #898989;
+    cursor: default;
+    opacity: 0.5;
+}
+
+.playerBarDisabled h2 {
+    margin: auto;
+    padding-left: 10px;
+    float: left;
+    line-height: 60px;
+}
+
+.playerBarDisabled img {
+    float: right;
+    width: 56px;
+    height: 56px;
+}
+
+.playerBar {
+    margin-top: 15px;
+    width: 296px;
+    height: 56px;
+    border: 2px solid #595959;
+    background-color: #898989;
+    cursor: default;
+}
+
+.playerBar h2 {
+    margin: auto;
+    padding-left: 10px;
+    float: left;
+    line-height: 60px;
+}
+
+.playerBar img {
+    float: right;
+    width: 56px;
+    height: 56px;
+}
+
+.optionsPlayers p {
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+.optionsPlayers input {
+    margin-top: 0;
+    margin-bottom: 7px;
+}
+
+.optionsPlayers fieldset {
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+.optionsPlayers h2 {
+    margin-top: 10px;
+    margin-bottom: 0;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.startButton {
+    display: block;
+}

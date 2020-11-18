@@ -1,0 +1,77 @@
+﻿/*
+    table
+    tr
+    td
+    td
+    td
+    tr
+*/
+
+
+.table {
+    border: none;
+    border-collapse: collapse;
+    cursor: default;
+}
+
+.table thead tr:first-child {
+    border-left: none;
+}
+
+.table td {
+    border-right: 2px solid gray;
+    height: 40px;
+    text-align: center;
+}
+
+.table th {
+    border-right: 2px solid gray;
+    width: 65px;
+}
+
+table tr {
+    border-left: 2px solid gray;
+    border-bottom: 2px solid gray;
+}
+
+.table th:first-child {
+    width: 40px;
+}
+
+.table tr:first-child {
+    padding: 20px, 0;
+}
+
+.active {
+    color: black;
+}
+
+.inActive {
+    color: gray;
+}
+
+.inActiveColumns {
+    background-color: #cacaca;
+}
+
+.cell {
+    cursor: pointer;
+    font-size: 20px;
+    color: #a9a9a9;
+}
+
+.cell:hover {
+    color: black;
+}
+
+.cellClicked {
+    font-size: 20px;
+    color: black;
+    cursor: default;
+}
+
+.cell3rd {
+    cursor: default;
+    font-size: 20px;
+    color: #a9a9a9;
+}
