@@ -6,7 +6,7 @@ import Dices from './Dices';
 import Table from './Table';
 import Config from './Config';
 import Alert from '../alerts/Alert';
-import EndgameAlert from '../alerts/EndgameAlert';
+import DoubleButtonAlert from '../alerts/DoubleButtonAlert';
 import socket from '../../nonUI/socketIO';
 
 class Game extends Component {
@@ -169,10 +169,10 @@ class Game extends Component {
     }
 
     componentWillUnmount() {
-        if (this.state.mySeat !== null) {
+        /*if (this.state.mySeat !== null) {
             socket.emit('getUp', this.props.location.state.username, this.room, this.state.mySeat);
-        }
-
+        }*/
+        // ^ Co tu zrobić - chyba w configu trzeba tu dać jakąś zmianę state warunkową
         socket.off('take-a-seat');
         socket.off('getUp');
         socket.off('changePlayersNumber');
@@ -238,7 +238,7 @@ class Game extends Component {
                 <Config username={this.props.location.state.username} room={this.room} creator={this.props.location.state.creator} players={this.state.players} playersNumber={this.state.playersNumber} availableSeats={this.state.availableSeats} amISitting={this.state.amISitting} started={this.state.started} handlePlayersNumber={this.handlePlayersNumber} sit={this.sit} getUp={this.getUp} startGame={this.startGame}/>
                 {
                     this.state.text &&
-                    <EndgameAlert text={this.state.text} restart={this.restartGame} quit={this.quitGame} />
+                    <DoubleButtonAlert text={this.state.text} button1='Rewanż' button2='Wyjdź' handleButton1={this.restartGame} handleButton2={this.quitGame} />
                 }  
                 {
                     this.state.showAlert &&

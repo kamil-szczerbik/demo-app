@@ -26,6 +26,25 @@ function createBoard(req, res) {
     res.status(200).send(newBoard);
 }
 
+function deleteBoard(req, res) {
+    if (req.body.id === boards.length - 1) {
+        console.log('usuwam z końca tablicy');
+
+        boards.pop();
+        let i = boards.length;
+        while (!boards[--i] && i >= 0)
+            boards.pop();
+    }
+        
+    else {
+        console.log('zmieniam na undefined');
+        boards[req.body.id] = undefined;
+    }
+
+    console.log(boards);
+    res.sendStatus(200);
+} 
+
 function giveBoardsList(req, res) {
     res.status(200).send(boards);
 }
@@ -76,6 +95,7 @@ function checkPassword(req, res) {
 
 module.exports = {
     createBoard,
+    deleteBoard,
     giveBoardsList,
     giveBoard,
     updateBoardsList,

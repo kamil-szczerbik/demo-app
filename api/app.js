@@ -99,6 +99,10 @@ io.on('connection', (socket) => {
             socket.broadcast.emit('updateBoard', private);
         }
     });
+
+    socket.on('kickOthers', (room) => {
+        io.in(room).emit('kickOthers');
+    });
 });
 
 module.exports = http;

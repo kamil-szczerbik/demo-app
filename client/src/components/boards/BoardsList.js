@@ -13,7 +13,12 @@ class BoardsList extends Component {
     }
 
     loadList(res) {
-        const newBoardsList = res.map(board => (
+        const newBoardsList = res.filter(check => {
+            if (check)
+                return true;
+            else
+                return false;
+        }).map(board => (
             <Board key={board.id.toString()} id={board.id} started={board.started} creator={board.creator} type={board.type} password={board.password}/>
         ));
 

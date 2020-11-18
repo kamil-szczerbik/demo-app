@@ -17,5 +17,6 @@ router.post('/api/newBoard', board.createBoard);
 router.get('/api/boardsList', board.giveBoardsList);
 router.post('/api/getBoard', board.giveBoard);
 router.post('/api/checkPassword', board.checkPassword);
+router.post('/api/deleteBoard', board.deleteBoard);
 
 module.exports = router;

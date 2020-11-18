@@ -1,5 +1,21 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Required Packages
+
+### [konva] (https://konvajs.org/docs/react/index.html)
+
+Game field in dices.
+npm install react-konva konva
+
+### [react-router] (https://reactrouter.com/)
+
+Collection of navigational components.
+npm install react-router-dom
+
+### [socket.io-client] (https://socket.io/)
+
+npm install socket.io-client
+
 ## Available Scripts
 
 In the project directory, you can run:

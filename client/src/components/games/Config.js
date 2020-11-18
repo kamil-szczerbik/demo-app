@@ -1,8 +1,10 @@
 //Komponent będący konfiguracją gry kości (prawy panel)
 
 import React, { Component } from 'react';
+import { BrowserRouter, Redirect } from 'react-router-dom';
 import PlayerBar from './PlayerBar';
 import Alert from '../alerts/Alert';
+import DoubleButtonAlert from '../alerts/DoubleButtonAlert';
 import socket from '../../nonUI/socketIO';
 import style from '../../css/style.module.css';
 
@@ -13,14 +15,21 @@ class Config extends Component {
             isPublic: false,
             password: '',
             message: '',
-            showAlert: false
+            showAlert: false,
+            showDoubleButtonAlert: false,
+            showDeleteInfo: false,
+            boardDeleted: false
         }
         this.handleType = this.handleType.bind(this);
+        this.handleDeleteBoard = this.handleDeleteBoard.bind(this);
     }
 
     componentDidMount() {
         socket.on('getPassword', (newPassword) => {
             this.setState({password: newPassword})
+        });
+        socket.on('kickOthers', () => {
+            this.setState({ showDeleteInfo: true });
         });
 
         if (this.props.creator === this.props.username)
@@ -29,6 +38,7 @@ class Config extends Component {
 
     componentWillUnmount() {
         socket.off('getPassword');
+        socket.off('kickOthers');
     }
 
     handleType(e) {
@@ -39,6 +49,27 @@ class Config extends Component {
         else {
             socket.emit('setGameType', this.props.room, false);
             this.setState({ isPublic: false });
+        }
+    }
+
+    async handleDeleteBoard() {
+        const room = this.props.room;
+
+        const response = await fetch('/api/deleteBoard', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                id: this.props.room
+            })
+        });
+        if (response.status === 200) {
+            socket.emit('updateBoardsList');
+            socket.emit('kickOthers', room);
+            this.setState({ boardDeleted: true });
+            //Wykonuje się ComponentWillUnmount, więc socket off tu nie muszę umieszczać
         }
     }
 
@@ -79,12 +110,25 @@ class Config extends Component {
                                     <h2>{this.state.password}</h2>
                             }
                                 <input className={style.startButton} type='submit' value='Start!' disabled={this.props.creator === this.props.username ? false : true} />
+                                <input className={style.startButton} type='button' value='Spal stół' disabled={this.props.creator === this.props.username ? false : true} onClick={() => this.setState({showDoubleButtonAlert: true})}/>
                         </fieldset>
                     </form>
                 </div>
                 {
                     this.state.showAlert === true &&
                         <Alert text={this.state.message} cancel={() => this.setState({showAlert: false})} />
+                }
+                {
+                    this.state.showDoubleButtonAlert === true &&
+                        <DoubleButtonAlert text='Czy na pewno chcesz usunąć ten stół?' button1='Tak' button2='Nie' handleButton1={this.handleDeleteBoard} handleButton2={() => this.setState({showDoubleButtonAlert: false})} />
+                }
+                {
+                    this.state.boardDeleted === true &&
+                        <Redirect to='/' />
+                }
+                {
+                    this.state.showDeleteInfo === true &&
+                        <Alert text='Założyciel rozwiązał stół. Kliknij aby wrócić do strony głownej.' cancel={() => this.setState({boardDeleted: true})} />
                 }
             </div>
 
