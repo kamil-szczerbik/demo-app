@@ -29,6 +29,16 @@ io.on('connection', (socket) => {
         console.log('user disconnected');
     });
 
+    socket.on('disconnecting', ()=> {
+        const room = Object.keys(socket.rooms);
+        room.pop();
+
+        if (room[0]) {
+            io.in(room[0]).emit('userLeft', socket.username);
+            console.log(socket.username + ' opuścił stół ' + room[0]);
+        }            
+    });
+
     socket.on('updateBoardsList', () => {
         const boards = board.updateBoardsList();
         socket.broadcast.emit('updateBoardsList', boards);
@@ -36,7 +46,14 @@ io.on('connection', (socket) => {
 
     socket.on('joinBoard', (id, username) => {
         socket.join(id);
+        socket.username = username;
         console.log(username + ' dołączył do stołu ' + id);
+    });
+
+    socket.on('leaveBoard', (id, username) => {
+        socket.leave(id);
+        io.in(id).emit('userLeft', username);
+        console.log(username + ' opuścił stół ' + id);
     });
 
     socket.on('take-a-seat', (username, room, seat) => {

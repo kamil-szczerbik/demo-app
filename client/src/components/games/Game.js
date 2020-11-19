@@ -28,11 +28,6 @@ class Game extends Component {
             ],
             URLs: [],
 
-            highestScore: 0,
-            usernames: [],
-            winner: '',
-            text: '',
-
             //to się tyczy configa
             showAlert: false,
             players: ['Wolne miejsce', 'Wolne miejsce', 'Wolne miejsce', 'Wolne miejsce'],
@@ -40,7 +35,9 @@ class Game extends Component {
 
             amISitting: false,
             mySeat: null,
-            started: false
+            started: false,
+
+            winnerMessage: ''
         }
 
         this.room = this.props.location.state.boardId;
@@ -126,6 +123,14 @@ class Game extends Component {
             this.setState({ players: newPlayers, availableSeats: newAvailableSeats, amISitting: newAmISitting, playersNumber: value });
         });
 
+        socket.on('userLeft', (username) => {
+            for (let i = 0; i < this.state.playersNumber; i++)
+                if (username === this.state.players[i]) {
+                    socket.emit('getUp', this.props.location.state.username, this.room, i);
+                    break;
+                }
+        });
+
         socket.on('startGame', (data) => {
             let newURLs = [];
             for (let i = 0; i < 5; i++) {
@@ -149,22 +154,7 @@ class Game extends Component {
         });
 
         socket.on('endGame', (data) => {
-            if (data.usernames) {
-                this.setState({
-                    score: data.score,
-                    highestScore: data.highestScore,
-                    usernames: data.usernames,
-                    text: 'Remis!'
-                });
-            }
-            else {
-                this.setState({
-                    score: data.score,
-                    highestScore: data.highestScore,
-                    winner: data.winner,
-                    text: `Zwyciężył ${data.winner}!`
-                });
-            }
+            this.setState({winnerMessage: data});
         });
     }
 
@@ -173,9 +163,13 @@ class Game extends Component {
             socket.emit('getUp', this.props.location.state.username, this.room, this.state.mySeat);
         }*/
         // ^ Co tu zrobić - chyba w configu trzeba tu dać jakąś zmianę state warunkową
+
+        socket.emit('leaveBoard', this.room, this.props.location.state.username);
+
         socket.off('take-a-seat');
         socket.off('getUp');
         socket.off('changePlayersNumber');
+        socket.off('userLeft');
         socket.off('startGame');
         socket.off('endGame');
     }
@@ -227,7 +221,7 @@ class Game extends Component {
     }
 
     quitGame() {
-        console.log('lallala');
+        this.props.history.replace('/'); //React Router używa History API z HTML5 history.replace zastępuje aktualną ścieżkę, push przekierowałoby, a poprzednia strona zostałaby zapamiętana.
     }
 
     render() {
@@ -237,8 +231,8 @@ class Game extends Component {
                 <Dices mySeat={this.state.mySeat} activePlayer={this.state.activePlayer} room={this.room} urlDices={this.state.URLs} posArray={this.state.posArray} rotArray={this.state.rotArray} rollNumber={this.state.rollNumber} />
                 <Config username={this.props.location.state.username} room={this.room} creator={this.props.location.state.creator} players={this.state.players} playersNumber={this.state.playersNumber} availableSeats={this.state.availableSeats} amISitting={this.state.amISitting} started={this.state.started} handlePlayersNumber={this.handlePlayersNumber} sit={this.sit} getUp={this.getUp} startGame={this.startGame}/>
                 {
-                    this.state.text &&
-                    <DoubleButtonAlert text={this.state.text} button1='Rewanż' button2='Wyjdź' handleButton1={this.restartGame} handleButton2={this.quitGame} />
+                    this.state.winnerMessage &&
+                    <DoubleButtonAlert text={this.state.winnerMessage} button1='Rewanż' button2='Wyjdź' handleButton1={this.restartGame} handleButton2={this.quitGame} />
                 }  
                 {
                     this.state.showAlert &&

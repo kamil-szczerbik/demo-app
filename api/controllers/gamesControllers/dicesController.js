@@ -16,10 +16,10 @@ let endIndicator;
 let data = {};
 
 /*
- £aÒcuch 1 (Start gry) --- prepareData -> rollTheDices (-> randomizeDicesPositions -> calculate) -> Przypisujemy odpowiednie wartoúci do moøliwych punktÛw do wziÍcia
+ ≈Åa≈Ñcuch 1 (Start gry) --- prepareData -> rollTheDices (-> randomizeDicesPositions -> calculate) -> Przypisujemy odpowiednie warto≈õci do mo≈ºliwych punkt√≥w do wziƒôcia
 */
 
-//Przypisujemy dane jakie dostajemy z zewnπtrz, czyli liczba graczy oraz nazwy uøytkownikÛw
+//Przypisujemy dane jakie dostajemy z zewnƒÖtrz, czyli liczba graczy oraz nazwy u≈ºytkownik√≥w
 function prepareData(newPlayersNumber, newPlayersUsernames) {
     playersNumber = newPlayersNumber;
     playersUsernames = newPlayersUsernames;
@@ -38,11 +38,11 @@ function prepareData(newPlayersNumber, newPlayersUsernames) {
     data.rollNumber = rollNumber;
     data.dices = dices;
     data.activePlayer = activePlayer;
-    data.score = score;                 //g≥upie to
+    data.score = score;                 //g≈Çupie to
     return data;
 }
 
-//Przerzucamy wybrane koúci
+//Przerzucamy wybrane ko≈õci
 function rerollDices(newDicesReroll) {
     dicesReroll = newDicesReroll;
     rollNumber++;
@@ -99,7 +99,7 @@ function setScore(chosenValue) {
     return data;
 }
 
-//Losujemy wartoúci piÍciu koúci, oddelogowujemy do dzia≥ania 2 funkcje i sprawdzamy, czy gracz, ktÛry rzuci≥ koúcmi ma juø jakieú wartoúci w tabelce
+//Losujemy warto≈õci piƒôciu ko≈õci, oddelogowujemy do dzia≈Çania 2 funkcje i sprawdzamy, czy gracz, kt√≥ry rzuci≈Ç ko≈õcmi ma ju≈º jakie≈õ warto≈õci w tabelce
 function rollDices() {
     for (let i = 0; i < 5; i++)
         if (dicesReroll[i] === true)
@@ -110,29 +110,29 @@ function rollDices() {
     
     for (let i = 0; i < 13; i++) {
         if (score[activePlayer][i] !== null)
-            proposedValues[i] = score[activePlayer][i];//Nadpisujemy to co wyliczyliúmy, tym co jest juø w tabelce
+            proposedValues[i] = score[activePlayer][i];//Nadpisujemy to co wyliczyli≈õmy, tym co jest ju≈º w tabelce
     }
 }
 
-//Losujemy po≥oøenie wzglÍdne kaødej z koúci na planszy, pÛüniej przeliczamy je na wspÛ≥rzÍdne bezwzglÍdne
+//Losujemy po≈Ço≈ºenie wzglƒôdne ka≈ºdej z ko≈õci na planszy, p√≥≈∫niej przeliczamy je na wsp√≥≈Çrzƒôdne bezwzglƒôdne
 function randomizeDicesPositions() {
     for (let i = 0; i < 5; i++) {
         if (dicesReroll[i] === true) {
-            let g = Math.floor(Math.random() * 25);                 //Losujemy kwadrat jeden z 25 kwadratÛw, w ktÛrym znajdzie siÍ koúÊ
-            if (grid.indexOf(g) === -1 && g !== 22)                 //Jeúli wylosowana liczba siÍ powtarza z ktÛrπú z poprzednich lub jest 22 (kwadrat w ktÛrym znajduje siÍ przycisk do przerzucenia koúci), powtÛrz losowanie
+            let g = Math.floor(Math.random() * 25);                 //Losujemy kwadrat jeden z 25 kwadrat√≥w, w kt√≥rym znajdzie siƒô ko≈õƒá
+            if (grid.indexOf(g) === -1 && g !== 22)                 //Je≈õli wylosowana liczba siƒô powtarza z kt√≥rƒÖ≈õ z poprzednich lub jest 22 (kwadrat w kt√≥rym znajduje siƒô przycisk do przerzucenia ko≈õci), powt√≥rz losowanie
                 grid[i] = g;
             else
                 i--;
         }
     }
 
-    //SprawdziÊ czy nie da siÍ tego zmergewaÊ w jednym ifie.
+    //Sprawdziƒá czy nie da siƒô tego zmergewaƒá w jednym ifie.
 
     for (let i = 0; i < 5; i++) {
         if (dicesReroll[i] === true) {
-            const rndX = Math.floor(Math.random() * 29) + 36;       //to jest tak wyliczone, øe przy kπcie 45st. rÛg koúci moøe siÍ stykaÊ z krawÍdziπ
-            const rndY = Math.floor(Math.random() * 29) + 36;       //kwadratu (ew. 1px rÛønicy, bo nw jak js przelicza przecinkowe i je zaokrπgla)
-            //Na wspÛ≥rzÍdne bezwzglÍdne
+            const rndX = Math.floor(Math.random() * 29) + 36;       //to jest tak wyliczone, ≈ºe przy kƒÖcie 45st. r√≥g ko≈õci mo≈ºe siƒô stykaƒá z krawƒôdziƒÖ
+            const rndY = Math.floor(Math.random() * 29) + 36;       //kwadratu (ew. 1px r√≥≈ºnicy, bo nw jak js przelicza przecinkowe i je zaokrƒÖgla)
+            //Na wsp√≥≈Çrzƒôdne bezwzglƒôdne
             posArray[0][i] = rndX + (100 * (grid[i] % 5));
             posArray[1][i] = rndY + (100 * (Math.floor(grid[i] / 5)));
             rotArray[i] = Math.floor(Math.random() * 360);
@@ -140,7 +140,7 @@ function randomizeDicesPositions() {
     }
 }
 
-//Iterujemy zmiennπ activePlayer
+//Iterujemy zmiennƒÖ activePlayer
 function nextPlayer() {
     if (activePlayer === playersNumber - 1)
         activePlayer = 0;
@@ -150,50 +150,48 @@ function nextPlayer() {
     rollDices();
 }
 
-//Koniec gry - sprawdzamy kto wygra≥ lub czy jest remis
+//Koniec gry - sprawdzamy kto wygra≈Ç lub czy jest remis
 function endGame() {
+    const winners = [];
     let highestScore = score[0][14];
-    let winner = [];
-    winner[0] = 0;
-    let tie = false;
-    let summary = {};
+    let tie;
+    let message;
+    winners[0] = playersUsernames[0];
 
     for (let i = 1; i < playersNumber; i++) {
-        if (highestScore <= score[i][14]) {
-            if (highestScore < score[i][14]) {
-                highestScore = score[i][14];
-                winner.fill(null);
-                winner[0] = i;
-                tie = false;
-            }
-            else {
-                tie = true;
-                winner[i - 1] = highestScore;
-                winner[i] = highestScore;
-            }
+        if (score[i][14] > highestScore) {
+            highestScore = score[i][14];
+            winners.fill(undefined);
+            winners[i] = playersUsernames[i];
+            tie = false;
+        }
+        else if (score[i][14] === highestScore) {
+            winners[i] = playersUsernames[i];
+            tie = true;
         }
     }
 
-    if (tie) {
-        const usernames = [];
-        let i = 0;
-        console.log(`Remis pomiÍdzy: `)
-        while (winner[i++]) {
-            console.log(`${playersUsernames[i]}`);
-            usernames[i] = playersUsernames[i];
+    if (!tie) {
+        for (let i = 0; i < playersNumber; i++) {
+            if (winners[i]) {
+                message = `Wygra≈Ç ${winners[i]} z wynikiem ${highestScore} punkt√≥w!`;
+                console.log(message);
+                break;
+            }
         }
-        console.log(`ktÛrzy zdobyli po ${highestScore} punktÛw!`);
-        summary.usernames = usernames;
     }
     else {
-        console.log(`Wygra≥ ${playersUsernames[winner[0]]} z wynikiem ${highestScore} punktÛw!`);
-        summary.winner = playersUsernames[winner[0]];
+        message = `Remis pomiƒôdzy`
+        for (let i = 0; i < playersNumber; i++) {
+            if (winners[i]) {
+                message += ` ${winners[i]},`;
+            }
+        }
+        message += ` , kt√≥rzy zdobyli po ${highestScore} punkt√≥w!`;
+        console.log(message);
     }
 
-    summary.highestScore = highestScore;
-    summary.score = score;
-
-    return summary;
+    return message;
 }
 
 module.exports = {
