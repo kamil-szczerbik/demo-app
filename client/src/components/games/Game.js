@@ -36,6 +36,8 @@ class Game extends Component {
             amISitting: false,
             mySeat: null,
             started: false,
+            type: 'private',
+            password: '',
 
             winnerMessage: ''
         }
@@ -45,6 +47,7 @@ class Game extends Component {
         this.sit = this.sit.bind(this);
         this.getUp = this.getUp.bind(this);
         this.handlePlayersNumber = this.handlePlayersNumber.bind(this);
+        this.handleType = this.handleType.bind(this);
         this.startGame = this.startGame.bind(this);
         this.setScore = this.setScore.bind(this);
 
@@ -78,7 +81,13 @@ class Game extends Component {
                             newAvailableSeats[i] = false;
                         }
                     }
-                    this.setState({ players: newPlayers, availableSeats: newAvailableSeats, playersNumber: newPlayersNumber, started: response.started });
+
+                    let newPassword = '';
+                    if (this.props.location.state.username === this.props.location.state.creator) {
+                        newPassword = response.password;
+                    }
+
+                    this.setState({ players: newPlayers, availableSeats: newAvailableSeats, playersNumber: newPlayersNumber, started: response.started, type: response.type, password: newPassword });
                 });
         }
         catch (err) {
@@ -123,12 +132,21 @@ class Game extends Component {
             this.setState({ players: newPlayers, availableSeats: newAvailableSeats, amISitting: newAmISitting, playersNumber: value });
         });
 
+        socket.on('setGameType', (newType) => {
+            this.setState({ type: newType });
+        });
+
+        socket.on('getPassword', (newPassword) => {
+            this.setState({ password: newPassword })
+        });
+
         socket.on('userLeft', (username) => {
-            for (let i = 0; i < this.state.playersNumber; i++)
+            for (let i = 0; i < this.state.playersNumber; i++) {
                 if (username === this.state.players[i]) {
-                    socket.emit('getUp', this.props.location.state.username, this.room, i);
+                    socket.emit('getUp', username, this.room, i);
                     break;
                 }
+            }
         });
 
         socket.on('startGame', (data) => {
@@ -147,9 +165,11 @@ class Game extends Component {
                 started: true
             });
 
-            socket.off('take-a-seat');
+            /*socket.off('take-a-seat');
             socket.off('getUp');
             socket.off('changePlayersNumber');
+            socket.off('setGameType');
+            socket.off('getPassword')*/
             //startgame musi być bo używamy do innych rzeczy
         });
 
@@ -169,6 +189,8 @@ class Game extends Component {
         socket.off('take-a-seat');
         socket.off('getUp');
         socket.off('changePlayersNumber');
+        socket.off('setGameType')
+        socket.off('getPassword')
         socket.off('userLeft');
         socket.off('startGame');
         socket.off('endGame');
@@ -192,6 +214,15 @@ class Game extends Component {
 
     handlePlayersNumber(e) {
         socket.emit('changePlayersNumber', this.room, e.target.value);
+    }
+
+    handleType(e) {
+        if (e.target.value === 'public') {
+            socket.emit('setGameType', this.room, true);
+        }
+        else {
+            socket.emit('setGameType', this.room, false);
+        }
     }
 
     startGame(e) {
@@ -229,7 +260,7 @@ class Game extends Component {
             <div>
                 <Table mySeat={this.state.mySeat} proposedValues={this.state.proposedValues} score={this.state.score} activePlayer={this.state.activePlayer} setScore={this.setScore} playersNumber={this.state.playersNumber}/>
                 <Dices mySeat={this.state.mySeat} activePlayer={this.state.activePlayer} room={this.room} urlDices={this.state.URLs} posArray={this.state.posArray} rotArray={this.state.rotArray} rollNumber={this.state.rollNumber} />
-                <Config username={this.props.location.state.username} room={this.room} creator={this.props.location.state.creator} players={this.state.players} playersNumber={this.state.playersNumber} availableSeats={this.state.availableSeats} amISitting={this.state.amISitting} started={this.state.started} handlePlayersNumber={this.handlePlayersNumber} sit={this.sit} getUp={this.getUp} startGame={this.startGame}/>
+                <Config username={this.props.location.state.username} room={this.room} creator={this.props.location.state.creator} players={this.state.players} playersNumber={this.state.playersNumber} availableSeats={this.state.availableSeats} amISitting={this.state.amISitting} started={this.state.started} type={this.state.type} password={this.state.password} handlePlayersNumber={this.handlePlayersNumber} handleType={this.handleType} sit={this.sit} getUp={this.getUp} startGame={this.startGame}/>
                 {
                     this.state.winnerMessage &&
                     <DoubleButtonAlert text={this.state.winnerMessage} button1='Rewanż' button2='Wyjdź' handleButton1={this.restartGame} handleButton2={this.quitGame} />

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter, Redirect } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import PasswordAlert from '../alerts/PasswordAlert';
 import * as auth from '../../nonUI/authMe';
 import socket from '../../nonUI/socketIO';
@@ -9,9 +9,6 @@ class Board extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            boardId: '',
-            username: '',
-            creator: '',
             error: '',
             showPasswordAlert: false
         }
@@ -70,11 +67,15 @@ class Board extends Component {
         else {
             username = '#RND!lalala'
         }
+
         socket.emit('joinBoard', this.props.id, username);
-        this.setState({
-            boardId: this.props.id,
-            username: username,
-            creator: this.props.creator
+        this.props.history.push({
+            pathname: '/kosci/s/' + this.props.id,
+            state: {
+                boardId: this.props.id,
+                username: username,
+                creator: this.props.creator
+            }
         });
     }
 
@@ -85,20 +86,6 @@ class Board extends Component {
                     <h1>{this.props.id}</h1>
                     <img src={`/placeholders/${this.props.type === 'public' ? 'unlock' : 'lock'}.png`} alt='ikona kłódki' />
                     <h1>{this.props.creator}</h1>
-                {
-                    this.state.boardId !== '' &&
-                    <Redirect to={{
-                        pathname: '/kosci/s/' + this.state.boardId,
-                        state: {
-                            username: this.state.username,
-                            boardId: this.state.boardId, //to robi za id pokoju tylko czy to jest bezpieczne? Czy nie będzie się dało tej wartości zmodyfikować
-                            creator: this.state.creator
-                            //i popsuć inne boardy?
-                        } //Wysyłam coś do kompenentu, na który jestem redirectowany. Username będzie dostępny
-                        //via this.props.location.state.username w komponencie Game
-                    }}
-                    />
-                }
             </div>
                 {
                     this.state.showPasswordAlert === true &&
@@ -109,4 +96,4 @@ class Board extends Component {
     }
 }
 
-export default Board;
+export default withRouter(Board);

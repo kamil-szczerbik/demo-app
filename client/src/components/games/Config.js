@@ -1,7 +1,7 @@
 //Komponent będący konfiguracją gry kości (prawy panel)
 
 import React, { Component } from 'react';
-import { BrowserRouter, Redirect } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import PlayerBar from './PlayerBar';
 import Alert from '../alerts/Alert';
 import DoubleButtonAlert from '../alerts/DoubleButtonAlert';
@@ -12,44 +12,22 @@ class Config extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            isPublic: false,
-            password: '',
             message: '',
             showAlert: false,
             showDoubleButtonAlert: false,
-            showDeleteInfo: false,
-            boardDeleted: false
+            showDeleteInfo: false
         }
-        this.handleType = this.handleType.bind(this);
         this.handleDeleteBoard = this.handleDeleteBoard.bind(this);
     }
 
     componentDidMount() {
-        socket.on('getPassword', (newPassword) => {
-            this.setState({password: newPassword})
-        });
         socket.on('kickOthers', () => {
             this.setState({ showDeleteInfo: true });
         });
-
-        if (this.props.creator === this.props.username)
-            socket.emit('setGameType', this.props.room, false);
     }
 
     componentWillUnmount() {
-        socket.off('getPassword');
         socket.off('kickOthers');
-    }
-
-    handleType(e) {
-        if (e.target.value === 'public') {
-            socket.emit('setGameType', this.props.room, true);
-            this.setState({ isPublic: true });
-        }
-        else {
-            socket.emit('setGameType', this.props.room, false);
-            this.setState({ isPublic: false });
-        }
     }
 
     async handleDeleteBoard() {
@@ -68,7 +46,7 @@ class Config extends Component {
         if (response.status === 200) {
             socket.emit('updateBoardsList');
             socket.emit('kickOthers', room);
-            this.setState({ boardDeleted: true });
+            this.props.history.push('/');
             //Wykonuje się ComponentWillUnmount, więc socket off tu nie muszę umieszczać
         }
     }
@@ -100,14 +78,14 @@ class Config extends Component {
                                 <label for='players4'>4</label>
                             <br />
                             <p>Rodzaj gry:</p>
-                                <input type='radio' id='public' name='gameType' value='public' checked={this.state.isPublic} onChange={this.handleType} disabled={this.props.creator === this.props.username ? false : true} />
+                                <input type='radio' id='public' name='gameType' value='public' checked={this.props.type === 'public'} onChange={this.props.handleType} disabled={this.props.creator === this.props.username ? false : true} />
                                 <label for='public'>publiczna</label>
                             
-                                <input type='radio' id='private' name='gameType' value='private' checked={!this.state.isPublic} onChange={this.handleType} disabled={this.props.creator === this.props.username ? false : true} />
+                                <input type='radio' id='private' name='gameType' value='private' checked={this.props.type === 'private'} onChange={this.props.handleType} disabled={this.props.creator === this.props.username ? false : true} />
                                 <label for='private'>prywatna</label>
                             {
-                                this.state.isPublic === false &&
-                                    <h2>{this.state.password}</h2>
+                                this.props.type === 'private' &&
+                                    <h2>{this.props.password}</h2>
                             }
                                 <input className={style.startButton} type='submit' value='Start!' disabled={this.props.creator === this.props.username ? false : true} />
                                 <input className={style.startButton} type='button' value='Spal stół' disabled={this.props.creator === this.props.username ? false : true} onClick={() => this.setState({showDoubleButtonAlert: true})}/>
@@ -123,10 +101,6 @@ class Config extends Component {
                         <DoubleButtonAlert text='Czy na pewno chcesz usunąć ten stół?' button1='Tak' button2='Nie' handleButton1={this.handleDeleteBoard} handleButton2={() => this.setState({showDoubleButtonAlert: false})} />
                 }
                 {
-                    this.state.boardDeleted === true &&
-                        <Redirect to='/' />
-                }
-                {
                     this.state.showDeleteInfo === true &&
                         <Alert text='Założyciel rozwiązał stół. Kliknij aby wrócić do strony głownej.' cancel={() => this.setState({boardDeleted: true})} />
                 }
@@ -136,4 +110,4 @@ class Config extends Component {
     }
 }
 
-export default Config;
+export default withRouter(Config);

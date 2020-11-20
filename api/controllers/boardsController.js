@@ -1,3 +1,5 @@
+const crypto = require("crypto");
+
 const boards = [];
 
 /*let boardId = '#';*/
@@ -8,7 +10,7 @@ function createBoard(req, res) {
     boardId = boardId.padStart(4, '#00'); //dzięki temu będzie szło: #000 #001 #002 ... #078 ...*/
 
     let i = 0;
-
+    const newPassword = generatePassword()
     while (boards[i])
         i++;
 
@@ -17,7 +19,7 @@ function createBoard(req, res) {
         creator: req.body.creator,
         started: false,
         type: 'private',
-        password: undefined,
+        password: newPassword,
         playersNumber: 2,
         players: []
     };
@@ -40,8 +42,6 @@ function deleteBoard(req, res) {
         console.log('zmieniam na undefined');
         boards[req.body.id] = undefined;
     }
-
-    console.log(boards);
     res.sendStatus(200);
 } 
 
@@ -77,13 +77,18 @@ function startBoard(room) {
 function setGameType(room, isPublic, password) {
     if (isPublic) {
         boards[room].type = 'public';
+        boards[room].password = undefined;
     }
     else {
         boards[room].type = 'private';
-        boards[room].password = password;
+        boards[room].password = generatePassword();
     }
     console.log(boards[room].type);
     return boards[room];
+}
+
+function generatePassword() {
+    return crypto.randomBytes(3).toString('hex');
 }
 
 function checkPassword(req, res) {

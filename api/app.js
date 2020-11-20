@@ -9,7 +9,6 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const io = require('socket.io')(http);
-const crypto = require("crypto");
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -108,12 +107,13 @@ io.on('connection', (socket) => {
         if (isPublic) {
             const public = board.setGameType(room, isPublic);
             socket.broadcast.emit('updateBoard', public);
+            io.in(room).emit('setGameType', public.type);
         }
         else {
-            const password = crypto.randomBytes(3).toString('hex');
-            const private = board.setGameType(room, isPublic, password);
-            socket.emit('getPassword', password);
+            const private = board.setGameType(room, isPublic);
+            socket.emit('getPassword', private.password);
             socket.broadcast.emit('updateBoard', private);
+            io.in(room).emit('setGameType', private.type);
         }
     });
 

@@ -66,14 +66,14 @@ class BoardsList extends Component {
 
     render() {
         return (
-            <div className={boardStyle.boardMainContainer}>
+            
                 <div className={boardStyle.boardContainer}>
                     <NewBoard />
                     {
                         this.state.boardsList
                     }
                 </div>
-            </div>
+            
         );
     }
 }
