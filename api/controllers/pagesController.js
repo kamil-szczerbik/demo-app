@@ -25,7 +25,7 @@ function register(req, res) {
                 newUser.save()
                     .then(() => {
                         console.log('Pomyślnie dodano użytkownika: ' + req.body.username);
-                        res.status(201).send('1');
+                        res.sendStatus(201);
                     })
                     .catch((err) => {
                         const DBerr = [];

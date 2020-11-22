@@ -3,10 +3,6 @@ import GameTile from './GameTile';
 import gamesStyle from '../css/games.module.css';
 
 class GamesList extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         return (
             <div className={gamesStyle.container}>

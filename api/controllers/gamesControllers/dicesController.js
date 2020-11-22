@@ -71,6 +71,7 @@ function setScore(chosenValue) {
 
     newScore[activePlayer][14] += newScore[activePlayer][chosenValue];
     score = newScore;
+    data.score = score;
 
     if (activePlayer === playersNumber - 1) {
         endIndicator++;
@@ -79,9 +80,7 @@ function setScore(chosenValue) {
             return summary;
         }
     }
-    
-    data.score = score;
-    
+
     grid.fill(undefined);
     dicesReroll.fill(true);
     dices.fill(undefined);
@@ -156,6 +155,7 @@ function endGame() {
     let highestScore = score[0][14];
     let tie;
     let message;
+    let obj = {};
     winners[0] = playersUsernames[0];
 
     for (let i = 1; i < playersNumber; i++) {
@@ -191,7 +191,10 @@ function endGame() {
         console.log(message);
     }
 
-    return message;
+    obj.message = message;
+    obj.lastScore = data.score
+
+    return obj;
 }
 
 module.exports = {

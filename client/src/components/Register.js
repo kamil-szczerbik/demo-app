@@ -42,10 +42,8 @@ class Register extends Component {
                     password: this.state.password,
                 })
             })
-                .then(response => response.json())
-                .then((response) => {
-                    console.log(response);
-                    if (response == 1) {
+                .then(response => {
+                    if (response.status === 201) {
                         this.setState({ register: false });
                     }
                     else {

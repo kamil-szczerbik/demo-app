@@ -13,10 +13,6 @@ import * as logout from './nonUI/logoutMe';
 import './css/global.css';
 
 class App extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     componentDidMount() {
         if (localStorage.getItem('username') === null) {
             logout.logoutMe();

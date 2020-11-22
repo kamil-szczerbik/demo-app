@@ -56,10 +56,10 @@ class Config extends Component {
             <div className={style.divSettings}>
                 <div className={style.innerSettings}>
 
-                    <PlayerBar seat={0} path='/placeholders/avatar.jpg' started={this.props.started} disabled={false} player={this.props.players[0]} amISitting={this.props.amISitting} availableSeat={this.props.availableSeats[0]} sit={this.props.sit} getUp={this.props.getUp}/>
-                    <PlayerBar seat={1} path='/placeholders/avatar.jpg' started={this.props.started} disabled={false} player={this.props.players[1]} amISitting={this.props.amISitting} availableSeat={this.props.availableSeats[1]} sit={this.props.sit} getUp={this.props.getUp}/>
-                    <PlayerBar seat={2} path='/placeholders/avatar.jpg' started={this.props.started} disabled={this.props.playersNumber < 3 ? true : false} player={this.props.players[2]} amISitting={this.props.amISitting} availableSeat={this.props.availableSeats[2]} sit={this.props.sit} getUp={this.props.getUp}/>
-                    <PlayerBar seat={3} path='/placeholders/avatar.jpg' started={this.props.started} disabled={this.props.playersNumber < 4 ? true : false} player={this.props.players[3]} amISitting={this.props.amISitting} availableSeat={this.props.availableSeats[3]} sit={this.props.sit} getUp={this.props.getUp}/>
+                    <PlayerBar seat={0} path='/placeholders/avatar.jpg' username={this.props.username} creator={this.props.creator} started={this.props.started} disabled={false} player={this.props.players[0]} amISitting={this.props.amISitting} availableSeat={this.props.availableSeats[0]} sit={this.props.sit} getUp={this.props.getUp} handover={this.props.handover} kick={this.props.kick}/>
+                    <PlayerBar seat={1} path='/placeholders/avatar.jpg' username={this.props.username} creator={this.props.creator} started={this.props.started} disabled={false} player={this.props.players[1]} amISitting={this.props.amISitting} availableSeat={this.props.availableSeats[1]} sit={this.props.sit} getUp={this.props.getUp} handover={this.props.handover} kick={this.props.kick}/>
+                    <PlayerBar seat={2} path='/placeholders/avatar.jpg' username={this.props.username} creator={this.props.creator} started={this.props.started} disabled={this.props.playersNumber < 3 ? true : false} player={this.props.players[2]} amISitting={this.props.amISitting} availableSeat={this.props.availableSeats[2]} sit={this.props.sit} getUp={this.props.getUp} handover={this.props.handover} kick={this.props.kick}/>
+                    <PlayerBar seat={3} path='/placeholders/avatar.jpg' username={this.props.username} creator={this.props.creator} started={this.props.started} disabled={this.props.playersNumber < 4 ? true : false} player={this.props.players[3]} amISitting={this.props.amISitting} availableSeat={this.props.availableSeats[3]} sit={this.props.sit} getUp={this.props.getUp} handover={this.props.handover} kick={this.props.kick}/>
 
                     <p>
                         Twoja nazwa użytkownika: {this.props.username}<br />
@@ -71,18 +71,18 @@ class Config extends Component {
                         <fieldset disabled={this.props.started}>
                             <p>Liczba graczy:</p>
                                 <input type='radio' id='players2' name='players' value='2' checked={this.props.playersNumber === 2} onChange={this.props.handlePlayersNumber} disabled={this.props.creator === this.props.username ? false : true} />
-                                <label for='players2'>2</label>
+                                <label htmlFor='players2'>2</label>
                                 <input type="radio" id='players3' name='players' value='3' checked={this.props.playersNumber === 3} onChange={this.props.handlePlayersNumber} disabled={this.props.creator === this.props.username ? false : true} />
-                                <label for='players3'>3</label>
+                                <label htmlFor='players3'>3</label>
                                 <input type="radio" id='players4' name='players' value='4' checked={this.props.playersNumber === 4} onChange={this.props.handlePlayersNumber} disabled={this.props.creator === this.props.username ? false : true} />
-                                <label for='players4'>4</label>
+                                <label htmlFor='players4'>4</label>
                             <br />
                             <p>Rodzaj gry:</p>
                                 <input type='radio' id='public' name='gameType' value='public' checked={this.props.type === 'public'} onChange={this.props.handleType} disabled={this.props.creator === this.props.username ? false : true} />
-                                <label for='public'>publiczna</label>
+                                <label htmlFor='public'>publiczna</label>
                             
                                 <input type='radio' id='private' name='gameType' value='private' checked={this.props.type === 'private'} onChange={this.props.handleType} disabled={this.props.creator === this.props.username ? false : true} />
-                                <label for='private'>prywatna</label>
+                                <label htmlFor='private'>prywatna</label>
                             {
                                 this.props.type === 'private' &&
                                     <h2>{this.props.password}</h2>
@@ -102,7 +102,7 @@ class Config extends Component {
                 }
                 {
                     this.state.showDeleteInfo === true &&
-                        <Alert text='Założyciel rozwiązał stół. Kliknij aby wrócić do strony głownej.' cancel={() => this.setState({boardDeleted: true})} />
+                    <Alert text='Założyciel rozwiązał stół. Kliknij aby wrócić do strony głownej.' cancel={() => this.props.history.push('/')} />
                 }
             </div>
 

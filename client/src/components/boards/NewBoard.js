@@ -39,8 +39,7 @@ class NewBoard extends Component {
                     pathname: 'kosci/s/' + responseJSON.id,
                     state: {
                         boardId: responseJSON.id,
-                        username: responseJSON.creator,
-                        creator: responseJSON.creator
+                        username: responseJSON.creator
                     }
                 });
             }
@@ -54,7 +53,7 @@ class NewBoard extends Component {
     render() {
         return (
             <div className={boardStyle.newBoard}>
-                <h1 className={boardStyle.title} onClick={this.authMe}>Utwórz nowy stół</h1>
+                <h1 className={boardStyle.title} onClick={this.authMe}>Załóż nowy stół</h1>
                 {
                     this.state.showAlert === true &&
                         <Alert text='Aby utworzyć nowy stół musisz być zalogowany!' cancel={() => this.setState({ showAlert: false })} />

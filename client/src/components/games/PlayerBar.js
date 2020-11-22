@@ -10,6 +10,8 @@ class PlayerBar extends Component {
         }
         this.handleSit = this.handleSit.bind(this);
         this.handleGetUp = this.handleGetUp.bind(this);
+        this.handleHandover = this.handleHandover.bind(this);
+        this.handleKick = this.handleKick.bind(this);
     }
 
     static getDerivedStateFromProps(props, state) {
@@ -31,6 +33,14 @@ class PlayerBar extends Component {
         this.setState({ showButton: false });
     }
 
+    handleHandover() {
+        this.props.handover(this.props.player);
+    }
+
+    handleKick() {
+        this.props.kick(this.props.player, this.props.seat);
+    }
+
     render() {
         return (
             <div
@@ -40,8 +50,15 @@ class PlayerBar extends Component {
                 <h2>{this.props.player}</h2>
 
                 {
-                    (this.state.showButton && !this.props.disabled && !this.props.started) &&
+                    (this.props.player === this.props.username && !this.props.disabled && !this.props.started) &&
                         <button onClick={this.handleGetUp}>Wstań!</button>
+                }
+                {
+                    (this.props.username === this.props.creator && !this.props.availableSeat && this.props.player !== this.props.creator) &&
+                    <>
+                        <button onClick={this.handleKick}>Kick</button>
+                        <button onClick={this.handleHandover}>LOL</button>
+                    </>
                 }
 
                 <img src={this.props.path} alt="Awatar gracza"/>

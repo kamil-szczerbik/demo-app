@@ -4,10 +4,6 @@ import React, { Component } from 'react';
 import alertStyle from '../../css/alert.module.css';
 
 class Alert extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         return (
             <div className={alertStyle.divAlert}>

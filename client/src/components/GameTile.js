@@ -3,10 +3,6 @@ import { withRouter } from 'react-router-dom';
 import gamesStyle from '../css/games.module.css';
 
 class GameTile extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         return (
             <div className={gamesStyle.tile} onClick={() => this.props.history.push(this.props.redirect)}>

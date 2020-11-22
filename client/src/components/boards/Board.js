@@ -73,8 +73,7 @@ class Board extends Component {
             pathname: '/kosci/s/' + this.props.id,
             state: {
                 boardId: this.props.id,
-                username: username,
-                creator: this.props.creator
+                username: username
             }
         });
     }

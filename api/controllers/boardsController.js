@@ -45,6 +45,22 @@ function deleteBoard(req, res) {
     res.sendStatus(200);
 } 
 
+function deleteInactiveBoard(id) {
+    if (id === boards.length - 1) {
+        console.log('usuwam z końca tablicy');
+
+        boards.pop();
+        let i = boards.length;
+        while (!boards[--i] && i >= 0)
+            boards.pop();
+    }
+
+    else {
+        console.log('zmieniam na undefined');
+        boards[id] = undefined;
+    }
+}
+
 function giveBoardsList(req, res) {
     res.status(200).send(boards);
 }
@@ -59,6 +75,11 @@ function updateBoardsList() {
 
 function changePlayersNumber(room, newPlayersNumber) {
     boards[room].playersNumber = newPlayersNumber;
+}
+
+function changeCreator(room, newCreator) {
+    boards[room].creator = newCreator;
+    return boards[room];
 }
 
 function addPlayer(username, room, seat) {
@@ -101,10 +122,12 @@ function checkPassword(req, res) {
 module.exports = {
     createBoard,
     deleteBoard,
+    deleteInactiveBoard,
     giveBoardsList,
     giveBoard,
     updateBoardsList,
     changePlayersNumber,
+    changeCreator,
     addPlayer,
     removePlayer,
     startBoard,

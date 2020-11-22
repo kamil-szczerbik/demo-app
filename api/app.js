@@ -24,6 +24,8 @@ const dices = require('./controllers/gamesControllers/dicesController');
 io.on('connection', (socket) => {
     console.log('a user connected');
 
+    /*console.log(io.sockets.adapter.rooms);*/
+
     socket.on('disconnect', () => {
         console.log('user disconnected');
     });
@@ -35,6 +37,12 @@ io.on('connection', (socket) => {
         if (room[0]) {
             io.in(room[0]).emit('userLeft', socket.username);
             console.log(socket.username + ' opuścił stół ' + room[0]);
+
+            if (io.sockets.adapter.rooms[0].length === 1) {
+                board.deleteInactiveBoard(0);
+                const boards = board.updateBoardsList();
+                socket.broadcast.emit('updateBoardsList', boards);
+            }
         }            
     });
 
@@ -53,6 +61,12 @@ io.on('connection', (socket) => {
         socket.leave(id);
         io.in(id).emit('userLeft', username);
         console.log(username + ' opuścił stół ' + id);
+
+        if (!io.sockets.adapter.rooms[id]) {
+            board.deleteInactiveBoard(id);
+            const boards = board.updateBoardsList();
+            socket.broadcast.emit('updateBoardsList', boards);
+        }
     });
 
     socket.on('take-a-seat', (username, room, seat) => {
@@ -65,6 +79,13 @@ io.on('connection', (socket) => {
         board.removePlayer(room, seat);
         io.in(room).emit('getUp', seat);
         console.log(username + ' wstał od stołu');
+    });
+
+    socket.on('handover', (room, newPlayer) => {
+        const newCreator = board.changeCreator(room, newPlayer);
+        socket.broadcast.emit('updateBoard', newCreator);
+        io.in(room).emit('handover', newPlayer);
+        console.log(newPlayer + ' został nowym przywódcą stołu');
     });
 
     //trzeba walidację tu jeszcze zrobić

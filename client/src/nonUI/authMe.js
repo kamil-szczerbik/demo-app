@@ -15,9 +15,6 @@ export async function authMe() {
         const json = await response.json();
         ob.username = json.username;
     }
-    else {
-        const text = await response.text();
-    }
     return ob;
 }
 //catch???

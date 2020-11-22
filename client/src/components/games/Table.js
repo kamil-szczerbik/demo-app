@@ -5,10 +5,6 @@ import tabStyle from '../../css/table.module.css';
 import style from '../../css/style.module.css';
 
 class Table extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         return (
             <div className={style.divTable}>
@@ -144,11 +140,6 @@ class Table extends Component {
 }
 
 class TableValues extends Component {
-    constructor(props) {
-        super(props);
-
-    }
-
     render() {
         return (
             <>
