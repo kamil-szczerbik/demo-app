@@ -107,8 +107,27 @@ io.on('connection', (socket) => {
         playersNumber = updatedBoard.playersNumber;
         playersUsernames = updatedBoard.players;
         const data = dices.prepareData(playersNumber, playersUsernames);
+
         io.in(room).emit('startGame', data);
         console.log('Gra przy stole ' + room + ' rozpoczęła się');
+
+        let timer = 30; // w sekundach
+
+        const gameTime = setInterval(() => {
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+            remainedTime = minutes + ':' + seconds;
+
+            io.in(room).emit('countDown', remainedTime);
+
+            if (--timer < 0) {
+                io.in(room).emit('timeHasEnded');
+                clearInterval(gameTime);
+            }
+        }, 1000);
     });
 
     socket.on('rerollDices', (room, newDicesReroll) => {

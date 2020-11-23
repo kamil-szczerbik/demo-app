@@ -1,20 +1,36 @@
 export async function authMe() {
-    const ob = {};
-    const response = await fetch('/api/authenticate', {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-        },
-        credentials: 'same-origin'
-    });
+    try {
+        const response = await fetch('/api/authenticate', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            credentials: 'same-origin'
+        });
 
-    ob.status = response.status;
-
-    if (ob.status === 200) {
-        const json = await response.json();
-        ob.username = json.username;
+        return response;
     }
-    return ob;
+    catch (err) {
+        console.log('dupa');
+        console.log(err);
+    }
 }
-//catch???
+
+export async function getUsername() {
+    try {
+        const response = await fetch('/api/getUsername', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            credentials: 'same-origin'
+        });
+
+        return response;
+    }
+    catch(err) {
+        console.log(err);
+    }
+}

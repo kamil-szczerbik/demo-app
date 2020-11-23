@@ -12,20 +12,29 @@ class Board extends Component {
             error: '',
             showPasswordAlert: false
         }
+        this.username = '';
+
         this.handleClick = this.handleClick.bind(this);
         this.checkPassword = this.checkPassword.bind(this);
         this.joinBoard = this.joinBoard.bind(this);
-        /* <---- wychodzi na to, że w ramach jednej klasy nie trzeba jednak bindować? Trzeba jeśli używami this! Bo bez
-        bindingu this jest brany jako this tej funkcji a nie klasy LOL*/
-
     }
 
-    handleClick() {
-        if (this.props.type === 'public') {
-            this.joinBoard();
+    async handleClick() {
+        const res = await auth.getUsername();
+
+        if (res.status === 200) {
+            const json = await res.json();
+            this.username = json.username;
+
+            if (this.props.type === 'public' || this.username === this.props.creator) {
+                this.joinBoard();
+            }
+            else {
+                this.setState({ showPasswordAlert: true });
+            }
         }
         else {
-            this.setState({ showPasswordAlert: true });
+            console.log('Coś poszło nie tak');
         }
     }
 
@@ -58,22 +67,13 @@ class Board extends Component {
         }
     }
 
-    async joinBoard() {
-        let username;
-        const res = await auth.authMe();
-        if (res.status === 200) {
-            username = res.username;
-        }
-        else {
-            username = '#RND!lalala'
-        }
-
-        socket.emit('joinBoard', this.props.id, username);
+    joinBoard() {
+        socket.emit('joinBoard', this.props.id, this.username);
         this.props.history.push({
             pathname: '/kosci/s/' + this.props.id,
             state: {
                 boardId: this.props.id,
-                username: username
+                username: this.username
             }
         });
     }

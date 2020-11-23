@@ -18,7 +18,10 @@ class NewBoard extends Component {
 
     async authMe() {
         const res = await auth.authMe();
+
         if (res.status === 200) {
+            const json = await res.json();
+
             const response = await fetch('/api/newBoard', {
                 method: 'POST',
                 headers: {
@@ -27,7 +30,7 @@ class NewBoard extends Component {
                 },
                 body: JSON.stringify({
                     game: 'dices', //póki co tylko to, na razie z tego nawet nie korzystam
-                    creator: res.username //Żeby założyć grę, musimy być zalogowani. Po autentykacji wysyłamy username, żeby wiedzieć kto jest założycielem
+                    creator: json.username //Żeby założyć grę, musimy być zalogowani. Po autentykacji wysyłamy username, żeby wiedzieć kto jest założycielem
                     //i tu mam wątpliwość, ponownie, czy to jest bezpieczne?
                 })
             });
@@ -43,11 +46,13 @@ class NewBoard extends Component {
                     }
                 });
             }
-            
+            else {
+                console.log('Coś poszło nie tak');
+            }
         }
         else {
             this.setState({ showAlert: true });
-        } //DLACZEGO TO JEST TU?! I DZIAŁA
+        }
     }
 
     render() {

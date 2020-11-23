@@ -11,7 +11,8 @@ router.post('/api/register', pagesController.register);
 router.post('/api/login', pagesController.login);
 router.get('/api/logout', logout);
 
-router.get('/api/authenticate', authentication);
+router.get('/api/authenticate', authentication.authentication);
+router.get('/api/getUsername', authentication.getUsername);
 
 router.post('/api/newBoard', board.createBoard);
 router.get('/api/boardsList', board.giveBoardsList);

@@ -21,7 +21,7 @@ function createBoard(req, res) {
         type: 'private',
         password: newPassword,
         playersNumber: 2,
-        players: []
+        players: [],
     };
 
     boards[i] = newBoard;

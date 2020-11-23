@@ -13,21 +13,31 @@ class Config extends Component {
         super(props);
         this.state = {
             message: '',
+            remainedTime: '',
             showAlert: false,
             showDoubleButtonAlert: false,
-            showDeleteInfo: false
+            text: ''
         }
         this.handleDeleteBoard = this.handleDeleteBoard.bind(this);
     }
 
     componentDidMount() {
         socket.on('kickOthers', () => {
-            this.setState({ showDeleteInfo: true });
+            this.setState({ text: 'Założyciel rozwiązał stół. Kliknij aby wrócić do strony głownej.' });
+        });
+
+        socket.on('timeHasEnded', () => {
+            this.setState({ text: 'Niestety, dozwolony czas rozgrywki upłynął. Kliknij, aby wrócić do strony głownej.' });
+        });
+
+        socket.on('countDown', (newRemainedTime) => {
+            this.setState({ remainedTime: newRemainedTime });
         });
     }
 
     componentWillUnmount() {
         socket.off('kickOthers');
+        socket.off('countDown');
     }
 
     async handleDeleteBoard() {
@@ -65,6 +75,7 @@ class Config extends Component {
                         Twoja nazwa użytkownika: {this.props.username}<br />
                         ID stołu: {this.props.room}<br />
                         Założyciel stołu: {this.props.creator}<br />
+                        Pozostały czas: {this.state.remainedTime}
                     </p>
 
                     <form className={style.optionsPlayers} onSubmit={this.props.startGame}>
@@ -101,8 +112,8 @@ class Config extends Component {
                         <DoubleButtonAlert text='Czy na pewno chcesz usunąć ten stół?' button1='Tak' button2='Nie' handleButton1={this.handleDeleteBoard} handleButton2={() => this.setState({showDoubleButtonAlert: false})} />
                 }
                 {
-                    this.state.showDeleteInfo === true &&
-                    <Alert text='Założyciel rozwiązał stół. Kliknij aby wrócić do strony głownej.' cancel={() => this.props.history.push('/')} />
+                    this.state.text!== '' &&
+                    <Alert text={this.state.text} cancel={() => this.props.history.push('/')} />
                 }
             </div>
 
