@@ -30,8 +30,6 @@ class Dices extends Component {
     mouseEnter - kursor bêdzie pointer nad kostk¹, jeœli ju¿ nie przerzuciliœmy dwa raz i nad guzikiem do przerzucenia, 
     jeœli zaznaczyliœmy jak¹œ kostkê*/
     mouseEnter(e) {
-        console.log(e.target.index);
-
         if (this.props.mySeat === this.props.activePlayer && ((this.props.canRoll !== 2 && e.target.index !== 7) || (e.target.index === 7 && this.dicesReroll.indexOf(true) !== -1))) {
             const container = e.target.getStage().container();
             container.style.cursor = "pointer";

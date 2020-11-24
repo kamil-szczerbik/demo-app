@@ -104,14 +104,15 @@ io.on('connection', (socket) => {
         const updatedBoard = board.startBoard(room);
         socket.broadcast.emit('updateBoard', updatedBoard);
 
-        playersNumber = updatedBoard.playersNumber;
-        playersUsernames = updatedBoard.players;
-        const data = dices.prepareData(playersNumber, playersUsernames);
+        const playersNumber = updatedBoard.playersNumber;
+        const playersUsernames = updatedBoard.players;
+        const roundsNumber = updatedBoard.roundsNumber;
+        const data = dices.prepareData(playersNumber, playersUsernames, roundsNumber);
 
         io.in(room).emit('startGame', data);
         console.log('Gra przy stole ' + room + ' rozpoczęła się');
 
-        let timer = 30; // w sekundach
+        let timer = 600; // w sekundach
 
         const gameTime = setInterval(() => {
             minutes = parseInt(timer / 60, 10);
@@ -137,10 +138,22 @@ io.on('connection', (socket) => {
 
     socket.on('setScore', (room, chosenValue) => {
         const data = dices.setScore(chosenValue);
-        if (data.dices)
+        if (!data.end) {
             io.in(room).emit('startGame', data);
-        else
-            io.in(room).emit('endGame', data);
+        }
+        else {
+            if (data.trueEnd) {
+                io.in(room).emit('endGame', data);
+            }
+            else {
+                io.in(room).emit('endMatch', data);
+            }    
+        }        
+    });
+
+    socket.on('setRoundsNumber', (room, roundsNumber) => {
+        board.changeRoundsNumber(room, roundsNumber);
+        io.in(room).emit('setRoundsNumber', roundsNumber);
     });
 
     socket.on('setGameType', (room, isPublic) => {

@@ -22,6 +22,7 @@ function createBoard(req, res) {
         password: newPassword,
         playersNumber: 2,
         players: [],
+        roundsNumber: 1
     };
 
     boards[i] = newBoard;
@@ -69,8 +70,16 @@ function giveBoard(req, res) {
     res.status(200).send(boards[req.body.id]);
 }
 
+function giveBoardSocket(room) {
+    return boards[room];
+}
+
 function updateBoardsList() {
     return boards;
+}
+
+function changeRoundsNumber(room, newRoundsNumber) {
+    boards[room].roundsNumber = newRoundsNumber;
 }
 
 function changePlayersNumber(room, newPlayersNumber) {
@@ -125,7 +134,9 @@ module.exports = {
     deleteInactiveBoard,
     giveBoardsList,
     giveBoard,
+    giveBoardSocket,
     updateBoardsList,
+    changeRoundsNumber,
     changePlayersNumber,
     changeCreator,
     addPlayer,

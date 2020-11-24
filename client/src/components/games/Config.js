@@ -88,6 +88,14 @@ class Config extends Component {
                                 <input type="radio" id='players4' name='players' value='4' checked={this.props.playersNumber === 4} onChange={this.props.handlePlayersNumber} disabled={this.props.creator === this.props.username ? false : true} />
                                 <label htmlFor='players4'>4</label>
                             <br />
+                            <label htmlFor='rounds'>Do ilu zwycięstw: </label>
+                            <select name='rounds' id='rounds' disabled={this.props.creator === this.props.username ? false : true} onChange={this.props.handleRoundsNumber}>
+                                <option value='1' selected={this.props.roundsNumber === 1 ? true : false}>1</option>
+                                <option value='2' selected={this.props.roundsNumber === 2 ? true : false}>2</option>
+                                <option value='3' selected={this.props.roundsNumber === 3 ? true : false}>3</option>
+                                <option value='4' selected={this.props.roundsNumber === 4 ? true : false}>4</option>
+                                <option value='5' selected={this.props.roundsNumber === 5 ? true : false}>5</option>
+                            </select>
                             <p>Rodzaj gry:</p>
                                 <input type='radio' id='public' name='gameType' value='public' checked={this.props.type === 'public'} onChange={this.props.handleType} disabled={this.props.creator === this.props.username ? false : true} />
                                 <label htmlFor='public'>publiczna</label>

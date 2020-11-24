@@ -2,6 +2,8 @@ const calculate = require('../../gamesLogic/dicesLogic');
 
 let playersNumber;
 let playersUsernames = [];
+let roundsNumber;
+let victories;
 let activePlayer;
 let dicesReroll = [];
 const dices = [];
@@ -20,9 +22,12 @@ let data = {};
 */
 
 //Przypisujemy dane jakie dostajemy z zewnątrz, czyli liczba graczy oraz nazwy użytkowników
-function prepareData(newPlayersNumber, newPlayersUsernames) {
+function prepareData(newPlayersNumber, newPlayersUsernames, newRoundsNumber) {
     playersNumber = newPlayersNumber;
     playersUsernames = newPlayersUsernames;
+    roundsNumber = newRoundsNumber;
+    victories = Array(playersNumber).fill(0);
+
     activePlayer = 0;
     rollNumber = 0;
     endIndicator = 0;
@@ -71,7 +76,6 @@ function setScore(chosenValue) {
 
     newScore[activePlayer][14] += newScore[activePlayer][chosenValue];
     score = newScore;
-    data.score = score;
 
     if (activePlayer === playersNumber - 1) {
         endIndicator++;
@@ -80,6 +84,8 @@ function setScore(chosenValue) {
             return summary;
         }
     }
+
+    data.score = score;
 
     grid.fill(undefined);
     dicesReroll.fill(true);
@@ -94,6 +100,7 @@ function setScore(chosenValue) {
     data.dices = dices;
     data.proposedValues = proposedValues;
     data.activePlayer = activePlayer;
+    data.end = false;
 
     return data;
 }
@@ -153,10 +160,14 @@ function nextPlayer() {
 function endGame() {
     const winners = [];
     let highestScore = score[0][14];
+    let trueEnd = false;
     let tie;
     let message;
     let obj = {};
+    obj.end = true;
     winners[0] = playersUsernames[0];
+
+
 
     for (let i = 1; i < playersNumber; i++) {
         if (score[i][14] > highestScore) {
@@ -174,8 +185,8 @@ function endGame() {
     if (!tie) {
         for (let i = 0; i < playersNumber; i++) {
             if (winners[i]) {
+                victories[i] += 1;
                 message = `Wygrał ${winners[i]} z wynikiem ${highestScore} punktów!`;
-                console.log(message);
                 break;
             }
         }
@@ -184,15 +195,46 @@ function endGame() {
         message = `Remis pomiędzy`
         for (let i = 0; i < playersNumber; i++) {
             if (winners[i]) {
+                victories[i] += 1;
                 message += ` ${winners[i]},`;
             }
         }
         message += ` , którzy zdobyli po ${highestScore} punktów!`;
-        console.log(message);
     }
 
+    for (let i = 0; i < playersNumber; i++) {
+        if (victories[i] === roundsNumber) {
+            trueEnd = true;
+            /*obj.winners = winners;*/
+            obj.lastScore = score;
+
+            break;
+        }
+        else {
+            trueEnd = false;
+        }
+    }
+    grid.fill(undefined);
+    dicesReroll.fill(true);
+    dices.fill(undefined);
+    rollNumber = 0;
+
+    endIndicator = 0;
+    proposedValues = Array(13).fill(null);
+
+    for (let i = 0; i < playersNumber; i++)
+        score[i] = Array(15).fill(null);
+
+    nextPlayer();
+    obj.score = score;
+    obj.rollNumber = rollNumber;
+    obj.posArray = posArray;
+    obj.rotArray = rotArray;
+    obj.dices = dices;
+    obj.proposedValues = proposedValues;
+    obj.activePlayer = activePlayer;
+    obj.trueEnd = trueEnd;
     obj.message = message;
-    obj.lastScore = data.score
 
     return obj;
 }
