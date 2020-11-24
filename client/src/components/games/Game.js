@@ -226,6 +226,7 @@ class Game extends Component {
         socket.off('getPassword')
         socket.off('userLeft');
         socket.off('startGame');
+        socket.off('endMatch');
         socket.off('endGame');
     }
 
