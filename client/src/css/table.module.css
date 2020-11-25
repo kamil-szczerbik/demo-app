@@ -7,11 +7,17 @@
     tr
 */
 
+.divTable {
+    float: left;
+    font-size: 20px;
+    width: 350px;
+}
 
 .table {
     border: none;
     border-collapse: collapse;
     cursor: default;
+    width: 100%; /*to tylko powoduje, że tabelka się nie przemieszcza o ten px, ale zmniejsza się canvas o px*/
 }
 
 .table thead tr:first-child {
@@ -48,10 +54,11 @@ table tr {
 
 .inActive {
     color: gray;
+    width: 69px;
 }
 
 .inActiveColumns {
-    background-color: #cacaca;
+    background-color: #e1e1e1;
 }
 
 .cell {

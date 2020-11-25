@@ -282,7 +282,7 @@ class Game extends Component {
             socket.emit('startGame', this.room);
         }
         else {
-            this.setState({ mesesage: 'Brak wymaganej ilości graczy!' });
+            this.setState({ message: 'Brak wymaganej ilości graczy!' });
         }
     }
 

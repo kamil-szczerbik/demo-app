@@ -2,12 +2,11 @@
 
 import React, { Component } from 'react';
 import tabStyle from '../../css/table.module.css';
-import style from '../../css/style.module.css';
 
 class Table extends Component {
     render() {
         return (
-            <div className={style.divTable}>
+            <div className={tabStyle.divTable}>
                 <table className={tabStyle.table}>
 
                     <colgroup>

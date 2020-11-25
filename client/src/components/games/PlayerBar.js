@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import style from '../../css/style.module.css';
+import configStyle from '../../css/config.module.css';
 
 
 class PlayerBar extends Component {
@@ -44,14 +44,14 @@ class PlayerBar extends Component {
     render() {
         return (
             <div
-                className={this.props.disabled === false ? ((this.props.availableSeat === true && this.props.amISitting === false) ? style.playerBarActive : style.playerBar) : style.playerBarDisabled}
+                className={this.props.disabled === false ? ((this.props.availableSeat === true && this.props.amISitting === false) ? configStyle.playerBarActive : configStyle.playerBar) : configStyle.playerBarDisabled}
                 onClick={this.handleSit}
             >
-                <h2>{this.props.player}</h2>
+                <h2 className={configStyle.nickname}>{this.props.player}</h2>
 
                 {
                     (this.props.player === this.props.username && !this.props.disabled && !this.props.started) &&
-                        <button onClick={this.handleGetUp}>Wstań!</button>
+                        <img src='/img/redX.jpg' className={configStyle.getUp} onClick={this.handleGetUp} alt='Przycisk do wstania od stołu' />
                 }
                 {
                     (this.props.username === this.props.creator && !this.props.availableSeat && this.props.player !== this.props.creator) &&
@@ -61,7 +61,7 @@ class PlayerBar extends Component {
                     </>
                 }
 
-                <img src={this.props.path} alt="Awatar gracza"/>
+                <img src={this.props.path} className={configStyle.avatar} alt="Awatar gracza"/>
             </div>
         );
     }

@@ -21,6 +21,8 @@ app.use('/', routes);
 const board = require('./controllers/boardsController');
 const dices = require('./controllers/gamesControllers/dicesController');
 
+let gameTime;
+
 io.on('connection', (socket) => {
     console.log('a user connected');
 
@@ -52,6 +54,8 @@ io.on('connection', (socket) => {
     });
 
     socket.on('joinBoard', (id, username) => {
+        if (gameTime)
+            clearInterval(gameTime);
         socket.join(id);
         socket.username = username;
         console.log(username + ' dołączył do stołu ' + id);
@@ -114,7 +118,7 @@ io.on('connection', (socket) => {
 
         let timer = 600; // w sekundach
 
-        const gameTime = setInterval(() => {
+            gameTime = setInterval(() => {
             minutes = parseInt(timer / 60, 10);
             seconds = parseInt(timer % 60, 10);
 
