@@ -4,17 +4,67 @@
 const db = require('../config/db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { body, validationResult } = require('express-validator');
 
 const secret = 'secretcode'; //you should keep your secret an actual secret using environment variables or some other method 
 //and make sure you DO NOT commit it to version control if you happen to be using git
 
+//Funkcja zajmująca się walidacją. Kilka uwag:
+//checkfalsy jest ustawiony na true, bo "pusty" formularz nie jest tak naprawdę pusty. Ponieważ korzystamy z Reacta oraz Controlled Inputs to input w formularzu ma "", a nie undefined.
+//bail służy do ignorowania kolejnych elementów łańcucha (coś jak break).
+//Jeśli chodzi o sprawdzanie czy username lub email już jest w bazie, to musimy sprawdzać value.length. FindAll zawsze zwróci tablicę, a sprawdzenie if(value) zwróci zawsze true (bo tabela istnieje, tylko jest pusta).
+function validate(method) {
+    switch (method) {
+        case 'register': {
+            return [
+                body('id')
+                    .not().exists({ checkFalsy: true }).withMessage('ID jest przydzielane automatycznie przez bazę danych'),
+                body('email')
+                    .exists({ checkFalsy: true }).withMessage('Nie podano adresu email')
+                    .bail()
+                    .isEmail().withMessage('To nie jest adres email')
+                    .bail()
+                    .custom(value => {
+                        return db.user.findAll({
+                            where: {
+                                email: value,
+                            }
+                        }).then(value => {
+                            if (value.length) {
+                                return Promise.reject('Podany email powiązany jest już z innym kontem');
+                            }
+                        });
+                    }),
+                body('username')
+                    .exists({ checkFalsy: true }).withMessage('Nie podano nazwy użytkownika')
+                    .bail()
+                    .isLength({ min: 4, max: 14 }).withMessage('Nazwa użytkownika musi mieć od 4 do 14 znaków')
+                    .bail()
+                    .custom(value => {
+                        return db.user.findAll({
+                            where: {
+                                username: value,
+                            }
+                        }).then(value => {
+                            if (value.length) {
+                                return Promise.reject('Podana nazwa użytkownika powiązana jest już z innym kontem');
+                            }
+                        });
+                    }),
+                body('password')
+                    .exists({ checkFalsy: true }).withMessage('Nie podano hasła'),
+/*                    .isStrongPassword().withMessage('Hasło musi zawierać małą literę, wielką literę oraz cyfrę')*/
+            ]
+        }
+    }
+}
 
 function register(req, res) {
+    const errors = validationResult(req);
 
-    if (req.body.id) {
-        res.status(400).send(`Bad request: ID should not be provided, since it is determined automatically by the database.`);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.mapped() });
     }
-    else {
         const newUser = db.user.build(req.body);
 
         bcrypt.hash(newUser.password, 10)
@@ -28,35 +78,9 @@ function register(req, res) {
                         res.sendStatus(201);
                     })
                     .catch((err) => {
-                        const DBerr = [];
-
-                        const p1 = db.user.findAll({
-                            where: {
-                                email: req.body.email,
-                            }
-                        }).then((result) => {
-                            if (result[0]) {
-                                DBerr[0] = 'Adres email jest powiązany z istniejącym już kontem!';
-                            }
-                        });
-
-                        const p2 = db.user.findAll({
-                            where: {
-                                username: req.body.username,
-                            }
-                        }).then((result) => {
-                            if (result[0]) {
-                                DBerr[1] = 'Podana nazwa użytkownika jest już zajęta!';
-                            }
-                        });
-
                         console.log('Coś poszło nie tak: ' + err);
-                        Promise.all([p1, p2]).then(() => { res.status(409).send(DBerr); });
                     });
-
-
             });
-    }
 }
 
 async function login(req, res) {
@@ -105,6 +129,7 @@ async function login(req, res) {
 }
 
 module.exports = {
+    validate,
     register,
     login
 };

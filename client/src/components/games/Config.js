@@ -13,7 +13,7 @@ class Config extends Component {
         super(props);
         this.state = {
             message: '',
-            remainedTime: '10:00',
+            remainedTime: '05:00',
             showAlert: false,
             showDoubleButtonAlert: false,
             text: ''
@@ -160,6 +160,7 @@ class Config extends Component {
                         Twoja nazwa użytkownika: {this.props.username}<br />
                         ID stołu: {this.props.room}<br />
                         Założyciel stołu: {this.props.creator}<br />
+                        Zwycięsta: {this.props.victories}<br />
                 </p>
             </div>
 

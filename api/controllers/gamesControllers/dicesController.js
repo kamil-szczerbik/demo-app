@@ -186,7 +186,7 @@ function endGame() {
         for (let i = 0; i < playersNumber; i++) {
             if (winners[i]) {
                 victories[i] += 1;
-                message = `Wygrał ${winners[i]} z wynikiem ${highestScore} punktów!`;
+                message = `Rundę wygrał ${winners[i]} z wynikiem ${highestScore} punktów!`;
                 break;
             }
         }
@@ -205,36 +205,39 @@ function endGame() {
     for (let i = 0; i < playersNumber; i++) {
         if (victories[i] === roundsNumber) {
             trueEnd = true;
-            /*obj.winners = winners;*/
-            obj.lastScore = score;
-
+            if (roundsNumber !== 1) {
+                message = `Grę wygrał ${winners[i]}!`
+            }
             break;
         }
-        else {
-            trueEnd = false;
-        }
     }
-    grid.fill(undefined);
-    dicesReroll.fill(true);
-    dices.fill(undefined);
-    rollNumber = 0;
 
-    endIndicator = 0;
-    proposedValues = Array(13).fill(null);
+    if (!trueEnd) {
+        grid.fill(undefined);
+        dicesReroll.fill(true);
+        dices.fill(undefined);
+        rollNumber = 0;
 
-    for (let i = 0; i < playersNumber; i++)
-        score[i] = Array(15).fill(null);
+        endIndicator = 0;
+        proposedValues = Array(13).fill(null);
 
-    nextPlayer();
-    obj.score = score;
-    obj.rollNumber = rollNumber;
-    obj.posArray = posArray;
-    obj.rotArray = rotArray;
-    obj.dices = dices;
-    obj.proposedValues = proposedValues;
-    obj.activePlayer = activePlayer;
+        for (let i = 0; i < playersNumber; i++)
+            score[i] = Array(15).fill(null);
+
+        nextPlayer();
+        obj.rollNumber = rollNumber;
+        obj.posArray = posArray;
+        obj.rotArray = rotArray;
+        obj.dices = dices;
+        obj.proposedValues = proposedValues;
+        obj.activePlayer = activePlayer;
+        obj.message = message;
+    }
+
     obj.trueEnd = trueEnd;
     obj.message = message;
+    obj.score = score;
+    obj.victories = victories;
 
     return obj;
 }

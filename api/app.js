@@ -22,6 +22,7 @@ const board = require('./controllers/boardsController');
 const dices = require('./controllers/gamesControllers/dicesController');
 
 let gameTime;
+let timer = 300; //w sekundach
 
 io.on('connection', (socket) => {
     console.log('a user connected');
@@ -42,6 +43,7 @@ io.on('connection', (socket) => {
 
             if (io.sockets.adapter.rooms[0].length === 1) {
                 board.deleteInactiveBoard(0);
+                clearInterval(gameTime);
                 const boards = board.updateBoardsList();
                 socket.broadcast.emit('updateBoardsList', boards);
             }
@@ -54,8 +56,6 @@ io.on('connection', (socket) => {
     });
 
     socket.on('joinBoard', (id, username) => {
-        if (gameTime)
-            clearInterval(gameTime);
         socket.join(id);
         socket.username = username;
         console.log(username + ' dołączył do stołu ' + id);
@@ -68,6 +68,7 @@ io.on('connection', (socket) => {
 
         if (!io.sockets.adapter.rooms[id]) {
             board.deleteInactiveBoard(id);
+            clearInterval(gameTime);
             const boards = board.updateBoardsList();
             socket.broadcast.emit('updateBoardsList', boards);
         }
@@ -116,7 +117,7 @@ io.on('connection', (socket) => {
         io.in(room).emit('startGame', data);
         console.log('Gra przy stole ' + room + ' rozpoczęła się');
 
-        let timer = 600; // w sekundach
+        timer = 300;
 
             gameTime = setInterval(() => {
             minutes = parseInt(timer / 60, 10);
@@ -147,9 +148,11 @@ io.on('connection', (socket) => {
         }
         else {
             if (data.trueEnd) {
+                clearInterval(gameTime);
                 io.in(room).emit('endGame', data);
             }
             else {
+                timer = 300;
                 io.in(room).emit('endMatch', data);
             }    
         }        

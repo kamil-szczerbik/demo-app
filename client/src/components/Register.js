@@ -13,10 +13,12 @@ class Register extends Component {
             password: "",
             passwordCheck: "",
 
-            emailErr: "",
-            usernameErr: "",
-            passwordErr: "",
-            passwordCheckErr: "",
+            errors: {
+                email: '',
+                username: '',
+                password: '',
+                passwordCheck: ''
+            },
 
             register: true
         };
@@ -24,47 +26,57 @@ class Register extends Component {
         this.handleInput = this.handleInput.bind(this);
     }
 
-    handleSubmit(e) {
+    async handleSubmit(e) {
         e.preventDefault();
-        this.setState({ passwordCheckErr: '' });
-        this.setState({ emailErr: '' });
-        this.setState({ usernameErr: '' });
+        //walidacja po stronie klienta dobra
         if (e.target[2].value === e.target[3].value) {
-            fetch('/api/register', {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    email: this.state.email,
-                    username: this.state.username,
-                    password: this.state.password,
-                })
-            })
-                .then(response => {
-                    if (response.status === 201) {
-                        this.setState({ register: false });
+
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: this.state.email,
+                        username: this.state.username,
+                        password: this.state.password,
+                    })
+                });
+
+                if (response.status === 201) {
+                    this.setState({ register: false });
+                }
+                else {
+                    const json = await response.json();
+
+                    const newErrors = {
+                        email: '',
+                        username: '',
+                        password: '',
+                        passwordCheck: ''
+                    };
+
+                    for (let i in json.errors) {
+                        newErrors[i] = json.errors[i].msg;
                     }
-                    else {
-                        if (response[0]) {
-                            this.setState({ emailErr: response[0] });
-                        }
-                        else {
-                            this.setState({ emailErr: '' });
-                        }
-                        if (response[1]) {
-                            this.setState({ usernameErr: response[1] });
-                        }
-                        else {
-                            this.setState({ usernameErr: '' });
-                        }
-                    }
-                })
-                .catch(err => console.log(err));
+                    this.setState({ errors: newErrors });
+                }
+            }
+            catch (err) {
+                console.log('Coś poszło nie tak: ' + err);
+            }        
         }
         else {
-            this.setState({ passwordCheckErr: 'Podane hasła nie są takie same!' });
+            const newErrors = {
+                email: '',
+                username: '',
+                password: '',
+                passwordCheck: 'Podane hasła nie są takie same!'
+            };
+
+            this.setState({ errors: newErrors });
         }
     }
 
@@ -87,15 +99,15 @@ class Register extends Component {
                                 <label htmlFor="email">E-mail:</label><br />
                                 <input
                                     className={formStyle.input}
-                                    type="email"
+                                    type="text"
                                     id="email"
                                     name="email"
-                                    pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
-                                    required
+/*                                  pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                                    required*/
                                     value={this.state.email}
                                     onChange={this.handleInput}
                                 />
-                                <span className={formStyle.error}>{this.state.emailErr}</span>
+                                <span className={formStyle.error}>{this.state.errors.email}</span>
 
 
                                 <label htmlFor="username">Nazwa użytkownika:</label><br />
@@ -104,13 +116,13 @@ class Register extends Component {
                                     type="text"
                                     id="username"
                                     name="username"
-                                    minLength="4"
-                                    maxLength="16"
-                                    required
+/*                                    minLength="4"
+                                    maxLength="14"
+                                    required*/
                                     value={this.state.username}
                                     onChange={this.handleInput}
                                 />
-                                <span className={formStyle.error}>{this.state.usernameErr}</span>
+                                <span className={formStyle.error}>{this.state.errors.username}</span>
 
 
                                 <label htmlFor="password">Hasło:</label><br />
@@ -119,12 +131,12 @@ class Register extends Component {
                                     type="password"
                                     id="password"
                                     name="password"
-                                    minLength="8"
-                                    required
+/*                                    minLength="8"
+                                    required*/
                                     value={this.state.password}
                                     onChange={this.handleInput}
                                 />
-                                <span className={formStyle.error}>{this.state.passwordErr}</span>
+                                <span className={formStyle.error}>{this.state.errors.password}</span>
 
 
                                 <label htmlFor="passwordCheck">Powtórz hasło:</label><br />
@@ -133,11 +145,11 @@ class Register extends Component {
                                     type="password"
                                     id="passwordCheck"
                                     name="passwordCheck"
-                                    required
+/*                                    required*/
                                     value={this.state.passwordCheck}
                                     onChange={this.handleInput}
                                 />
-                                <span className={formStyle.error}>{this.state.passwordCheckErr}</span>
+                                <span className={formStyle.error}>{this.state.errors.passwordCheck}</span>
 
 
                                 <input className={formStyle.submit} type="submit" value="Submit" />

@@ -57,13 +57,15 @@ class NewBoard extends Component {
 
     render() {
         return (
-            <div className={boardStyle.newBoard}>
-                <h1 className={boardStyle.title} onClick={this.authMe}>Załóż nowy stół</h1>
+            <>
+                <div className={boardStyle.newBoard}>
+                    <h1 className={boardStyle.title} onClick={this.authMe}>Załóż nowy stół</h1>
+                </div>
                 {
-                    this.state.showAlert === true &&
-                        <Alert text='Aby utworzyć nowy stół musisz być zalogowany!' cancel={() => this.setState({ showAlert: false })} />
+                this.state.showAlert === true &&
+                    <Alert text='Aby utworzyć nowy stół musisz być zalogowany!' cancel={() => this.setState({ showAlert: false })} />
                 }
-            </div>
+            </>
         );
     }
 }

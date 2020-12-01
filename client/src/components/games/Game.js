@@ -27,6 +27,7 @@ class Game extends Component {
                 Array(15).fill(null),
                 Array(15).fill(null)
             ],
+            victories: Array(4).fill(0),
             URLs: [],
 
             //to się tyczy configa
@@ -93,7 +94,7 @@ class Game extends Component {
                         newPassword = response.password;
                     }
 
-                    this.setState({ players: newPlayers, availableSeats: newAvailableSeats, playersNumber: newPlayersNumber, started: response.started, type: response.type, password: newPassword, creator: response.creator});
+                    this.setState({ players: newPlayers, availableSeats: newAvailableSeats, playersNumber: newPlayersNumber, roundsNumber: response.roundsNumber, started: response.started, type: response.type, password: newPassword, creator: response.creator});
                 });
         }
         catch (err) {
@@ -201,11 +202,12 @@ class Game extends Component {
                 score: data.score,
                 message: data.message,
                 URLs: newURLs,
+                victories: data.victories
             });
         });
 
         socket.on('endGame', (data) => {
-            this.setState({score: data.lastScore, winnerMessage: data.message});
+            this.setState({score: data.score, winnerMessage: data.message, victories: data.victories});
         });
     }
 
@@ -305,7 +307,7 @@ class Game extends Component {
             <div>
                 <Table mySeat={this.state.mySeat} proposedValues={this.state.proposedValues} score={this.state.score} activePlayer={this.state.activePlayer} setScore={this.setScore} playersNumber={this.state.playersNumber}/>
                 <Dices mySeat={this.state.mySeat} activePlayer={this.state.activePlayer} room={this.room} urlDices={this.state.URLs} posArray={this.state.posArray} rotArray={this.state.rotArray} rollNumber={this.state.rollNumber} />
-                <Config username={this.props.location.state.username} room={this.room} creator={this.state.creator} players={this.state.players} playersNumber={this.state.playersNumber} availableSeats={this.state.availableSeats} amISitting={this.state.amISitting} started={this.state.started} roundsNumber={this.state.roundsNumber} type={this.state.type} password={this.state.password} handlePlayersNumber={this.handlePlayersNumber} handleRoundsNumber={this.handleRoundsNumber} handleType={this.handleType} sit={this.sit} getUp={this.getUp} handover={this.handover} kick={this.kick} startGame={this.startGame}/>
+                <Config username={this.props.location.state.username} room={this.room} creator={this.state.creator} players={this.state.players} playersNumber={this.state.playersNumber} availableSeats={this.state.availableSeats} amISitting={this.state.amISitting} started={this.state.started} roundsNumber={this.state.roundsNumber} victories={this.state.victories} type={this.state.type} password={this.state.password} handlePlayersNumber={this.handlePlayersNumber} handleRoundsNumber={this.handleRoundsNumber} handleType={this.handleType} sit={this.sit} getUp={this.getUp} handover={this.handover} kick={this.kick} startGame={this.startGame}/>
                 {
                     this.state.winnerMessage &&
                     <DoubleButtonAlert text={this.state.winnerMessage} button1='Rewanż' button2='Wyjdź' handleButton1={this.restartGame} handleButton2={this.quitGame} />

@@ -1,5 +1,6 @@
 //Funkcja autentykuj¹ca token
 
+const { nanoid } = require('nanoid');
 const jwt = require('jsonwebtoken');
 const secret = 'secretcode';
 
@@ -28,7 +29,8 @@ const getUsername = (req, res) => {
     const token = req.cookies.token;
 
     if (!token) {
-        res.status(200).send({ username: '#RND001' });
+        tempUsername = 'rnd' + nanoid(6);
+        res.status(200).send({ username: tempUsername});
     }
     else {
         try {
@@ -38,11 +40,11 @@ const getUsername = (req, res) => {
             });
         }
         catch {
-            res.status(200).send({ username: '#RND001' });
+            tempUsername = 'rnd' + nanoid(6);
+            res.status(200).send({ username: tempUsername });
         }
     }
 }
-
 
 module.exports = {
     authentication,

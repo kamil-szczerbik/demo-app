@@ -49,15 +49,16 @@ class TopBar extends Component {
 
     async login(isRemembered) {
         const res = await auth.authMe();
+        const resJson = await res.json();
 
         if (isRemembered) {
-            localStorage.setItem('username', res.username);
+            localStorage.setItem('username', resJson.username);
         }
         else {
-            sessionStorage.setItem('username', res.username);
+            sessionStorage.setItem('username', resJson.username);
         }
 
-        this.setState({ username: res.username });
+        this.setState({ username: resJson.username });
     }
 
     render() {

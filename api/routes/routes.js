@@ -7,7 +7,7 @@ const board = require('../controllers/boardsController');
 const authentication = require('../controllers/authentication');
 const logout = require('../controllers/logout');
 
-router.post('/api/register', pagesController.register);
+router.post('/api/register', pagesController.validate('register'), pagesController.register);
 router.post('/api/login', pagesController.login);
 router.get('/api/logout', logout);
 
