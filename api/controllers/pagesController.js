@@ -13,6 +13,7 @@ const secret = 'secretcode'; //you should keep your secret an actual secret usin
 //checkfalsy jest ustawiony na true, bo "pusty" formularz nie jest tak naprawdę pusty. Ponieważ korzystamy z Reacta oraz Controlled Inputs to input w formularzu ma "", a nie undefined.
 //bail służy do ignorowania kolejnych elementów łańcucha (coś jak break).
 //Jeśli chodzi o sprawdzanie czy username lub email już jest w bazie, to musimy sprawdzać value.length. FindAll zawsze zwróci tablicę, a sprawdzenie if(value) zwróci zawsze true (bo tabela istnieje, tylko jest pusta).
+//Wyrażenie regularne do sprawdzenia hasła są z internetu, nie wiem czy są idealne/czy można lepiej.
 function validate(method) {
     switch (method) {
         case 'register': {
@@ -52,8 +53,15 @@ function validate(method) {
                         });
                     }),
                 body('password')
-                    .exists({ checkFalsy: true }).withMessage('Nie podano hasła'),
-/*                    .isStrongPassword().withMessage('Hasło musi zawierać małą literę, wielką literę oraz cyfrę')*/
+                    .exists({ checkFalsy: true }).withMessage('Nie podano hasła')
+                    .bail()
+                    .isLength({ min: 8, max: 30}).withMessage('Hasło musi się składać z przynajmniej 8 znaków')
+                    .bail()
+                    .matches(/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])/).withMessage('Hasło musi zawierać małą i wielką literę oraz cyfrę'),
+                body('passwordConfirmation')
+                    .exists({ checkFalsy: true }).withMessage('Potwierdź hasło')
+                    .bail()
+                    .custom((value, { req }) => value === req.body.password).withMessage('Podane hasła nie są takie same')
             ]
         }
     }

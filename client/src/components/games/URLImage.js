@@ -76,5 +76,4 @@ class URLImage extends Component {
         );
     }
 }
-
 export default URLImage;

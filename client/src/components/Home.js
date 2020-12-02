@@ -3,6 +3,7 @@
 import React, { Component } from 'react';
 import TopBar from './TopBar';
 import GamesList from './GameList';
+import Footer from './Footer';
 import * as auth from '../nonUI/authMe';
 
 class Home extends Component {
@@ -48,9 +49,7 @@ class Home extends Component {
             <>
                 <TopBar />
                 <GamesList />
-                <p>{this.state.dupa}</p>
-                <input type='button' value='test' onClick={this.test} />
-                <p>{this.state.secret}</p>
+                <Footer />
             </>
         );
     }

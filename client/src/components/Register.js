@@ -11,13 +11,13 @@ class Register extends Component {
             email: "",
             username: "",
             password: "",
-            passwordCheck: "",
+            passwordConfirmation: "",
 
             errors: {
                 email: '',
                 username: '',
                 password: '',
-                passwordCheck: ''
+                passwordConfirmation: ''
             },
 
             register: true
@@ -26,11 +26,51 @@ class Register extends Component {
         this.handleInput = this.handleInput.bind(this);
     }
 
+    //Walidacja + ewentualne wysłanie formularza do walidacji na serwerze.
+    //Email waliduje tylko po @ i ., bo wykryje sporo przypadków próby oszukania systemu, a resztą zajmie się serwer (Tylko czy to jest dobre podejście? Teoretycznie bardziej obciąża serwer).
+    //Walidacja emaila to w ogóle bardzo ciekawa sprawa -> fajny wątek https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
     async handleSubmit(e) {
         e.preventDefault();
-        //walidacja po stronie klienta dobra
-        if (e.target[2].value === e.target[3].value) {
 
+        let isError = false;
+        const newErrors = {
+            email: '',
+            username: '',
+            password: '',
+            passwordConfirmation: ''
+        }
+
+        if (this.state.email === '')
+            newErrors.email = 'Nie podano adresu email';
+        else if (this.state.email.indexOf('@') < 1 || this.state.email.indexOf('.') < 1)
+            newErrors.email = 'To nie jest adres email';
+
+        if (this.state.username === '')
+            newErrors.username = 'Nie podano nazwy użytkownika';
+        else if (this.state.username.length < 4 || this.state.username.length > 14)
+            newErrors.username = 'Nazwa użytkownika musi mieć od 4 do 14 znaków';
+
+        if (this.state.password === '')
+            newErrors.password = 'Nie podano hasła';
+        else if (this.state.password.length < 8 || this.state.password.length > 30)
+            newErrors.password = 'Hasło musi się składać z przynajmniej 8 znaków';
+        else if (!this.state.password.match(/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])/))
+            newErrors.password = 'Hasło musi zawierać małą i wielką literę oraz cyfrę';
+
+        if (this.state.passwordConfirmation === '')
+            newErrors.passwordConfirmation = 'Potwierdź hasło';
+        else if (this.state.passwordConfirmation !== this.state.password)
+            newErrors.passwordConfirmation = 'Podane hasła nie są takie same';
+
+        for (let i in newErrors) {
+            if (newErrors[i] !== '')
+                isError = true;
+        }
+
+        if (isError) {
+            this.setState({ errors: newErrors });
+        }
+        else {
             try {
                 const response = await fetch('/api/register', {
                     method: 'POST',
@@ -42,6 +82,7 @@ class Register extends Component {
                         email: this.state.email,
                         username: this.state.username,
                         password: this.state.password,
+                        passwordConfirmation: this.state.passwordConfirmation
                     })
                 });
 
@@ -55,7 +96,7 @@ class Register extends Component {
                         email: '',
                         username: '',
                         password: '',
-                        passwordCheck: ''
+                        passwordConfirmation: ''
                     };
 
                     for (let i in json.errors) {
@@ -66,18 +107,8 @@ class Register extends Component {
             }
             catch (err) {
                 console.log('Coś poszło nie tak: ' + err);
-            }        
-        }
-        else {
-            const newErrors = {
-                email: '',
-                username: '',
-                password: '',
-                passwordCheck: 'Podane hasła nie są takie same!'
-            };
-
-            this.setState({ errors: newErrors });
-        }
+            }     
+        }    
     }
 
     handleInput(e) {
@@ -89,7 +120,6 @@ class Register extends Component {
     render() {
         return (
             <div className={formStyle.divFixed}>
-
                 {
                     this.state.register === true
                         ?
@@ -102,8 +132,6 @@ class Register extends Component {
                                     type="text"
                                     id="email"
                                     name="email"
-/*                                  pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
-                                    required*/
                                     value={this.state.email}
                                     onChange={this.handleInput}
                                 />
@@ -116,9 +144,6 @@ class Register extends Component {
                                     type="text"
                                     id="username"
                                     name="username"
-/*                                    minLength="4"
-                                    maxLength="14"
-                                    required*/
                                     value={this.state.username}
                                     onChange={this.handleInput}
                                 />
@@ -131,26 +156,22 @@ class Register extends Component {
                                     type="password"
                                     id="password"
                                     name="password"
-/*                                    minLength="8"
-                                    required*/
                                     value={this.state.password}
                                     onChange={this.handleInput}
                                 />
                                 <span className={formStyle.error}>{this.state.errors.password}</span>
 
 
-                                <label htmlFor="passwordCheck">Powtórz hasło:</label><br />
+                                <label htmlFor="passwordConfirmation">Powtórz hasło:</label><br />
                                 <input
                                     className={formStyle.input}
                                     type="password"
-                                    id="passwordCheck"
-                                    name="passwordCheck"
-/*                                    required*/
-                                    value={this.state.passwordCheck}
+                                    id="passwordConfirmation"
+                                    name="passwordConfirmation"
+                                    value={this.state.passwordConfirmation}
                                     onChange={this.handleInput}
                                 />
-                                <span className={formStyle.error}>{this.state.errors.passwordCheck}</span>
-
+                                <span className={formStyle.error}>{this.state.errors.passwordConfirmation}</span>
 
                                 <input className={formStyle.submit} type="submit" value="Submit" />
                                 <input className={formStyle.cancel} type="button" value="Cancel" onClick={this.props.cancel} />

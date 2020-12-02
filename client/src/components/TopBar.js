@@ -93,5 +93,4 @@ class TopBar extends Component {
             );
     }
 }
-
 export default TopBar;
