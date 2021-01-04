@@ -11,4 +11,5 @@ class GamesList extends Component {
         );
     }
 }
+
 export default GamesList;

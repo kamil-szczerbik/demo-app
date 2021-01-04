@@ -1,8 +1,7 @@
-//Komponent, który jest belk¹ na górze strony, wywo³uj¹cy formularz logowanie i rejestracji, a tak¿e funkcjê wylogowuj¹c¹
-
 import React, { Component } from 'react';
-import Login from './Login';
-import Register from './Register';
+import LoginForm from './forms/LoginForm';
+import RegisterForm from './forms/RegisterForm';
+import Alert from './alerts/Alert';
 import * as auth from '../nonUI/authMe';
 import * as logout from '../nonUI/logoutMe';
 import globalStyle from '../css/global.module.css';
@@ -13,52 +12,74 @@ class TopBar extends Component {
         this.state = {
             loginForm: false,
             registerForm: false,
-            username: localStorage.getItem('username') || sessionStorage.getItem('username') || ''
+            username: localStorage.getItem('username') || sessionStorage.getItem('username') || '',
+            alertMessage: ''
         }
 
+        this.showLoginForm = this.showLoginForm.bind(this);
+        this.showRegisterForm = this.showRegisterForm.bind(this);
+        this.hideForm = this.hideForm.bind(this);
         this.handleLogin = this.handleLogin.bind(this);
-        this.handleRegister = this.handleRegister.bind(this);
+        this.setUsernameAndHideForm = this.setUsernameAndHideForm.bind(this);
         this.handleLogout = this.handleLogout.bind(this);
-        this.cancelForm = this.cancelForm.bind(this);
-        this.login = this.login.bind(this);
+        this.showLogoutMessage = this.showLogoutMessage.bind(this);
     }
 
-    handleLogin() {
+    showLoginForm() {
         this.setState({ loginForm: true, registerForm: false });
     }
 
-    handleRegister() {
+    showRegisterForm() {
         this.setState({ loginForm: false, registerForm: true });
     }
 
-    handleLogout() {
-        if (localStorage.getItem('username') !== null) {
+    hideForm(message) {
+    this.setState({ loginForm: false, registerForm: false, alertMessage: message });
+    }
+
+    async handleLogin(isRemembered) {
+        const authenticationResponseJSON = await this.authenticateUser();
+        this.addUsernameToStorage(authenticationResponseJSON.username, isRemembered);
+        this.setUsernameAndHideForm(authenticationResponseJSON.username);
+    }
+
+    async authenticateUser() {
+        const authenticationResponse = await auth.authMe();
+        const authenticationResponseJSON = await authenticationResponse.json();
+        return authenticationResponseJSON;
+    }
+
+    addUsernameToStorage(username, isRemembered) {
+        if (isRemembered)
+            localStorage.setItem('username', username);
+        else
+            sessionStorage.setItem('username', username);
+    }
+
+    setUsernameAndHideForm(username) {
+        //Nie korzystam z hideForm(), Å¼eby uniknÄ…Ä‡ podwÃ³jnej zmiany state (renderowania).
+        this.setState({ username: username, loginForm: false, registerForm: false });
+    }
+
+    async handleLogout() {
+        this.removeUsernameFromStorage();
+        const logoutResponse = await logout.logoutMe();
+        this.showLogoutMessage(logoutResponse);
+    }
+
+    removeUsernameFromStorage() {
+        if (localStorage.getItem('username') !== null)
             localStorage.removeItem('username');
-        }
-        else if (sessionStorage.getItem('username') !== null) {
+
+        else if (sessionStorage.getItem('username') !== null)
             sessionStorage.removeItem('username');
-        }
+    } 
 
-        logout.logoutMe();
-        this.setState({ username: '' });
-    }
-
-    cancelForm() {
-        this.setState({ loginForm: false, registerForm: false });
-    }
-
-    async login(isRemembered) {
-        const res = await auth.authMe();
-        const resJson = await res.json();
-
-        if (isRemembered) {
-            localStorage.setItem('username', resJson.username);
-        }
-        else {
-            sessionStorage.setItem('username', resJson.username);
-        }
-
-        this.setState({ username: resJson.username });
+    showLogoutMessage(logoutResponse) {
+        if (logoutResponse.status === 200)
+            this.setState({ username: '', alertMessage: 'ZostaÅ‚eÅ› poprawnie wylogowany.' });
+        else 
+            this.setState({ alertMessage: 'CoÅ› poszÅ‚o nie tak. SprÃ³buj odÅ›wieÅ¼yÄ‡ stronÄ™.' });
     }
 
     render() {
@@ -77,20 +98,27 @@ class TopBar extends Component {
                         </>
                         :
                         <>
-                            <span className={globalStyle.options} onClick={this.handleLogin}>Login</span>
-                            <span className={globalStyle.options} onClick={this.handleRegister}>Register</span>
+                            <span className={globalStyle.options} onClick={this.showLoginForm}>Login</span>
+                            <span className={globalStyle.options} onClick={this.showRegisterForm}>Register</span>
                         </>
                         }
                 </div>
 
-                {this.state.loginForm &&
-                    <Login login={this.login} cancel={this.cancelForm} />
+                {
+                    this.state.loginForm &&
+                    <LoginForm loginUser={this.handleLogin} hideForm={this.hideForm}/>
                 }
-                {this.state.registerForm &&
-                    <Register cancel={this.cancelForm} />
+                {
+                    this.state.registerForm &&
+                    <RegisterForm hideForm={this.hideForm} />
+                }
+                {
+                    this.state.alertMessage !== '' &&
+                    <Alert text={this.state.alertMessage} cancel={() => this.setState({ alertMessage: '' })} />
                 }
             </div>
             );
     }
 }
+
 export default TopBar;

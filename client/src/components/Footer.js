@@ -5,9 +5,10 @@ class Footer extends Component {
     render() {
         return (
             <div className={globalStyle.footer}>
-                <h3>&copy; 2020 Wszystkie prawa zastrzeżone!</h3>
+                <p>&copy; 2020 Wszystkie prawa zastrzeżone!</p>
             </div>
         );
     }
 }
+
 export default Footer;

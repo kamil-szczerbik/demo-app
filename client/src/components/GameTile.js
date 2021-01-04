@@ -12,4 +12,5 @@ class GameTile extends Component {
         );
     }
 }
+
 export default withRouter(GameTile);

@@ -1,69 +1,94 @@
 import React, { Component } from 'react';
-import Alert from '../alerts/Alert';
 import { withRouter } from 'react-router-dom';
-import boardStyle from '../../css/board.module.css';
-import * as auth from '../../nonUI/authMe';
+import Alert from '../alerts/Alert';
+import * as authentication from '../../nonUI/authMe';
 import socket from '../../nonUI/socketIO';
-
+import boardStyle from '../../css/board.module.css';
 
 class NewBoard extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            showAlert: false
+            alertMessage: ''
         };
-        this.test = false;
-        this.authMe = this.authMe.bind(this);
+        this.handleCreatingBoard = this.handleCreatingBoard.bind(this);
     }
 
-    async authMe() {
-        const res = await auth.authMe();
+    async handleCreatingBoard() {
+        const authenticationResponse = await authentication.authMe(); // ← zmienić authMe na authenticateUser (wszędzie trzeba)
 
-        if (res.status === 200) {
-            const json = await res.json();
+        if (authenticationResponse.status === 200) {
+            this.tryCreateBoard(authenticationResponse);
+        }
+        else
+            this.showAlert('Aby utworzyć stół, musisz być zalogowany.');
+    }
 
-            const response = await fetch('/api/newBoard', {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    game: 'dices', //póki co tylko to, na razie z tego nawet nie korzystam
-                    creator: json.username //Żeby założyć grę, musimy być zalogowani. Po autentykacji wysyłamy username, żeby wiedzieć kto jest założycielem
-                    //i tu mam wątpliwość, ponownie, czy to jest bezpieczne?
-                })
-            });
-            const responseJSON = await response.json();
-            if (response.status === 200) {
-                socket.emit('joinBoard', responseJSON.id, res.username);
-                socket.emit('updateBoardsList'); //to wysyła ping serwerowi, który odsyła wszystkim zaktualizowaną listę
-                this.props.history.push({
-                    pathname: 'kosci/s/' + responseJSON.id,
-                    state: {
-                        boardId: responseJSON.id,
-                        username: responseJSON.creator
-                    }
-                });
-            }
-            else {
-                console.log('Coś poszło nie tak');
-            }
+    async tryCreateBoard(authenticationResponse) {
+        const authenticationResponseJSON = await authenticationResponse.json();
+
+        try {
+            this.createBoard(authenticationResponseJSON);
         }
-        else {
-            this.setState({ showAlert: true });
+        catch (err) {
+            console.log('Coś poszło nie tak: ' + err);
         }
+    }
+
+    async createBoard(authenticationResponseJSON) {
+        const newBoardResponse = await fetch('/api/newBoard', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            game: 'dices', //póki co z tego nie korzystam, bo mam jedną grę
+            creator: authenticationResponseJSON.username
+        })
+        });
+
+        if (newBoardResponse.status === 200)
+            this.joinNewBoard(newBoardResponse);
+        else
+            this.showAlert('Coś poszło nie tak. Spróbuj ponownie.');
+    }
+
+    async joinNewBoard(newBoardResponse) {
+        const newBoardResponseJSON = await newBoardResponse.json();
+
+        this.emitSockets(newBoardResponseJSON);
+        this.redirectUser(newBoardResponseJSON);
+    }
+
+    emitSockets(newBoardResponseJSON) {
+        socket.emit('joinBoard', newBoardResponseJSON.id, newBoardResponseJSON.creator);
+        socket.emit('updateBoardsList');
+    }
+
+    redirectUser(newBoardResponseJSON) {
+        this.props.history.push({
+            pathname: 'kosci/s/' + newBoardResponseJSON.id,
+            state: {
+                boardId: newBoardResponseJSON.id,
+                username: newBoardResponseJSON.creator
+            }
+        });
+    }
+
+    showAlert(message) {
+        this.setState({ alertMessage: message });
     }
 
     render() {
         return (
             <>
                 <div className={boardStyle.newBoard}>
-                    <h1 className={boardStyle.title} onClick={this.authMe}>Załóż nowy stół</h1>
+                    <h1 className={boardStyle.title} onClick={this.handleCreatingBoard}>Załóż nowy stół</h1>
                 </div>
                 {
-                this.state.showAlert === true &&
-                    <Alert text='Aby utworzyć nowy stół musisz być zalogowany!' cancel={() => this.setState({ showAlert: false })} />
+                    this.state.alertMessage !== '' &&
+                    <Alert text={this.state.alertMessage} cancel={() => this.setState({ alertMessage: '' })} />
                 }
             </>
         );

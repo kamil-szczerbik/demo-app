@@ -2,6 +2,7 @@
 
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
+import GameOptions from './options/GameOptions';
 import PlayerBar from './PlayerBar';
 import Alert from '../alerts/Alert';
 import DoubleButtonAlert from '../alerts/DoubleButtonAlert';
@@ -77,7 +78,19 @@ class Config extends Component {
 
                     <hr />
 
-                    <form className={configStyle.optionsPlayers} onSubmit={this.props.startGame}>
+                    <GameOptions
+                        playersNumber={this.props.playersNumber}
+                        roundsNumber={this.props.roundsNumber}
+                        type={this.props.type}
+                        password={this.props.password}
+                        username={this.props.username}
+                        creator={this.props.creator}
+                        handlePlayersNumber={this.props.handlePlayersNumber}
+                        handleRoundsNumber={this.props.handleRoundsNumber}
+                        handleType={this.props.handleType}
+                    />
+
+                    {/*<form className={configStyle.optionsPlayers} onSubmit={this.props.startGame}>
                         <fieldset disabled={this.props.started}>
 
                             <div className={configStyle.divColumn}>
@@ -140,7 +153,7 @@ class Config extends Component {
                             </div>
 
                         </fieldset>
-                    </form>
+                    </form>*/}
                 </div>
                 {
                     this.state.showAlert === true &&

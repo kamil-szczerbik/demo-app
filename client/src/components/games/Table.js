@@ -140,55 +140,26 @@ class Table extends Component {
 
 class TableValues extends Component {
     render() {
-        return (
-            <>
-                {
-                    this.props.proposedValue !== false && this.props.proposedValue !== undefined && this.props.player === this.props.mySeat
-                        ?
-                        <td
-                            className={this.props.score !== null ? tabStyle.cellClicked : tabStyle.cell}
-                            value={this.props.value}
-                            onClick={(e) => {
-                                this.props.setScore(e)
-                            }
-                            }
-                        >
-                            {this.props.score === null ? this.props.proposedValue : this.props.score}
-                        </td>
-                        :
-                        <td className={this.props.score !== null ? tabStyle.cellClicked : tabStyle.cell3rd}>
-                            {this.props.score === null ? this.props.proposedValue : this.props.score}
-                        </td>
-                }
-            </>
-        );
+
+        if (this.props.proposedValue !== false && this.props.proposedValue !== undefined && this.props.player === this.props.mySeat) {
+            return (
+                <td
+                className={this.props.score !== null ? tabStyle.cellClicked : tabStyle.cell}
+                value={this.props.value}
+                onClick={(e) => { this.props.score === null && this.props.setScore(e)}}
+                >
+                    {this.props.score === null ? this.props.proposedValue : this.props.score}
+                </td>
+            )
+        }
+        else {
+            return (
+                <td className={this.props.score !== null ? tabStyle.cellClicked : tabStyle.cell3rd}>
+                    {this.props.score === null ? this.props.proposedValue : this.props.score}
+                </td>
+            )
+        }
     }
 }
 
 export default Table;
-
-
-/*<td
-    onClick={((e) => console.log(e))}
->
-    {this.props.proposedValue !== false && this.props.proposedValue !== undefined
-                    ?                
-                    <button
-                        className={this.props.score !== null ? tabStyle.btnClicked : tabStyle.btn}
-                        value={this.props.value}
-                        disabled={this.state.disabled}
-                        onClick={(e) => {
-                            if (this.state.disabled === false)
-                                this.setState({ disabled: true });
-
-                        this.props.setScore(e);
-                            console.log(e.target);
-                            this.clicked = true
-                        }}
-                    >
-                        {this.props.score === null ? this.props.proposedValue : this.props.score}
-                    </button>
-                    :
-                    this.props.score === null ? this.props.proposedValue : this.props.score
-    }
-</td>*/

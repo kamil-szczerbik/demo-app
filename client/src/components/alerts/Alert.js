@@ -1,5 +1,3 @@
-//Komponent wyœwietlaj¹cy ustalony komunikat z guzikiem 'OK!', którego klikniêcie go zamyka
-
 import React, { Component } from 'react';
 import alertStyle from '../../css/alert.module.css';
 

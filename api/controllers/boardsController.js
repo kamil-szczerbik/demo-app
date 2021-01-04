@@ -31,7 +31,6 @@ function createBoard(req, res) {
 
 function deleteBoard(req, res) {
     if (req.body.id === boards.length - 1) {
-        console.log('usuwam z końca tablicy');
 
         boards.pop();
         let i = boards.length;
@@ -40,7 +39,6 @@ function deleteBoard(req, res) {
     }
         
     else {
-        console.log('zmieniam na undefined');
         boards[req.body.id] = undefined;
     }
     res.sendStatus(200);
@@ -48,7 +46,6 @@ function deleteBoard(req, res) {
 
 function deleteInactiveBoard(id) {
     if (id === boards.length - 1) {
-        console.log('usuwam z końca tablicy');
 
         boards.pop();
         let i = boards.length;
@@ -57,7 +54,6 @@ function deleteInactiveBoard(id) {
     }
 
     else {
-        console.log('zmieniam na undefined');
         boards[id] = undefined;
     }
 }
@@ -104,7 +100,7 @@ function startBoard(room) {
     return boards[room];
 }
 
-function setGameType(room, isPublic, password) {
+function setGameType(room, isPublic) {
     if (isPublic) {
         boards[room].type = 'public';
         boards[room].password = undefined;
@@ -113,7 +109,6 @@ function setGameType(room, isPublic, password) {
         boards[room].type = 'private';
         boards[room].password = generatePassword();
     }
-    console.log(boards[room].type);
     return boards[room];
 }
 

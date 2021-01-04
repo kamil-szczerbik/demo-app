@@ -42,8 +42,8 @@ class Game extends Component {
             type: '',
             password: '',
 
-            winnerMessage: '',
-            message: ''
+            message: '',
+            message2: '' //zwycięstwo / stopGame
         }
 
         this.room = this.props.location.state.boardId;
@@ -164,6 +164,11 @@ class Game extends Component {
             }
         });
 
+        socket.on('stopGame', (username) => {
+            const newMessage2 = `Niestety, użytkownik ${username} opuścił grę.`
+            this.setState({ message2: newMessage2 });
+        });
+
         socket.on('startGame', (data) => {
             let newURLs = [];
             for (let i = 0; i < 5; i++) {
@@ -179,13 +184,6 @@ class Game extends Component {
                 URLs: newURLs,
                 started: true
             });
-
-            /*socket.off('take-a-seat');
-            socket.off('getUp');
-            socket.off('changePlayersNumber');
-            socket.off('setGameType');
-            socket.off('getPassword')*/
-            //startgame musi być bo używamy do innych rzeczy
         });
 
         socket.on('endMatch', (data) => {
@@ -207,29 +205,23 @@ class Game extends Component {
         });
 
         socket.on('endGame', (data) => {
-            this.setState({score: data.score, winnerMessage: data.message, victories: data.victories});
+            this.setState({score: data.score, message2: data.message, victories: data.victories});
         });
     }
 
     componentWillUnmount() {
-        /*if (this.state.mySeat !== null) {
-            socket.emit('getUp', this.props.location.state.username, this.room, this.state.mySeat);
-        }*/
-        // ^ Co tu zrobić - chyba w configu trzeba tu dać jakąś zmianę state warunkową
-
-        socket.emit('leaveBoard', this.room, this.props.location.state.username);
-
-        socket.off('take-a-seat');
-        socket.off('getUp');
-        socket.off('handover');
-        socket.off('changePlayersNumber');
-        socket.off('setRoundsNumber');
-        socket.off('setGameType')
-        socket.off('getPassword')
-        socket.off('userLeft');
-        socket.off('startGame');
-        socket.off('endMatch');
-        socket.off('endGame');
+            socket.emit('leaveBoard', this.room, this.props.location.state.username);
+            socket.off('take-a-seat');
+            socket.off('getUp');
+            socket.off('handover');
+            socket.off('changePlayersNumber');
+            socket.off('setRoundsNumber');
+            socket.off('setGameType')
+            socket.off('getPassword')
+            socket.off('userLeft');
+            socket.off('startGame');
+            socket.off('endMatch');
+            socket.off('endGame');
     }
 
     sit(seat) {
@@ -309,13 +301,13 @@ class Game extends Component {
                 <Dices mySeat={this.state.mySeat} activePlayer={this.state.activePlayer} room={this.room} urlDices={this.state.URLs} posArray={this.state.posArray} rotArray={this.state.rotArray} rollNumber={this.state.rollNumber} />
                 <Config username={this.props.location.state.username} room={this.room} creator={this.state.creator} players={this.state.players} playersNumber={this.state.playersNumber} availableSeats={this.state.availableSeats} amISitting={this.state.amISitting} started={this.state.started} roundsNumber={this.state.roundsNumber} victories={this.state.victories} type={this.state.type} password={this.state.password} handlePlayersNumber={this.handlePlayersNumber} handleRoundsNumber={this.handleRoundsNumber} handleType={this.handleType} sit={this.sit} getUp={this.getUp} handover={this.handover} kick={this.kick} startGame={this.startGame}/>
                 {
-                    this.state.winnerMessage &&
-                    <DoubleButtonAlert text={this.state.winnerMessage} button1='Rewanż' button2='Wyjdź' handleButton1={this.restartGame} handleButton2={this.quitGame} />
-                }  
-                {
                     this.state.message &&
                     <Alert text={this.state.message} cancel={() => this.setState({ message: '' })} />
                 }
+                {
+                    this.state.message2 &&
+                    <DoubleButtonAlert text={this.state.message2} button1='Rewanż (WIP)' button2='Wyjdź' handleButton1={this.restartGame} handleButton2={this.quitGame} />
+                }  
             </div>
             );
     }

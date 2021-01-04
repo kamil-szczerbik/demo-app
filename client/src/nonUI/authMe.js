@@ -1,3 +1,7 @@
+//zmieniæ nazwê na authenticateUser i poprawiæ we wszystkich komponentach
+
+
+//Funkcja wywo³uj¹ca sprawdzenie na serwerze czy u¿ytkownik jest zalogowany.
 export async function authMe() {
     try {
         const response = await fetch('/api/authenticate', {
@@ -12,11 +16,11 @@ export async function authMe() {
         return response;
     }
     catch (err) {
-        console.log('dupa');
-        console.log(err);
+        console.log('Coœ posz³o nie tak: ' + err);
     }
 }
 
+//Funkcja zwracaj¹ca username z serwera.
 export async function getUsername() {
     try {
         const response = await fetch('/api/getUsername', {
@@ -31,6 +35,6 @@ export async function getUsername() {
         return response;
     }
     catch(err) {
-        console.log(err);
+        console.log('Coœ posz³o nie tak: ' + err);
     }
 }

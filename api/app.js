@@ -27,15 +27,28 @@ let timer = 300; //w sekundach
 io.on('connection', (socket) => {
     console.log('a user connected');
 
-    /*console.log(io.sockets.adapter.rooms);*/
-
     socket.on('disconnect', () => {
         console.log('user disconnected');
     });
 
-    socket.on('disconnecting', ()=> {
+    socket.on('disconnecting', () => {
         const room = Object.keys(socket.rooms);
         room.pop();
+
+        if (socket.boardId !== undefined) {
+            const boardData = board.giveBoardSocket(socket.boardId);
+            if (boardData.started) {
+                let i = 0;
+                while (boardData.players[i]) {
+                    if (boardData.players[i] === socket.username) {
+                        console.log('grę opuścił ten kto siedział przy stole')
+                        io.in(socket.boardId).emit('stopGame', socket.username);
+                        clearInterval(gameTime);
+                    }
+                    i++;
+                }
+            }
+        }
 
         if (room[0]) {
             io.in(room[0]).emit('userLeft', socket.username);
@@ -47,7 +60,7 @@ io.on('connection', (socket) => {
                 const boards = board.updateBoardsList();
                 socket.broadcast.emit('updateBoardsList', boards);
             }
-        }            
+        }
     });
 
     socket.on('updateBoardsList', () => {
@@ -58,13 +71,30 @@ io.on('connection', (socket) => {
     socket.on('joinBoard', (id, username) => {
         socket.join(id);
         socket.username = username;
+        socket.boardId = id; //socket id nie może być, bo socket ma już pole id.
         console.log(username + ' dołączył do stołu ' + id);
     });
 
     socket.on('leaveBoard', (id, username) => {
         socket.leave(id);
+        socket.username = undefined;
+        socket.id = undefined;
         io.in(id).emit('userLeft', username);
         console.log(username + ' opuścił stół ' + id);
+
+        const boardData = board.giveBoardSocket(id);
+
+        if (boardData.started) {
+            let i = 0;
+            while (boardData.players[i]) {
+                if (boardData.players[i] === username) {
+                    console.log('grę opuścił ten kto siedział przy stole')
+                    io.in(id).emit('stopGame', username);
+                    clearInterval(gameTime);
+                }
+                i++;
+                }
+        }
 
         if (!io.sockets.adapter.rooms[id]) {
             board.deleteInactiveBoard(id);
@@ -119,7 +149,7 @@ io.on('connection', (socket) => {
 
         timer = 300;
 
-            gameTime = setInterval(() => {
+        gameTime = setInterval(() => {
             minutes = parseInt(timer / 60, 10);
             seconds = parseInt(timer % 60, 10);
 
@@ -154,8 +184,8 @@ io.on('connection', (socket) => {
             else {
                 timer = 300;
                 io.in(room).emit('endMatch', data);
-            }    
-        }        
+            }
+        }
     });
 
     socket.on('setRoundsNumber', (room, roundsNumber) => {
