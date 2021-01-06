@@ -12,12 +12,28 @@ class GameType extends Component {
                 <div className={configStyle.divColumn}>
                     <p>
                         Rodzaj gry:
-                                    <br />
-                        <input type='radio' id='public' name='gameType' value='public' checked={this.props.type === 'public'} onChange={this.props.handleType} disabled={this.props.creator === this.props.username ? false : true} />
+                        <br />
+                        <input
+                            type='radio'
+                            id='public'
+                            name='gameType'
+                            value='public'
+                            checked={this.props.type === 'public'}
+                            onChange={this.props.handleType}
+                            disabled={this.props.creator === this.props.username ? false : true}
+                        />
                         <label htmlFor='public'>publiczna</label>
 
                         <br />
-                        <input type='radio' id='private' name='gameType' value='private' checked={this.props.type === 'private'} onChange={this.props.handleType} disabled={this.props.creator === this.props.username ? false : true} />
+                        <input
+                            type='radio'
+                            id='private'
+                            name='gameType'
+                            value='private'
+                            checked={this.props.type === 'private'}
+                            onChange={this.props.handleType}
+                            disabled={this.props.creator === this.props.username ? false : true}
+                        />
                         <label htmlFor='private'>prywatna</label>
                     </p>
                 </div>

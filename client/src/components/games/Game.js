@@ -57,6 +57,7 @@ class Game extends Component {
         this.handleType = this.handleType.bind(this);
         this.startGame = this.startGame.bind(this);
         this.setScore = this.setScore.bind(this);
+        this.handleDeleteBoard = this.handleDeleteBoard.bind(this);
 
         this.restartGame = this.restartGame.bind(this);
         this.quitGame = this.quitGame.bind(this);
@@ -207,6 +208,10 @@ class Game extends Component {
         socket.on('endGame', (data) => {
             this.setState({score: data.score, message2: data.message, victories: data.victories});
         });
+
+        socket.on('kickOthers', () => {
+            this.setState({ message: 'Założyciel rozwiązał stół. Kliknij aby wrócić do strony głównej.' });
+        });
     }
 
     componentWillUnmount() {
@@ -222,6 +227,7 @@ class Game extends Component {
             socket.off('startGame');
             socket.off('endMatch');
             socket.off('endGame');
+            socket.off('kickOthers');
     }
 
     sit(seat) {
@@ -294,12 +300,54 @@ class Game extends Component {
         this.props.history.replace('/'); //React Router używa History API z HTML5 history.replace zastępuje aktualną ścieżkę, push przekierowałoby, a poprzednia strona zostałaby zapamiętana.
     }
 
+    //export withRouter???!!!
+    async handleDeleteBoard() {
+        const response = await fetch('/api/deleteBoard', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                id: this.room
+            })
+        });
+        if (response.status === 200) {
+            socket.emit('updateBoardsList');
+            socket.emit('kickOthers', this.room);
+            this.props.history.push('/');
+            //Wykonuje się ComponentWillUnmount, więc socket off tu nie muszę umieszczać
+        }
+    }
+
     render() {
         return (
             <div>
                 <Table mySeat={this.state.mySeat} proposedValues={this.state.proposedValues} score={this.state.score} activePlayer={this.state.activePlayer} setScore={this.setScore} playersNumber={this.state.playersNumber}/>
                 <Dices mySeat={this.state.mySeat} activePlayer={this.state.activePlayer} room={this.room} urlDices={this.state.URLs} posArray={this.state.posArray} rotArray={this.state.rotArray} rollNumber={this.state.rollNumber} />
-                <Config username={this.props.location.state.username} room={this.room} creator={this.state.creator} players={this.state.players} playersNumber={this.state.playersNumber} availableSeats={this.state.availableSeats} amISitting={this.state.amISitting} started={this.state.started} roundsNumber={this.state.roundsNumber} victories={this.state.victories} type={this.state.type} password={this.state.password} handlePlayersNumber={this.handlePlayersNumber} handleRoundsNumber={this.handleRoundsNumber} handleType={this.handleType} sit={this.sit} getUp={this.getUp} handover={this.handover} kick={this.kick} startGame={this.startGame}/>
+                <Config
+                    username={this.props.location.state.username}
+                    room={this.room}
+                    creator={this.state.creator}
+                    players={this.state.players}
+                    playersNumber={this.state.playersNumber}
+                    availableSeats={this.state.availableSeats}
+                    amISitting={this.state.amISitting}
+                    started={this.state.started}
+                    roundsNumber={this.state.roundsNumber}
+                    victories={this.state.victories}
+                    type={this.state.type}
+                    password={this.state.password}
+                    handlePlayersNumber={this.handlePlayersNumber}
+                    handleRoundsNumber={this.handleRoundsNumber}
+                    handleType={this.handleType}
+                    sit={this.sit}
+                    getUp={this.getUp}
+                    handover={this.handover}
+                    kick={this.kick}
+                    startGame={this.startGame}
+                    handleDeleteBoard={this.handleDeleteBoard}
+                />
                 {
                     this.state.message &&
                     <Alert text={this.state.message} cancel={() => this.setState({ message: '' })} />

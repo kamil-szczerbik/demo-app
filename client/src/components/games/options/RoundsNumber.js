@@ -11,7 +11,12 @@ class RoundsNumber extends Component {
             <div className={configStyle.divColumn}>
                 <p>
                     <label htmlFor='rounds'>Do ilu zwycięstw: </label><br />
-                    <select name='rounds' id='rounds' disabled={this.props.creator === this.props.username ? false : true} onChange={this.props.handleRoundsNumber}>
+                    <select
+                        name='rounds'
+                        id='rounds'
+                        onChange={this.props.handleRoundsNumber}
+                        disabled={this.props.creator === this.props.username ? false : true}
+                    >
                         <option value='1' selected={this.props.roundsNumber === 1 ? true : false}>1</option>
                         <option value='2' selected={this.props.roundsNumber === 2 ? true : false}>2</option>
                         <option value='3' selected={this.props.roundsNumber === 3 ? true : false}>3</option>
