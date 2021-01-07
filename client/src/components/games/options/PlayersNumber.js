@@ -55,4 +55,5 @@ class PlayersNumber extends Component {
         );
     }
 }
+
 export default PlayersNumber;

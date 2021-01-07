@@ -28,4 +28,5 @@ class RoundsNumber extends Component {
         );
     }
 }
+
 export default RoundsNumber;

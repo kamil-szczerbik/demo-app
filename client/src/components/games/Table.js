@@ -1,6 +1,5 @@
-//Jeden z komponentów kości. Tabela w grze (lewy panel)
-
 import React, { Component } from 'react';
+import TableValues from './TableValues';
 import tabStyle from '../../css/table.module.css';
 
 class Table extends Component {
@@ -21,7 +20,7 @@ class Table extends Component {
                             <th></th>                                                                               {/*nagłówek tabeli, w zależności od liczby graczy, jest albo wyszarzony albo czarny*/}
                             <th className={tabStyle.active}>1</th>      {/*nie korzystamy z this.props.playersNumber, żeby stylizowanie zadziałało dopiero w momencie odpalenia gry*/}
                             <th className={tabStyle.active}>2</th>
-                            <th className={this.props.playersNumber > 2 ? tabStyle.active : tabStyle.inActive}>3</th> {/* <--- NIE WIEM JESZCZE CZY TO DZIAŁA - jak start button będzie działać, to wtedy się okaże*/}
+                            <th className={this.props.playersNumber > 2 ? tabStyle.active : tabStyle.inActive}>3</th>
                             <th className={this.props.playersNumber > 3 ? tabStyle.active : tabStyle.inActive}>4</th>
                         </tr>
                     </thead>
@@ -135,30 +134,6 @@ class Table extends Component {
                 </table>
             </div>
         );
-    }
-}
-
-class TableValues extends Component {
-    render() {
-
-        if (this.props.proposedValue !== false && this.props.proposedValue !== undefined && this.props.player === this.props.mySeat) {
-            return (
-                <td
-                className={this.props.score !== null ? tabStyle.cellClicked : tabStyle.cell}
-                value={this.props.value}
-                onClick={(e) => { this.props.score === null && this.props.setScore(e)}}
-                >
-                    {this.props.score === null ? this.props.proposedValue : this.props.score}
-                </td>
-            )
-        }
-        else {
-            return (
-                <td className={this.props.score !== null ? tabStyle.cellClicked : tabStyle.cell3rd}>
-                    {this.props.score === null ? this.props.proposedValue : this.props.score}
-                </td>
-            )
-        }
     }
 }
 

@@ -53,4 +53,5 @@ class GameType extends Component {
         );
     }
 }
+
 export default GameType;
