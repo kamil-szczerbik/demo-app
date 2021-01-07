@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Button from '../buttons/Button';
 import alertStyle from '../../css/alert.module.css';
 
 class Alert extends Component {

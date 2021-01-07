@@ -3,6 +3,7 @@ import PlayersNumber from './PlayersNumber';
 import RoundsNumber from './RoundsNumber';
 import GameType from './GameType';
 import DoubleButtonAlert from '../../alerts/DoubleButtonAlert';
+import Button from '../../buttons/Button';
 import configStyle from '../../../css/config.module.css';
 
 class GameOptions extends Component {
@@ -42,26 +43,23 @@ class GameOptions extends Component {
                         />
 
                         <div className={configStyle.divColumn}>
-                            <button
-                                className={configStyle.startButton}
-                                type='button'
+                            <Button
+                                className='affirmative'
                                 disabled={this.props.creator === this.props.username ? false : true}
-                                onClick={this.props.startGame}
-                            >
-                                Start!
-                            </button>
+                                action={this.props.startGame}
+                                text='Start!'
+                            />
                         </div>
 
                         <div className={configStyle.divColumn}>
-                            <button
-                                className={configStyle.cancelButton}
-                                type='button'
+                            <Button
+                                className='dismissive'
                                 disabled={this.props.creator === this.props.username ? false : true}
-                                onClick={() => this.setState({ doubleButtonAlertMessage: 'Czy na pewno chcesz usunąć ten stół?' })}
-                            >
-                                Usuń stół
-                            </button>
+                                action={() => this.setState({ doubleButtonAlertMessage: 'Czy na pewno chcesz usunąć ten stół?' })}
+                                text='Usuń stół'
+                            />
                         </div>
+
                     </fieldset>
                 </form>
                 {

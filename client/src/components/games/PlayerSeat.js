@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import configStyle from '../../css/config.module.css';
 
-
 class PlayerSeat extends Component {
     constructor(props) {
         super(props);
@@ -10,8 +9,6 @@ class PlayerSeat extends Component {
         }
         this.handleSit = this.handleSit.bind(this);
         this.handleGetUp = this.handleGetUp.bind(this);
-        this.handleHandover = this.handleHandover.bind(this);
-        this.handleKick = this.handleKick.bind(this);
     }
 
     static getDerivedStateFromProps(props, state) {
@@ -33,14 +30,6 @@ class PlayerSeat extends Component {
         this.setState({ showButton: false });
     }
 
-    handleHandover() {
-        this.props.handover(this.props.player);
-    }
-
-    handleKick() {
-        this.props.kick(this.props.player, this.props.seat);
-    }
-
     render() {
         return (
             <div
@@ -55,8 +44,8 @@ class PlayerSeat extends Component {
                 {
                     (this.props.username === this.props.creator && !this.props.availableSeat && this.props.player !== this.props.creator) &&
                     <>
-                        <button onClick={this.handleKick}>Kick</button>
-                        <button onClick={this.handleHandover}>LOL</button>
+                        <button onClick={() => this.props.kick(this.props.player, this.props.seat)}>Kick</button>
+                        <button onClick={() => this.props.handover(this.props.player)}>LOL</button>
                     </>
                 }
                 <img src={this.props.path} className={configStyle.avatar} alt="Awatar gracza"/>
@@ -64,4 +53,5 @@ class PlayerSeat extends Component {
         );
     }
 }
+
 export default PlayerSeat;

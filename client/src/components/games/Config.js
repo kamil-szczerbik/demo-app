@@ -34,12 +34,13 @@ class Config extends Component {
                     <hr />
 
                     <GameOptions
+                        username={this.props.username}
+                        creator={this.props.creator}
+                        started={this.props.started}
                         playersNumber={this.props.playersNumber}
                         roundsNumber={this.props.roundsNumber}
                         type={this.props.type}
                         password={this.props.password}
-                        username={this.props.username}
-                        creator={this.props.creator}
                         handlePlayersNumber={this.props.handlePlayersNumber}
                         handleRoundsNumber={this.props.handleRoundsNumber}
                         handleType={this.props.handleType}
