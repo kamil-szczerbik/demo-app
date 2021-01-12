@@ -36,8 +36,8 @@ io.on('connection', (socket) => {
         room.pop();
 
         if (socket.boardId !== undefined) {
-            const boardData = board.giveBoardSocket(socket.boardId);
-            if (boardData.started) {
+            const boardData = board.giveBoardSocket(socket.boardId); //to nie zawsze istnieje jak się wywołuje funkcja! POPRAWIĆ!!!
+            if (boardData && boardData.started) {
                 let i = 0;
                 while (boardData.players[i]) {
                     if (boardData.players[i] === socket.username) {
@@ -55,7 +55,7 @@ io.on('connection', (socket) => {
             console.log(socket.username + ' opuścił stół ' + room[0]);
 
             if (io.sockets.adapter.rooms[0].length === 1) {
-                board.deleteInactiveBoard(0);
+                board.deleteEmptyBoard(0);
                 clearInterval(gameTime);
                 const boards = board.updateBoardsList();
                 socket.broadcast.emit('updateBoardsList', boards);
@@ -82,9 +82,9 @@ io.on('connection', (socket) => {
         io.in(id).emit('userLeft', username);
         console.log(username + ' opuścił stół ' + id);
 
-        const boardData = board.giveBoardSocket(id);
+        const boardData = board.giveBoardSocket(id); //to nie zawsze istnieje jak się wywołuje funkcja! POPRAWIĆ!!!
 
-        if (boardData.started) {
+        if (boardData && boardData.started) {
             let i = 0;
             while (boardData.players[i]) {
                 if (boardData.players[i] === username) {
@@ -97,16 +97,16 @@ io.on('connection', (socket) => {
         }
 
         if (!io.sockets.adapter.rooms[id]) {
-            board.deleteInactiveBoard(id);
+            board.deleteEmptyBoard(id);
             clearInterval(gameTime);
             const boards = board.updateBoardsList();
             socket.broadcast.emit('updateBoardsList', boards);
         }
     });
 
-    socket.on('take-a-seat', (username, room, seat) => {
-        board.addPlayer(username, room, seat);
-        io.in(room).emit('take-a-seat', username, seat);
+    socket.on('sitDown', (username, room, seat) => {
+        board.addPlayer(room, seat, username);
+        io.in(room).emit('sitDown', username, seat);
         console.log(username + ' zajął miejsce');
     });
 
@@ -116,11 +116,11 @@ io.on('connection', (socket) => {
         console.log(username + ' wstał od stołu');
     });
 
-    socket.on('handover', (room, newPlayer) => {
-        const newCreator = board.changeCreator(room, newPlayer);
-        socket.broadcast.emit('updateBoard', newCreator);
-        io.in(room).emit('handover', newPlayer);
-        console.log(newPlayer + ' został nowym przywódcą stołu');
+    socket.on('passLeaderPrivileges', (room, newLeader) => {
+        board.changeLeader(room, newLeader);
+        socket.broadcast.emit('updateBoard', newLeader);
+        io.in(room).emit('passLeaderPrivileges', newLeader);
+        console.log(newLeader + ' został nowym przywódcą stołu');
     });
 
     //trzeba walidację tu jeszcze zrobić
@@ -128,11 +128,11 @@ io.on('connection', (socket) => {
     socket.on('changePlayersNumber', (room, newPlayerNumber) => {
         board.changePlayersNumber(room, newPlayerNumber);
 
-        for (let i = 0; i < parseInt(newPlayerNumber); i++) {
+        for (let i = 0; i < newPlayerNumber; i++) {
             board.removePlayer(room, i); //i === seat
         }
 
-        io.in(room).emit('changePlayersNumber', parseInt(newPlayerNumber));
+        io.in(room).emit('changePlayersNumber', newPlayerNumber);
     });
 
     socket.on('startGame', (room) => {
@@ -143,6 +143,7 @@ io.on('connection', (socket) => {
         const playersUsernames = updatedBoard.players;
         const roundsNumber = updatedBoard.roundsNumber;
         const data = dices.prepareData(playersNumber, playersUsernames, roundsNumber);
+        data.started = updatedBoard.started;
 
         io.in(room).emit('startGame', data);
         console.log('Gra przy stole ' + room + ' rozpoczęła się');
@@ -183,27 +184,27 @@ io.on('connection', (socket) => {
             }
             else {
                 timer = 300;
-                io.in(room).emit('endMatch', data);
+                io.in(room).emit('endRound', data);
             }
         }
     });
 
-    socket.on('setRoundsNumber', (room, roundsNumber) => {
+    socket.on('changeRoundsNumber', (room, roundsNumber) => {
         board.changeRoundsNumber(room, roundsNumber);
-        io.in(room).emit('setRoundsNumber', roundsNumber);
+        io.in(room).emit('changeRoundsNumber', roundsNumber);
     });
 
-    socket.on('setGameType', (room, isPublic) => {
+    socket.on('changeGameType', (room, isPublic) => {
         if (isPublic) {
             const public = board.setGameType(room, isPublic);
             socket.broadcast.emit('updateBoard', public);
-            io.in(room).emit('setGameType', public.type);
+            io.in(room).emit('changeGameType', public.type);
         }
         else {
             const private = board.setGameType(room, isPublic);
             socket.emit('getPassword', private.password);
             socket.broadcast.emit('updateBoard', private);
-            io.in(room).emit('setGameType', private.type);
+            io.in(room).emit('changeGameType', private.type);
         }
     });
 

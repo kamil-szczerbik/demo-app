@@ -44,7 +44,7 @@ class NewBoard extends Component {
         },
         body: JSON.stringify({
             game: 'dices', //póki co z tego nie korzystam, bo mam jedną grę
-            creator: authenticationResponseJSON.username
+            leader: authenticationResponseJSON.username
         })
         });
 
@@ -62,7 +62,7 @@ class NewBoard extends Component {
     }
 
     emitSockets(newBoardResponseJSON) {
-        socket.emit('joinBoard', newBoardResponseJSON.id, newBoardResponseJSON.creator);
+        socket.emit('joinBoard', newBoardResponseJSON.id, newBoardResponseJSON.leader);
         socket.emit('updateBoardsList');
     }
 
@@ -71,7 +71,7 @@ class NewBoard extends Component {
             pathname: 'kosci/s/' + newBoardResponseJSON.id,
             state: {
                 boardId: newBoardResponseJSON.id,
-                username: newBoardResponseJSON.creator
+                username: newBoardResponseJSON.leader
             }
         });
     }
@@ -87,7 +87,7 @@ class NewBoard extends Component {
                     <h1 className={boardStyle.title} onClick={this.handleCreatingBoard}>Załóż nowy stół</h1>
                 </div>
                 {
-                    this.state.alertMessage !== '' &&
+                    this.state.alertMessage &&
                     <Alert text={this.state.alertMessage} cancel={() => this.setState({ alertMessage: '' })} />
                 }
             </>

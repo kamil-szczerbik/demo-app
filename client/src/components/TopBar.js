@@ -113,7 +113,7 @@ class TopBar extends Component {
                     <RegisterForm hideForm={this.hideForm} />
                 }
                 {
-                    this.state.alertMessage !== '' &&
+                    this.state.alertMessage &&
                     <Alert text={this.state.alertMessage} cancel={() => this.setState({ alertMessage: '' })} />
                 }
             </div>

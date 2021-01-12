@@ -16,16 +16,16 @@ class Config extends Component {
 
                     <PlayerSeats
                         username={this.props.username}
-                        creator={this.props.creator}
+                        leader={this.props.leader}
                         started={this.props.started}
                         playersNumber={this.props.playersNumber}
                         disabled={false}
-                        players={this.props.players}
+                        sittingPlayers={this.props.sittingPlayers}
                         amISitting={this.props.amISitting}
                         availableSeats={this.props.availableSeats}
-                        sit={this.props.sit}
+                        sitDown={this.props.sitDown}
                         getUp={this.props.getUp}
-                        handover={this.props.handover}
+                        passLeaderPrivileges={this.props.passLeaderPrivileges}
                         kick={this.props.kick}
                     />
 
@@ -35,15 +35,15 @@ class Config extends Component {
 
                     <GameOptions
                         username={this.props.username}
-                        creator={this.props.creator}
+                        leader={this.props.leader}
                         started={this.props.started}
                         playersNumber={this.props.playersNumber}
                         roundsNumber={this.props.roundsNumber}
-                        type={this.props.type}
+                        gameType={this.props.gameType}
                         password={this.props.password}
                         handlePlayersNumber={this.props.handlePlayersNumber}
                         handleRoundsNumber={this.props.handleRoundsNumber}
-                        handleType={this.props.handleType}
+                        handleGameType={this.props.handleGameType}
                         startGame={this.props.startGame}
                         handleDeleteBoard={this.props.handleDeleteBoard}
                     />
@@ -51,7 +51,7 @@ class Config extends Component {
                 <p className={configStyle.testInfo}>
                     Twoja nazwa użytkownika: {this.props.username}<br />
                         ID stołu: {this.props.room}<br />
-                        Założyciel stołu: {this.props.creator}<br />
+                        Założyciel stołu: {this.props.leader}<br />
                         Zwycięsta: {this.props.victories}<br />
                 </p>
             </div>

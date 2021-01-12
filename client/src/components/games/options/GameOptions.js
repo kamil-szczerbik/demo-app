@@ -23,29 +23,29 @@ class GameOptions extends Component {
                         <PlayersNumber
                             playersNumber={this.props.playersNumber}
                             username={this.props.username}
-                            creator={this.props.creator}
+                            leader={this.props.leader}
                             handlePlayersNumber={this.props.handlePlayersNumber}
                         />
 
                         <RoundsNumber
                             roundsNumber={this.props.roundsNumber}
                             username={this.props.username}
-                            creator={this.props.creator}
+                            leader={this.props.leader}
                             handleRoundsNumber={this.props.handleRoundsNumber}
                         />
 
                         <GameType
-                            type={this.props.type}
+                            gameType={this.props.gameType}
                             password={this.props.password}
                             username={this.props.username}
-                            creator={this.props.creator}
-                            handleType={this.props.handleType}
+                            leader={this.props.leader}
+                            handleGameType={this.props.handleGameType}
                         />
 
                         <div className={configStyle.divColumn}>
                             <Button
                                 className='affirmative'
-                                disabled={this.props.creator === this.props.username ? false : true}
+                                disabled={this.props.leader === this.props.username ? false : true}
                                 action={this.props.startGame}
                                 text='Start!'
                             />
@@ -54,7 +54,7 @@ class GameOptions extends Component {
                         <div className={configStyle.divColumn}>
                             <Button
                                 className='dismissive'
-                                disabled={this.props.creator === this.props.username ? false : true}
+                                disabled={this.props.leader === this.props.username ? false : true}
                                 action={() => this.setState({ doubleButtonAlertMessage: 'Czy na pewno chcesz usunąć ten stół?' })}
                                 text='Usuń stół'
                             />

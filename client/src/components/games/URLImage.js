@@ -22,6 +22,16 @@ class URLImage extends Component {
         }
 
     }
+/*
+    shouldComponentUpdate(nextProps) {
+        this.imageNode.strokeEnabled(false);
+        this.strokeEnable = true;
+
+        if (this.props.src !== nextProps.src)
+            this.loadImage();
+
+        return true;
+    }*/
 
     componentWillUnmount() {
         this.image.removeEventListener('load', this.handleLoad);
@@ -31,7 +41,8 @@ class URLImage extends Component {
         // save to "this" to remove "load" handler on unmount
         this.image = new window.Image();
         this.image.src = this.props.src;
-        this.image.addEventListener('load', this.handleLoad);
+        this.image.addEventListener('load', this.handleLoad); // <--- tu jest ca³a przyczyna z³ego wczytywania
+        //dopiero jak siê ca³a strona za³aduje to jest wywo³ywana funkcja z setstate i dopiero po setState jest update canvas
     }
 
     handleLoad = () => {
@@ -76,4 +87,5 @@ class URLImage extends Component {
         );
     }
 }
+
 export default URLImage;

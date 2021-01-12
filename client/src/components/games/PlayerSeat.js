@@ -7,7 +7,7 @@ class PlayerSeat extends Component {
         this.state = {
             showButton: false
         }
-        this.handleSit = this.handleSit.bind(this);
+        this.handleSitingDown = this.handleSitingDown.bind(this);
         this.handleGetUp = this.handleGetUp.bind(this);
     }
 
@@ -18,9 +18,9 @@ class PlayerSeat extends Component {
             return null;
     }
 
-    handleSit() {
+    handleSitingDown() {
         if (this.props.availableSeat && !this.props.disabled && !this.props.amISitting) {
-            this.props.sit(this.props.seat);
+            this.props.sitDown(this.props.seat);
             this.setState({ showButton: true });
         }
     }
@@ -34,18 +34,18 @@ class PlayerSeat extends Component {
         return (
             <div
                 className={this.props.playersNumber > this.props.seat ? ((this.props.availableSeat === true && this.props.amISitting === false) ? configStyle.playerBarActive : configStyle.playerBar) : configStyle.playerBarDisabled}
-                onClick={this.handleSit}
+                onClick={this.handleSitingDown}
             >
-                <h2 className={configStyle.nickname}>{this.props.player}</h2>
+                <h2 className={configStyle.nickname}>{this.props.playerUsername}</h2>
                 {
-                    (this.props.player === this.props.username && !this.props.disabled && !this.props.started) &&
+                    (this.props.playerUsername === this.props.username && !this.props.disabled && !this.props.started) &&
                     <img src='/img/redX.jpg' className={configStyle.getUp} onClick={this.handleGetUp} alt='Przycisk do wstania od stołu' />
                 }
                 {
-                    (this.props.username === this.props.creator && !this.props.availableSeat && this.props.player !== this.props.creator) &&
+                    (this.props.username === this.props.leader && !this.props.availableSeat && this.props.playerUsername !== this.props.leader) &&
                     <>
-                        <button onClick={() => this.props.kick(this.props.player, this.props.seat)}>Kick</button>
-                        <button onClick={() => this.props.handover(this.props.player)}>LOL</button>
+                        <button onClick={() => this.props.kick(this.props.playerUsername, this.props.seat)}>Kick</button>
+                        <button onClick={() => this.props.passLeaderPrivileges(this.props.playerUsername)}>LOL</button>
                     </>
                 }
                 <img src={this.props.path} className={configStyle.avatar} alt="Awatar gracza" />

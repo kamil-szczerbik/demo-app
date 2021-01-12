@@ -9,7 +9,7 @@ class TableValues extends Component {
                 <td
                     className={this.props.score !== null ? tabStyle.cellClicked : tabStyle.cell}
                     value={this.props.value}
-                    onClick={(e) => { this.props.score === null && this.props.setScore(e) }}
+                    onClick={() => this.props.score === null && this.props.setScore(this.props.value)}
                 >
                     {this.props.score === null ? this.props.proposedValue : this.props.score}
                 </td>

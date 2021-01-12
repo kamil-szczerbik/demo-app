@@ -14,7 +14,7 @@ class BoardsList extends Component {
         };
     }
 
-    async componentDidMount() {
+    componentDidMount() {
         this.initializeSockets();
         this.tryGetBoardsList();
     }
@@ -30,7 +30,7 @@ class BoardsList extends Component {
                     if (item.props.id === updatedBoard.id) {
                         return {
                             ...item,
-                            props: { key: updatedBoard.id.toString(), id: updatedBoard.id, started: updatedBoard.started, creator: updatedBoard.creator, type: updatedBoard.type, password: updatedBoard.password }
+                            props: { key: updatedBoard.id.toString(), id: updatedBoard.id, started: updatedBoard.started, leader: updatedBoard.leader, type: updatedBoard.type, password: updatedBoard.password }
                         };
                     }
                     return item;
@@ -44,7 +44,7 @@ class BoardsList extends Component {
             this.getBoardsList();
         }
         catch (err) {
-            console.log('Coś poszło nie tak: ' + err);
+            this.showAlert('Coś poszło nie tak: ' + err);
         }
     }
 
@@ -65,14 +65,14 @@ class BoardsList extends Component {
             this.showAlert('Coś poszło nie tak. Spróbuj ponownie.');
     }
 
-    async loadBoardsList(boardsList) {
+    loadBoardsList(boardsList) {
         const newBoardsList = boardsList.filter(check => {
             if (check)
                 return true;
             else
                 return false;
         }).map(board => (
-            <Board key={board.id.toString()} id={board.id} started={board.started} creator={board.creator} type={board.type} password={board.password} />
+            <Board key={board.id.toString()} id={board.id} started={board.started} leader={board.leader} type={board.type} password={board.password} />
         ));
 
         this.setState({ boardsList: newBoardsList })
@@ -97,7 +97,7 @@ class BoardsList extends Component {
                 }
                 </div>
                 {
-                    this.state.alertMessage !== '' &&
+                    this.state.alertMessage &&
                     <Alert text={this.state.alertMessage} cancel={() => this.setState({ alertMessage: '' })} />
                 }
             </>

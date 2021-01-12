@@ -29,11 +29,11 @@ class Board extends Component {
             this.checkPermissions();
         }
         else
-            this.setState({ alertMessage: 'Coś poszło nie tak. Spróbuj ponownie.' })
+            this.showAlert('Coś poszło nie tak. Spróbuj ponownie.')
     }
 
     checkPermissions() {
-        if (this.props.type === 'public' || this.username === this.props.creator)
+        if (this.props.type === 'public' || this.username === this.props.leader)
             this.joinBoard();
         else
             this.setState({ showPasswordAlert: true });
@@ -66,7 +66,7 @@ class Board extends Component {
             this.ValidatePasswordOnServer(password);
         }
         catch (err) {
-            console.log('Coś poszło nie tak: ' + err);
+            this.showAlert('Coś poszło nie tak: ' + err);
         }
     }
 
@@ -97,20 +97,24 @@ class Board extends Component {
         this.setState({ passwordError: error });
     }
 
+    showAlert(message) {
+        this.setState({ alertMessage: message });
+    }
+
     render() {
         return (
             <>
                 <div className={boardStyle.board} onClick={this.handleJoiningBoard}>
                     <h1>{this.props.id}</h1>
                     <img src={`/placeholders/${this.props.type === 'public' ? 'unlock' : 'lock'}.png`} alt='ikona kłódki' />
-                    <h1>{this.props.creator}</h1>
+                    <h1>{this.props.leader}</h1>
                 </div>
                 {
-                    this.state.showPasswordAlert === true &&
+                    this.state.showPasswordAlert &&
                     <PasswordAlert error={this.state.passwordError} checkPassword={this.checkPassword} cancel={() => this.setState({error: '', showPasswordAlert: false})}/>
                 }
                 {
-                    this.state.alertMessage !== '' &&
+                    this.state.alertMessage &&
                     <Alert text={this.state.alertMessage} cancel={() => this.setState({ alertMessage: '' })} />
                 }
             </>

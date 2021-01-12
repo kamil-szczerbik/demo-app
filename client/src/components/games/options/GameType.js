@@ -18,9 +18,9 @@ class GameType extends Component {
                             id='public'
                             name='gameType'
                             value='public'
-                            checked={this.props.type === 'public'}
-                            onChange={this.props.handleType}
-                            disabled={this.props.creator === this.props.username ? false : true}
+                            checked={this.props.gameType === 'public'}
+                            onChange={this.props.handleGameType}
+                            disabled={this.props.leader === this.props.username ? false : true}
                         />
                         <label htmlFor='public'>publiczna</label>
 
@@ -30,9 +30,9 @@ class GameType extends Component {
                             id='private'
                             name='gameType'
                             value='private'
-                            checked={this.props.type === 'private'}
-                            onChange={this.props.handleType}
-                            disabled={this.props.creator === this.props.username ? false : true}
+                            checked={this.props.gameType === 'private'}
+                            onChange={this.props.handleGameType}
+                            disabled={this.props.leader === this.props.username ? false : true}
                         />
                         <label htmlFor='private'>prywatna</label>
                     </p>
@@ -40,7 +40,7 @@ class GameType extends Component {
                 <div className={configStyle.divColumn}>
                     <p>
                         {
-                        this.props.type === 'private' &&
+                        this.props.gameType === 'private' &&
                         <>
                             Hasło:
                             <br />

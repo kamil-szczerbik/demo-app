@@ -2,21 +2,13 @@ const crypto = require("crypto");
 
 const boards = [];
 
-/*let boardId = '#';*/
-
 function createBoard(req, res) {
-    /*boardId = i*/
-/*    boardId = i.toString();
-    boardId = boardId.padStart(4, '#00'); //dzięki temu będzie szło: #000 #001 #002 ... #078 ...*/
-
-    let i = 0;
     const newPassword = generatePassword()
-    while (boards[i])
-        i++;
-
+    const index = findFirstAvailableIndex();
+    
     const newBoard = {
-        id: i,
-        creator: req.body.creator,
+        id: index,
+        leader: req.body.leader,
         started: false,
         type: 'private',
         password: newPassword,
@@ -25,37 +17,43 @@ function createBoard(req, res) {
         roundsNumber: 1
     };
 
-    boards[i] = newBoard;
+    boards[index] = newBoard;
     res.status(200).send(newBoard);
+}
+
+function findFirstAvailableIndex() {
+    let i = 0;
+
+    while (boards[i])
+        i++;
+
+    return i;
 }
 
 function deleteBoard(req, res) {
     if (req.body.id === boards.length - 1) {
-
         boards.pop();
-        let i = boards.length;
-        while (!boards[--i] && i >= 0)
-            boards.pop();
-    }
-        
-    else {
+        checkPreviousIndexes();
+    } 
+    else
         boards[req.body.id] = undefined;
-    }
+
     res.sendStatus(200);
 } 
 
-function deleteInactiveBoard(id) {
+function deleteEmptyBoard(id) {
     if (id === boards.length - 1) {
-
         boards.pop();
-        let i = boards.length;
-        while (!boards[--i] && i >= 0)
-            boards.pop();
+        checkPreviousIndexes();
     }
-
-    else {
+    else
         boards[id] = undefined;
-    }
+}
+
+function checkPreviousIndexes() {
+    let i = boards.length;
+    while (!boards[--i] && i >= 0)
+        boards.pop();
 }
 
 function giveBoardsList(req, res) {
@@ -82,12 +80,12 @@ function changePlayersNumber(room, newPlayersNumber) {
     boards[room].playersNumber = newPlayersNumber;
 }
 
-function changeCreator(room, newCreator) {
-    boards[room].creator = newCreator;
+function changeLeader(room, newLeader) {
+    boards[room].leader = newLeader;
     return boards[room];
 }
 
-function addPlayer(username, room, seat) {
+function addPlayer(room, seat, username) {
     boards[room].players[seat] = username;
 }
 
@@ -109,6 +107,7 @@ function setGameType(room, isPublic) {
         boards[room].type = 'private';
         boards[room].password = generatePassword();
     }
+
     return boards[room];
 }
 
@@ -126,14 +125,14 @@ function checkPassword(req, res) {
 module.exports = {
     createBoard,
     deleteBoard,
-    deleteInactiveBoard,
+    deleteEmptyBoard,
     giveBoardsList,
     giveBoard,
     giveBoardSocket,
     updateBoardsList,
     changeRoundsNumber,
     changePlayersNumber,
-    changeCreator,
+    changeLeader,
     addPlayer,
     removePlayer,
     startBoard,

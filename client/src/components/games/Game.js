@@ -1,6 +1,3 @@
-//Komponent, będący rodzicem 3 komponentów w kościach (tabela, gra i config), do niego są oddelegowywane prawie wszystkie funkcje, bo
-//z reguły działanie funkcji w jednym z komponentów kości, ma wpływ na inny (przekazywanie danych pomiędzy rodzeństwem)
-
 import React, { Component } from 'react';
 import Dices from './Dices';
 import Table from './Table';
@@ -13,9 +10,9 @@ class Game extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            playersNumber: 2,       //ilu graczy (string, bo wartość atrybutu value inputa radio w Configu nie może być liczbą)
-            roundsNumber: 1,        // ← jest int, bo jakoś magicznie string na serwerze staje się intem
-            //to z paczki 
+            playersNumber: 2,       
+            roundsNumber: 1,        
+
             activePlayer: 0,
             rollNumber: 0,
             proposedValues: [],
@@ -30,31 +27,30 @@ class Game extends Component {
             victories: Array(4).fill(0),
             URLs: [],
 
-            //to się tyczy configa
-            players: ['Wolne miejsce', 'Wolne miejsce', 'Wolne miejsce', 'Wolne miejsce'],
+            sittingPlayers: ['Wolne miejsce', 'Wolne miejsce', 'Wolne miejsce', 'Wolne miejsce'],
             availableSeats: [true, true, true, true],
 
             amISitting: false,
             mySeat: null,
             started: false,
 
-            creator: '',
-            type: '',
+            leader: '',
+            gameType: '',
             password: '',
 
-            message: '',
-            message2: '' //zwycięstwo / stopGame
+            alertMessage: '',
+            doubleButtonAlertMessage: ''
         }
 
         this.room = this.props.location.state.boardId;
 
-        this.sit = this.sit.bind(this);
+        this.sitDown = this.sitDown.bind(this);
         this.getUp = this.getUp.bind(this);
-        this.handover = this.handover.bind(this);
+        this.passLeaderPrivileges = this.passLeaderPrivileges.bind(this);
         this.kick = this.kick.bind(this);
         this.handlePlayersNumber = this.handlePlayersNumber.bind(this);
         this.handleRoundsNumber = this.handleRoundsNumber.bind(this);
-        this.handleType = this.handleType.bind(this);
+        this.handleGameType = this.handleGameType.bind(this);
         this.startGame = this.startGame.bind(this);
         this.setScore = this.setScore.bind(this);
         this.handleDeleteBoard = this.handleDeleteBoard.bind(this);
@@ -64,178 +60,207 @@ class Game extends Component {
     }
 
     componentDidMount() {
-        try {
-            fetch('/api/getBoard', {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    id: this.room
-                })
-            })
-                .then(response => {
-                    return response.json();
-                })
-                .then(response => {
-                    const newPlayers = { ...this.state.players };
-                    const newAvailableSeats = { ...this.state.availableSeats };
-                    const newPlayersNumber = parseInt(response.playersNumber);
+        this.initializeSockets();
+        this.tryGetBoardData();
+    }
 
-                    for (let i = 0; i < newPlayersNumber; i++) {
-                        if (response.players[i]) {
-                            newPlayers[i] = response.players[i];
-                            newAvailableSeats[i] = false;
-                        }
-                    }
-
-                    let newPassword = '';
-                    if (this.props.location.state.username === response.creator) {
-                        newPassword = response.password;
-                    }
-
-                    this.setState({ players: newPlayers, availableSeats: newAvailableSeats, playersNumber: newPlayersNumber, roundsNumber: response.roundsNumber, started: response.started, type: response.type, password: newPassword, creator: response.creator});
-                });
-        }
-        catch (err) {
-            console.log(err);
-        }
-
-        socket.on('take-a-seat', (username, seat) => {
-            const newPlayers = { ...this.state.players };
+    initializeSockets() {
+        socket.on('sitDown', (username, seat) => {
+            const newSittingPlayers = { ...this.state.sittingPlayers };
             const newAvailableSeats = { ...this.state.availableSeats };
 
-            newPlayers[seat] = username;
+            newSittingPlayers[seat] = username;
             newAvailableSeats[seat] = false;
 
-            this.setState({ players: newPlayers, availableSeats: newAvailableSeats });
+            this.setState({ sittingPlayers: newSittingPlayers, availableSeats: newAvailableSeats });
         });
 
         socket.on('getUp', (seat) => {
-            const newPlayers = { ...this.state.players };
+            const newSittingPlayers = { ...this.state.sittingPlayers };
             const newAvailableSeats = { ...this.state.availableSeats };
 
-            newPlayers[seat] = 'Wolne miejsce';
+            newSittingPlayers[seat] = 'Wolne miejsce';
             newAvailableSeats[seat] = true;
 
-            this.setState({ players: newPlayers, availableSeats: newAvailableSeats });
+            this.setState({ sittingPlayers: newSittingPlayers, availableSeats: newAvailableSeats });
         });
 
-        socket.on('handover', (newCreator) => {
-            this.setState({ creator: newCreator, password: '' });
-        });
-
-        socket.on('changePlayersNumber', (value) => {
-            
-            const newPlayers = { ...this.state.players };
+        socket.on('changePlayersNumber', (newPlayersNumber) => {
+            const newSittingPlayers = { ...this.state.sittingPlayers };
             const newAvailableSeats = { ...this.state.availableSeats };
             let newAmISitting = this.state.amISitting;
 
-            for (let i = 0; i < 4; i++) {
-                if (i >= value) {
-                    newPlayers[i] = 'Wolne miejsce';
-                    newAvailableSeats[i] = true;
+            if (newPlayersNumber <= 3) {
+                newSittingPlayers[3] = 'Wolne miejsce';
+                newAvailableSeats[3] = true;
 
-                    if (this.props.location.state.username === this.state.players[i])
+                if (this.props.location.state.username === this.state.sittingPlayers[3])
+                    newAmISitting = false;
+
+                if (newPlayersNumber === 2) {
+                    newSittingPlayers[2] = 'Wolne miejsce';
+                    newAvailableSeats[2] = true;
+
+                    if (this.props.location.state.username === this.state.sittingPlayers[2])
                         newAmISitting = false;
                 }
             }
-            this.setState({ players: newPlayers, availableSeats: newAvailableSeats, amISitting: newAmISitting, playersNumber: value });
+
+            this.setState({ sittingPlayers: newSittingPlayers, availableSeats: newAvailableSeats, amISitting: newAmISitting, playersNumber: newPlayersNumber });
         });
 
-        socket.on('setRoundsNumber', (value) => {
-            this.setState({ roundsNumber: value });
+        socket.on('changeRoundsNumber', (newRoundsNumber) => {
+            this.setState({ roundsNumber: newRoundsNumber });
         });
 
-        socket.on('setGameType', (newType) => {
-            this.setState({ type: newType });
+        socket.on('changeGameType', (newGameType) => {
+            this.setState({ gameType: newGameType });
         });
 
         socket.on('getPassword', (newPassword) => {
             this.setState({ password: newPassword })
         });
 
+        socket.on('passLeaderPrivileges', (newLeader) => {
+            this.setState({ leader: newLeader, password: '' });
+        });
+
         socket.on('userLeft', (username) => {
             for (let i = 0; i < this.state.playersNumber; i++) {
-                if (username === this.state.players[i]) {
+                if (username === this.state.sittingPlayers[i]) {
                     socket.emit('getUp', username, this.room, i);
                     break;
                 }
             }
         });
 
-        socket.on('stopGame', (username) => {
-            const newMessage2 = `Niestety, użytkownik ${username} opuścił grę.`
-            this.setState({ message2: newMessage2 });
-        });
-
-        socket.on('startGame', (data) => {
-            let newURLs = [];
-            for (let i = 0; i < 5; i++) {
-                newURLs[i] = `/img/dice${data.dices[i]}_test.png`;
-            }
-            this.setState({
-                activePlayer: data.activePlayer,
-                rollNumber: data.rollNumber,
-                proposedValues: data.proposedValues,
-                posArray: data.posArray,
-                rotArray: data.rotArray,
-                score: data.score,
-                URLs: newURLs,
-                started: true
-            });
-        });
-
-        socket.on('endMatch', (data) => {
-            let newURLs = [];
-            for (let i = 0; i < 5; i++) {
-                newURLs[i] = `/img/dice${data.dices[i]}_test.png`;
-            }
-            this.setState({
-                activePlayer: data.activePlayer,
-                rollNumber: data.rollNumber,
-                proposedValues: data.proposedValues,
-                posArray: data.posArray,
-                rotArray: data.rotArray,
-                score: data.score,
-                message: data.message,
-                URLs: newURLs,
-                victories: data.victories
-            });
-        });
-
-        socket.on('endGame', (data) => {
-            this.setState({score: data.score, message2: data.message, victories: data.victories});
-        });
-
         socket.on('kickOthers', () => {
-            this.setState({ message: 'Założyciel rozwiązał stół. Kliknij aby wrócić do strony głównej.' });
+            this.setState({ alertMessage: 'Założyciel rozwiązał stół. Kliknij aby wrócić do strony głównej.' });
+        });
+
+        socket.on('stopGame', (username) => {
+            this.setState({ doubleButtonAlertMessage: `Niestety, użytkownik ${username} opuścił grę.` });
+        });
+
+        socket.on('startGame', (initialData) => {
+            let newURLs = [];
+            for (let i = 0; i < 5; i++) {
+                newURLs[i] = `/img/dice${initialData.dices[i]}_test.png`;
+            }
+            this.setState({
+                activePlayer: initialData.activePlayer,
+                rollNumber: initialData.rollNumber,
+                proposedValues: initialData.proposedValues,
+                posArray: initialData.posArray,
+                rotArray: initialData.rotArray,
+                score: initialData.score,
+                URLs: newURLs,
+                started: initialData.started
+            });
+        });
+
+        socket.on('endRound', (newRoundData) => {
+            let newURLs = [];
+            for (let i = 0; i < 5; i++) {
+                newURLs[i] = `/img/dice${newRoundData.dices[i]}_test.png`;
+            }
+            this.setState({
+                activePlayer: newRoundData.activePlayer,
+                rollNumber: newRoundData.rollNumber,
+                proposedValues: newRoundData.proposedValues,
+                posArray: newRoundData.posArray,
+                rotArray: newRoundData.rotArray,
+                score: newRoundData.score,
+                alertMessage: newRoundData.message,
+                URLs: newURLs,
+                victories: newRoundData.victories
+            });
+        });
+
+        socket.on('endGame', (finalData) => {
+            this.setState({ score: finalData.score, doubleButtonAlertMessage: finalData.message, victories: finalData.victories });
         });
     }
 
-    componentWillUnmount() {
-            socket.emit('leaveBoard', this.room, this.props.location.state.username);
-            socket.off('take-a-seat');
-            socket.off('getUp');
-            socket.off('handover');
-            socket.off('changePlayersNumber');
-            socket.off('setRoundsNumber');
-            socket.off('setGameType')
-            socket.off('getPassword')
-            socket.off('userLeft');
-            socket.off('startGame');
-            socket.off('endMatch');
-            socket.off('endGame');
-            socket.off('kickOthers');
+    tryGetBoardData() {
+        try {
+            this.getBoardData();
+        }
+        catch (err) {
+            console.log('Coś poszło nie tak: ' + err);
+        }
     }
 
-    sit(seat) {
-        const newSeat = seat;
-        //Tu chyba powinna być zmiana lokalna, a do reszty wyemitować zmianę bez tego kto ją wysłał - oszczędność serwera, tylko co jeśli ktoś kliknie w tym samym momencie?
-        if (this.state.players[newSeat] === 'Wolne miejsce') {
+    async getBoardData() {
+        const boardDataResponse = await fetch('/api/getBoard', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                id: this.room
+            })
+        });
+
+        if (boardDataResponse.status === 200)
+            this.handleFetchedBoardData(boardDataResponse);
+        else
+            this.setState({ alertMessage: 'Coś poszło nie tak. Spróbuj ponownie.' });
+    }
+
+    async handleFetchedBoardData(boardDataResponse) {
+        const boardDataResponseJSON = await boardDataResponse.json();
+
+        const updatedData = this.updateData(boardDataResponseJSON);
+        this.setUpdatedData(boardDataResponseJSON, updatedData)
+    }
+
+    updateData(boardDataResponseJSON) {
+        const updatedData = {
+            newSittingPlayers: [],
+            newAvailableSeats: []
+        };
+
+        updatedData.newPlayersNumber = parseInt(boardDataResponseJSON.playersNumber);
+
+        for (let i = 0; i < 4; i++) {
+            if (boardDataResponseJSON.players[i]) {
+                updatedData.newPlayers[i] = boardDataResponseJSON.players[i];
+                updatedData.newAvailableSeats[i] = false;
+            }
+            else {
+                updatedData.newSittingPlayers[i] = this.state.sittingPlayers[i];
+                updatedData.newAvailableSeats[i] = this.state.availableSeats[i];
+            }
+        }
+
+        if (this.props.location.state.username === boardDataResponseJSON.leader)
+            updatedData.newPassword = boardDataResponseJSON.password;
+        else
+            updatedData.newPassword = '';
+
+        return updatedData;
+    }
+
+    setUpdatedData(boardDataResponseJSON, updatedData) {
+        this.setState({
+            roundsNumber: boardDataResponseJSON.roundsNumber,
+            started: boardDataResponseJSON.started,
+            gameType: boardDataResponseJSON.type,
+            leader: boardDataResponseJSON.leader,
+
+            sittingPlayers: updatedData.newSittingPlayers,
+            availableSeats: updatedData.newAvailableSeats,
+            playersNumber: updatedData.newPlayersNumber,
+            password: updatedData.newPassword
+        });
+    }
+
+    sitDown(seat) {
+        if (this.state.availableSeats[seat]) {
             this.setState({ amISitting: true, mySeat: seat });
-            socket.emit('take-a-seat', this.props.location.state.username, this.room, newSeat);
+            socket.emit('sitDown', this.props.location.state.username, this.room, seat);
         }
     }
 
@@ -244,8 +269,8 @@ class Game extends Component {
         socket.emit('getUp', this.props.location.state.username, this.room, seat);
     }
 
-    handover(newPlayer) {
-        socket.emit('handover', this.room, newPlayer);
+    passLeaderPrivileges(newLeader) {
+        socket.emit('passLeaderPrivileges', this.room, newLeader);
     }
 
     kick(player, seat) {
@@ -253,54 +278,52 @@ class Game extends Component {
     }
 
     handlePlayersNumber(e) {
-        socket.emit('changePlayersNumber', this.room, e.target.value);
+        const newPlayersNumber = parseInt(e.target.value);
+        socket.emit('changePlayersNumber', this.room, newPlayersNumber);
     }
 
     handleRoundsNumber(e) {
-        const roundsNumber = parseInt(e.target.value);
-        socket.emit('setRoundsNumber', this.room, roundsNumber);
+        const newRoundsNumber = parseInt(e.target.value);
+        socket.emit('changeRoundsNumber', this.room, newRoundsNumber);
     }
 
-    handleType(e) {
-        if (e.target.value === 'public') {
-            socket.emit('setGameType', this.room, true);
-        }
-        else {
-            socket.emit('setGameType', this.room, false);
-        }
+    handleGameType(e) {
+        if (e.target.value === 'public')
+            socket.emit('changeGameType', this.room, true);
+        else
+            socket.emit('changeGameType', this.room, false);
     }
 
-    startGame(e) {
-        e.preventDefault();
-        let ready = true;
+    startGame() {
+        const readiness = this.checkSeats();
 
-        for (let i = 0; i < this.state.playersNumber; i++)
-            if (this.state.players[i] === 'Wolne miejsce')
-                ready = false;
-
-        if (ready) {
+        if (readiness)
             socket.emit('startGame', this.room);
-        }
-        else {
-            this.setState({ message: 'Brak wymaganej ilości graczy!' });
-        }
+        else
+            this.showAlert('Brak wymaganej ilości graczy!')
     }
 
-    setScore(e) {
-        const chosenValue = e.target.getAttribute('value');
-        socket.emit('setScore', this.room, chosenValue);
+    checkSeats() {
+        for (let i = 0; i < this.state.playersNumber; i++)
+            if (this.state.sittingPlayers[i] === 'Wolne miejsce')
+                return false;
+
+        return true;
+    }
+
+    setScore(chosenCategory) {
+        socket.emit('setScore', this.room, chosenCategory);
     }
 
     restartGame() {
-        this.setState({ text: '' });
+        this.setState({ doubleButtonAlertMessage: '' });
         socket.emit('startGame', this.room);
     }
 
     quitGame() {
-        this.props.history.replace('/'); //React Router używa History API z HTML5 history.replace zastępuje aktualną ścieżkę, push przekierowałoby, a poprzednia strona zostałaby zapamiętana.
+        this.props.history.replace('/');
     }
 
-    //export withRouter???!!!
     async handleDeleteBoard() {
         const response = await fetch('/api/deleteBoard', {
             method: 'POST',
@@ -320,41 +343,82 @@ class Game extends Component {
         }
     }
 
+    showAlert(message) {
+        this.setState({ alertMessage: message });
+    }
+
+    componentWillUnmount() {
+        socket.emit('leaveBoard', this.room, this.props.location.state.username);
+        socket.off('sitDown');
+        socket.off('getUp');
+        socket.off('passLeaderPrivileges');
+        socket.off('changePlayersNumber');
+        socket.off('changeRoundsNumber');
+        socket.off('changeGameType')
+        socket.off('getPassword')
+        socket.off('userLeft');
+        socket.off('startGame');
+        socket.off('endRound');
+        socket.off('endGame');
+        socket.off('kickOthers');
+    }
+
     render() {
         return (
             <div>
-                <Table mySeat={this.state.mySeat} proposedValues={this.state.proposedValues} score={this.state.score} activePlayer={this.state.activePlayer} setScore={this.setScore} playersNumber={this.state.playersNumber}/>
-                <Dices mySeat={this.state.mySeat} activePlayer={this.state.activePlayer} room={this.room} urlDices={this.state.URLs} posArray={this.state.posArray} rotArray={this.state.rotArray} rollNumber={this.state.rollNumber} />
+                <Table
+                    mySeat={this.state.mySeat}
+                    proposedValues={this.state.proposedValues}
+                    score={this.state.score}
+                    activePlayer={this.state.activePlayer}
+                    setScore={this.setScore}
+                    playersNumber={this.state.playersNumber}
+                />
+                <Dices
+                    mySeat={this.state.mySeat}
+                    activePlayer={this.state.activePlayer}
+                    room={this.room}
+                    urlDices={this.state.URLs}
+                    posArray={this.state.posArray}
+                    rotArray={this.state.rotArray}
+                    rollNumber={this.state.rollNumber}
+                />
                 <Config
                     username={this.props.location.state.username}
                     room={this.room}
-                    creator={this.state.creator}
-                    players={this.state.players}
+                    leader={this.state.leader}
+                    sittingPlayers={this.state.sittingPlayers}
                     playersNumber={this.state.playersNumber}
                     availableSeats={this.state.availableSeats}
                     amISitting={this.state.amISitting}
                     started={this.state.started}
                     roundsNumber={this.state.roundsNumber}
                     victories={this.state.victories}
-                    type={this.state.type}
+                    gameType={this.state.gameType}
                     password={this.state.password}
                     handlePlayersNumber={this.handlePlayersNumber}
                     handleRoundsNumber={this.handleRoundsNumber}
-                    handleType={this.handleType}
-                    sit={this.sit}
+                    handleGameType={this.handleGameType}
+                    sitDown={this.sitDown}
                     getUp={this.getUp}
-                    handover={this.handover}
+                    passLeaderPrivileges={this.passLeaderPrivileges}
                     kick={this.kick}
                     startGame={this.startGame}
                     handleDeleteBoard={this.handleDeleteBoard}
                 />
                 {
-                    this.state.message &&
-                    <Alert text={this.state.message} cancel={() => this.setState({ message: '' })} />
+                    this.state.alertMessage &&
+                    <Alert text={this.state.alertMessage} cancel={() => this.setState({ alertMessage: '' })} />
                 }
                 {
-                    this.state.message2 &&
-                    <DoubleButtonAlert text={this.state.message2} button1='Rewanż (WIP)' button2='Wyjdź' handleButton1={this.restartGame} handleButton2={this.quitGame} />
+                    this.state.doubleButtonAlertMessage &&
+                    <DoubleButtonAlert
+                        text={this.state.doubleButtonAlertMessage}
+                        button1='Rewanż (WIP)'
+                        button2='Wyjdź'
+                        handleButton1={this.restartGame}
+                        handleButton2={this.quitGame}
+                    />
                 }  
             </div>
             );

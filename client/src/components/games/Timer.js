@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 import Alert from '../alerts/Alert';
 import socket from '../../nonUI/socketIO';
 import configStyle from '../../css/config.module.css';
@@ -34,12 +35,12 @@ class Timer extends Component {
                     ⏰ {this.state.remainedTime}
                 </p>
                 {
-                    this.state.alertMessage !== '' &&
-                    <Alert text={this.state.alertMessage} cancel={() => this.setState({ alertMessage: '' })} />
+                    this.state.alertMessage &&
+                    <Alert text={this.state.alertMessage} cancel={() => this.props.history.push('/')} />
                 }
             </>
         );
     }
 }
 
-export default Timer;
+export default withRouter(Timer);
