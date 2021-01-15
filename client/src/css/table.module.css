@@ -65,20 +65,28 @@ table tr {
     cursor: pointer;
     font-size: 20px;
     color: #a9a9a9;
+    user-select: none;
+    -moz-user-select: none;
 }
 
 .cell:hover {
     color: black;
+    user-select: none;
+    -moz-user-select: none;
 }
 
 .cellClicked {
     font-size: 20px;
     color: black;
     cursor: default;
+    user-select: none;
+    -moz-user-select: none;
 }
 
 .cell3rd {
     cursor: default;
     font-size: 20px;
     color: #a9a9a9;
+    user-select: none;
+    -moz-user-select: none;
 }

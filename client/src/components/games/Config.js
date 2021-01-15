@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import PlayerSeats from './PlayerSeats';
-import GameOptions from './options/GameOptions';
 import Timer from './Timer';
+import GameOptions from './options/GameOptions';
+import Chatbox from './Chatbox';
 import configStyle from '../../css/config.module.css';
 
 class Config extends Component {
@@ -26,7 +27,7 @@ class Config extends Component {
                         sitDown={this.props.sitDown}
                         getUp={this.props.getUp}
                         passLeaderPrivileges={this.props.passLeaderPrivileges}
-                        kick={this.props.kick}
+                        kickPlayer={this.props.kickPlayer}
                     />
 
                     <Timer />
@@ -47,6 +48,9 @@ class Config extends Component {
                         startGame={this.props.startGame}
                         handleDeleteBoard={this.props.handleDeleteBoard}
                     />
+
+                    <Chatbox />
+
                 </div>
                 <p className={configStyle.testInfo}>
                     Twoja nazwa użytkownika: {this.props.username}<br />

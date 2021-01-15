@@ -47,13 +47,12 @@ class Game extends Component {
         this.sitDown = this.sitDown.bind(this);
         this.getUp = this.getUp.bind(this);
         this.passLeaderPrivileges = this.passLeaderPrivileges.bind(this);
-        this.kick = this.kick.bind(this);
+        this.kickPlayer = this.kickPlayer.bind(this);
         this.handlePlayersNumber = this.handlePlayersNumber.bind(this);
         this.handleRoundsNumber = this.handleRoundsNumber.bind(this);
         this.handleGameType = this.handleGameType.bind(this);
         this.startGame = this.startGame.bind(this);
         this.setScore = this.setScore.bind(this);
-        this.handleDeleteBoard = this.handleDeleteBoard.bind(this);
 
         this.restartGame = this.restartGame.bind(this);
         this.quitGame = this.quitGame.bind(this);
@@ -76,6 +75,19 @@ class Game extends Component {
         });
 
         socket.on('getUp', (seat) => {
+            const newSittingPlayers = { ...this.state.sittingPlayers };
+            const newAvailableSeats = { ...this.state.availableSeats };
+
+            newSittingPlayers[seat] = 'Wolne miejsce';
+            newAvailableSeats[seat] = true;
+
+            this.setState({ sittingPlayers: newSittingPlayers, availableSeats: newAvailableSeats });
+        });
+
+        socket.on('kickPlayer', (seat) => {
+            if (this.props.location.state.username === this.state.sittingPlayers[seat])
+                this.showAlert('Zostałeś wyrzucony ze stołu. Możesz jednak zostać w pokoju i obserwować rozgrywkę.');
+
             const newSittingPlayers = { ...this.state.sittingPlayers };
             const newAvailableSeats = { ...this.state.availableSeats };
 
@@ -122,20 +134,10 @@ class Game extends Component {
         });
 
         socket.on('passLeaderPrivileges', (newLeader) => {
+            if (this.props.location.state.username === newLeader)
+                this.showAlert('Zostałeś nowym przywódcą stołu!');
+
             this.setState({ leader: newLeader, password: '' });
-        });
-
-        socket.on('userLeft', (username) => {
-            for (let i = 0; i < this.state.playersNumber; i++) {
-                if (username === this.state.sittingPlayers[i]) {
-                    socket.emit('getUp', username, this.room, i);
-                    break;
-                }
-            }
-        });
-
-        socket.on('kickOthers', () => {
-            this.setState({ alertMessage: 'Założyciel rozwiązał stół. Kliknij aby wrócić do strony głównej.' });
         });
 
         socket.on('stopGame', (username) => {
@@ -224,9 +226,12 @@ class Game extends Component {
 
         updatedData.newPlayersNumber = parseInt(boardDataResponseJSON.playersNumber);
 
+        for (let i = 0; i < 4; i++)
+            console.log(boardDataResponseJSON.players[i]);
+
         for (let i = 0; i < 4; i++) {
             if (boardDataResponseJSON.players[i]) {
-                updatedData.newPlayers[i] = boardDataResponseJSON.players[i];
+                updatedData.newSittingPlayers[i] = boardDataResponseJSON.players[i];
                 updatedData.newAvailableSeats[i] = false;
             }
             else {
@@ -260,21 +265,21 @@ class Game extends Component {
     sitDown(seat) {
         if (this.state.availableSeats[seat]) {
             this.setState({ amISitting: true, mySeat: seat });
-            socket.emit('sitDown', this.props.location.state.username, this.room, seat);
+            socket.emit('sitDown', this.room, this.props.location.state.username, seat);
         }
     }
 
     getUp(seat) {
         this.setState({ amISitting: false, mySeat: null });
-        socket.emit('getUp', this.props.location.state.username, this.room, seat);
+        socket.emit('getUp', this.room, this.props.location.state.username, seat);
     }
 
     passLeaderPrivileges(newLeader) {
         socket.emit('passLeaderPrivileges', this.room, newLeader);
     }
 
-    kick(player, seat) {
-        socket.emit('getUp', player, this.room, seat);
+    kickPlayer(player, seat) {
+        socket.emit('kickPlayer', this.room, player, seat);
     }
 
     handlePlayersNumber(e) {
@@ -288,10 +293,8 @@ class Game extends Component {
     }
 
     handleGameType(e) {
-        if (e.target.value === 'public')
-            socket.emit('changeGameType', this.room, true);
-        else
-            socket.emit('changeGameType', this.room, false);
+        const newGameType = e.target.value;
+        socket.emit('changeGameType', this.room, newGameType);
     }
 
     startGame() {
@@ -324,25 +327,6 @@ class Game extends Component {
         this.props.history.replace('/');
     }
 
-    async handleDeleteBoard() {
-        const response = await fetch('/api/deleteBoard', {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                id: this.room
-            })
-        });
-        if (response.status === 200) {
-            socket.emit('updateBoardsList');
-            socket.emit('kickOthers', this.room);
-            this.props.history.push('/');
-            //Wykonuje się ComponentWillUnmount, więc socket off tu nie muszę umieszczać
-        }
-    }
-
     showAlert(message) {
         this.setState({ alertMessage: message });
     }
@@ -356,11 +340,9 @@ class Game extends Component {
         socket.off('changeRoundsNumber');
         socket.off('changeGameType')
         socket.off('getPassword')
-        socket.off('userLeft');
         socket.off('startGame');
         socket.off('endRound');
         socket.off('endGame');
-        socket.off('kickOthers');
     }
 
     render() {
@@ -402,7 +384,7 @@ class Game extends Component {
                     sitDown={this.sitDown}
                     getUp={this.getUp}
                     passLeaderPrivileges={this.passLeaderPrivileges}
-                    kick={this.kick}
+                    kickPlayer={this.kickPlayer}
                     startGame={this.startGame}
                     handleDeleteBoard={this.handleDeleteBoard}
                 />

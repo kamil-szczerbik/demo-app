@@ -30,24 +30,13 @@ function findFirstAvailableIndex() {
     return i;
 }
 
-function deleteBoard(req, res) {
-    if (req.body.id === boards.length - 1) {
-        boards.pop();
-        checkPreviousIndexes();
-    } 
-    else
-        boards[req.body.id] = undefined;
-
-    res.sendStatus(200);
-} 
-
-function deleteEmptyBoard(id) {
-    if (id === boards.length - 1) {
+function deleteEmptyBoard(room) {
+    if (room === boards.length - 1) {
         boards.pop();
         checkPreviousIndexes();
     }
     else
-        boards[id] = undefined;
+        boards[room] = undefined;
 }
 
 function checkPreviousIndexes() {
@@ -60,6 +49,10 @@ function giveBoardsList(req, res) {
     res.status(200).send(boards);
 }
 
+function updateBoardsList() {
+    return boards;
+}
+
 function giveBoard(req, res) {
     res.status(200).send(boards[req.body.id]);
 }
@@ -68,16 +61,23 @@ function giveBoardSocket(room) {
     return boards[room];
 }
 
-function updateBoardsList() {
-    return boards;
+function changePlayersNumber(room, newPlayersNumber) {
+    boards[room].playersNumber = newPlayersNumber;
 }
 
 function changeRoundsNumber(room, newRoundsNumber) {
     boards[room].roundsNumber = newRoundsNumber;
 }
 
-function changePlayersNumber(room, newPlayersNumber) {
-    boards[room].playersNumber = newPlayersNumber;
+function changeGameType(room, newGameType) {
+    boards[room].type = newGameType;
+
+    if (newGameType === 'public')
+        boards[room].password = undefined;
+    else
+        boards[room].password = generatePassword();
+
+    return boards[room];
 }
 
 function changeLeader(room, newLeader) {
@@ -85,7 +85,7 @@ function changeLeader(room, newLeader) {
     return boards[room];
 }
 
-function addPlayer(room, seat, username) {
+function addPlayer(room, username, seat) {
     boards[room].players[seat] = username;
 }
 
@@ -95,19 +95,6 @@ function removePlayer(room, seat) {
 
 function startBoard(room) {
     boards[room].started = true;
-    return boards[room];
-}
-
-function setGameType(room, isPublic) {
-    if (isPublic) {
-        boards[room].type = 'public';
-        boards[room].password = undefined;
-    }
-    else {
-        boards[room].type = 'private';
-        boards[room].password = generatePassword();
-    }
-
     return boards[room];
 }
 
@@ -124,18 +111,22 @@ function checkPassword(req, res) {
 
 module.exports = {
     createBoard,
-    deleteBoard,
     deleteEmptyBoard,
+
     giveBoardsList,
+    updateBoardsList,
     giveBoard,
     giveBoardSocket,
-    updateBoardsList,
-    changeRoundsNumber,
+
     changePlayersNumber,
+    changeRoundsNumber,
+    changeGameType,
     changeLeader,
+
     addPlayer,
     removePlayer,
+
     startBoard,
-    setGameType,
+
     checkPassword
 };

@@ -27,10 +27,10 @@ class Table extends Component {
                     <tbody>
                         <tr>
                             <td>1</td>
-                            <TableValues player={0} mySeat={this.props.mySeat} className={tabStyle.test} setScore={this.props.setScore} value={0} proposedValue={this.props.activePlayer === 0 && this.props.proposedValues[0]} score={this.props.score[0][0]}/>
-                            <TableValues player={1} mySeat={this.props.mySeat} className={tabStyle.test} setScore={this.props.setScore} value={0} proposedValue={this.props.activePlayer === 1 && this.props.proposedValues[0]} score={this.props.score[1][0]}/>
-                            <TableValues player={2} mySeat={this.props.mySeat} className={tabStyle.test} setScore={this.props.setScore} value={0} proposedValue={this.props.activePlayer === 2 && this.props.proposedValues[0]} score={this.props.playersNumber > 2 && this.props.score[2][0]}/>
-                            <TableValues player={3} mySeat={this.props.mySeat} className={tabStyle.test} setScore={this.props.setScore} value={0} proposedValue={this.props.activePlayer === 3 && this.props.proposedValues[0]} score={this.props.playersNumber > 3 && this.props.score[3][0]}/>
+                            <TableValues player={0} mySeat={this.props.mySeat} setScore={this.props.setScore} value={0} proposedValue={this.props.activePlayer === 0 && this.props.proposedValues[0]} score={this.props.score[0][0]}/>
+                            <TableValues player={1} mySeat={this.props.mySeat} setScore={this.props.setScore} value={0} proposedValue={this.props.activePlayer === 1 && this.props.proposedValues[0]} score={this.props.score[1][0]}/>
+                            <TableValues player={2} mySeat={this.props.mySeat} setScore={this.props.setScore} value={0} proposedValue={this.props.activePlayer === 2 && this.props.proposedValues[0]} score={this.props.playersNumber > 2 && this.props.score[2][0]}/>
+                            <TableValues player={3} mySeat={this.props.mySeat} setScore={this.props.setScore} value={0} proposedValue={this.props.activePlayer === 3 && this.props.proposedValues[0]} score={this.props.playersNumber > 3 && this.props.score[3][0]}/>
                         </tr>
                         <tr>
                             <td>2</td>

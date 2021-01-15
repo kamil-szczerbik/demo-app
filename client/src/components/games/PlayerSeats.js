@@ -22,7 +22,7 @@ class PlayerSeats extends Component {
                     sitDown={this.props.sitDown}
                     getUp={this.props.getUp}
                     passLeaderPrivileges={this.props.passLeaderPrivileges}
-                    kick={this.props.kick}
+                    kickPlayer={this.props.kickPlayer}
                 />
                 <PlayerSeat
                     seat={1}
@@ -37,7 +37,7 @@ class PlayerSeats extends Component {
                     sitDown={this.props.sitDown}
                     getUp={this.props.getUp}
                     passLeaderPrivileges={this.props.passLeaderPrivileges}
-                    kick={this.props.kick}
+                    kickPlayer={this.props.kickPlayer}
                 />
                 <PlayerSeat
                     seat={2}
@@ -52,7 +52,7 @@ class PlayerSeats extends Component {
                     sitDown={this.props.sitDown}
                     getUp={this.props.getUp}
                     passLeaderPrivileges={this.props.passLeaderPrivileges}
-                    kick={this.props.kick}
+                    kickPlayer={this.props.kickPlayer}
                 />
                 <PlayerSeat
                     seat={3}
@@ -67,7 +67,7 @@ class PlayerSeats extends Component {
                     sitDown={this.props.sitDown}
                     getUp={this.props.getUp}
                     passLeaderPrivileges={this.props.passLeaderPrivileges}
-                    kick={this.props.kick}
+                    kickPlayer={this.props.kickPlayer}
                 />
             </div>
         );

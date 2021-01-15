@@ -44,7 +44,7 @@ class PlayerSeat extends Component {
                 {
                     (this.props.username === this.props.leader && !this.props.availableSeat && this.props.playerUsername !== this.props.leader) &&
                     <>
-                        <button onClick={() => this.props.kick(this.props.playerUsername, this.props.seat)}>Kick</button>
+                        <button onClick={() => this.props.kickPlayer(this.props.playerUsername, this.props.seat)}>Kick</button>
                         <button onClick={() => this.props.passLeaderPrivileges(this.props.playerUsername)}>LOL</button>
                     </>
                 }

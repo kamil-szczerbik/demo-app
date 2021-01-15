@@ -32,107 +32,207 @@ io.on('connection', (socket) => {
     });
 
     socket.on('disconnecting', () => {
-        const room = Object.keys(socket.rooms);
-        room.pop();
+        if (socket.room !== undefined) { //może być 0
+            const boardData = board.giveBoardSocket(socket.room);
 
-        if (socket.boardId !== undefined) {
-            const boardData = board.giveBoardSocket(socket.boardId); //to nie zawsze istnieje jak się wywołuje funkcja! POPRAWIĆ!!!
-            if (boardData && boardData.started) {
-                let i = 0;
-                while (boardData.players[i]) {
-                    if (boardData.players[i] === socket.username) {
-                        console.log('grę opuścił ten kto siedział przy stole')
-                        io.in(socket.boardId).emit('stopGame', socket.username);
+            if (io.sockets.adapter.rooms[socket.room].length === 1) {
+                board.deleteEmptyBoard(socket.room);
+
+                clearInterval(gameTime);
+
+                const newBoardsList = board.updateBoardsList();
+                socket.broadcast.emit('updateBoardsList', newBoardsList);
+            }
+            else {
+                let usernameWasSitting = false;
+                let seat;
+
+                for (seat = 0; seat < boardData.playersNumber; seat++) {
+                    if (socket.username === boardData.players[seat]) {
+                        usernameWasSitting = true;
+                        break;
+                    }
+                }
+
+                if (usernameWasSitting) {
+                    board.removePlayer(socket.room, seat);
+                    io.in(socket.room).emit('getUp', seat);
+                    const alert = socket.username + ' wstał od stołu i opuścił pokój.';
+                    io.in(room).emit('chatAlert', alert);
+                    console.log(socket.username + ' wstał od stołu i opuścił pokój.');
+
+                    if (boardData.started) {
+                        io.in(socket.room).emit('stopGame', socket.username);
                         clearInterval(gameTime);
                     }
-                    i++;
+                }
+                else {
+                    const alert = socket.username + ' opuścił pokój.';
+                    io.in(room).emit('chatAlert', alert);
+                    console.log(socket.username + ' opuścił pokój.');
+                }
+                    
+
+                if (socket.username === boardData.leader) {
+
+                    const playersSockets = io.sockets.adapter.rooms[socket.room].sockets;
+                    const playersIDs = Object.keys(playersSockets);
+
+                    //disconnecting odbywa się w trakcie wychodzenia, więc w sockecie wciąż siedzi 
+                    //username osoby, która wyszła. Trzeba sprawdzić, które jest które, bo to 
+                    //zależy od tego, czy ktoś kogoś wcześniej mianował, czy nie.
+                    let newLeader;
+
+                    if (io.sockets.connected[playersIDs[0]].username === boardData.leader)
+                        newLeader = io.sockets.connected[playersIDs[1]].username; 
+                    else
+                        newLeader = io.sockets.connected[playersIDs[0]].username;
+
+                    board.changeLeader(socket.room, newLeader);
+                    socket.broadcast.emit('updateBoard', newLeader);
+                    io.in(socket.room).emit('passLeaderPrivileges', newLeader);
+                    const alert = newLeader + ' został nowym przywódcą stołu.';
+                    io.in(room).emit('chatAlert', alert);
+                    console.log(newLeader + ' został nowym przywódcą stołu.');
                 }
             }
         }
+    });
 
-        if (room[0]) {
-            io.in(room[0]).emit('userLeft', socket.username);
-            console.log(socket.username + ' opuścił stół ' + room[0]);
+    socket.on('leaveBoard', (room, username) => {
+        socket.leave(room);
+        delete socket.username;
+        delete socket.room;
 
-            if (io.sockets.adapter.rooms[0].length === 1) {
-                board.deleteEmptyBoard(0);
-                clearInterval(gameTime);
-                const boards = board.updateBoardsList();
-                socket.broadcast.emit('updateBoardsList', boards);
+        if (!io.sockets.adapter.rooms[room]) {
+            board.deleteEmptyBoard(room);
+
+            clearInterval(gameTime);
+
+            const newBoardsList = board.updateBoardsList();
+            socket.broadcast.emit('updateBoardsList', newBoardsList);
+        }
+        else {
+            const boardData = board.giveBoardSocket(room);
+            let usernameWasSitting = false;
+            let seat;
+
+            for (seat = 0; seat < boardData.playersNumber; seat++) {
+                if (username === boardData.players[seat]) {
+                    usernameWasSitting = true;
+                    break;
+                }
+            }
+
+            if (usernameWasSitting) {
+                board.removePlayer(room, seat);
+                io.in(room).emit('getUp', seat);
+                const alert = username + ' wstał od stołu i opuścił pokój.';
+                io.in(room).emit('chatAlert', alert);
+                console.log(username + ' wstał od stołu i opuścił pokój.');
+
+                if (boardData.started) {
+                    io.in(room).emit('stopGame', username);
+                    clearInterval(gameTime);
+                }
+            }
+            else {
+                const alert = username + ' opuścił pokój.';
+                io.in(room).emit('chatAlert', alert);
+                console.log(username + ' opuścił pokój.');
+            }
+                
+
+            if (username === boardData.leader) {
+                const playersSockets = io.sockets.adapter.rooms[room].sockets;
+                const playersIDs = Object.keys(playersSockets);
+                const newLeader = io.sockets.connected[playersIDs[0]].username;
+
+                board.changeLeader(room, newLeader);
+                socket.broadcast.emit('updateBoard', newLeader);
+                io.in(room).emit('passLeaderPrivileges', newLeader);
+                const alert = newLeader + ' został nowym przywódcą stołu.';
+                io.in(room).emit('chatAlert', alert);
+                console.log(newLeader + ' został nowym przywódcą stołu.');
             }
         }
+    });
+
+    socket.on('joinBoard', (room, username) => {
+        socket.join(room);
+        //Dopisuję do socket dwa pola, które są potrzebne przy socket.on('disconnecting)
+        socket.username = username;
+        socket.room = room;
+        const alert = username + ' dołączył do pokoju.';
+        io.in(room).emit('chatAlert', alert);
+        console.log(username + ' dołączył do pokoju.');
     });
 
     socket.on('updateBoardsList', () => {
-        const boards = board.updateBoardsList();
-        socket.broadcast.emit('updateBoardsList', boards);
+        const newBoardsList = board.updateBoardsList();
+        socket.broadcast.emit('updateBoardsList', newBoardsList);
     });
 
-    socket.on('joinBoard', (id, username) => {
-        socket.join(id);
-        socket.username = username;
-        socket.boardId = id; //socket id nie może być, bo socket ma już pole id.
-        console.log(username + ' dołączył do stołu ' + id);
-    });
-
-    socket.on('leaveBoard', (id, username) => {
-        socket.leave(id);
-        socket.username = undefined;
-        socket.id = undefined;
-        io.in(id).emit('userLeft', username);
-        console.log(username + ' opuścił stół ' + id);
-
-        const boardData = board.giveBoardSocket(id); //to nie zawsze istnieje jak się wywołuje funkcja! POPRAWIĆ!!!
-
-        if (boardData && boardData.started) {
-            let i = 0;
-            while (boardData.players[i]) {
-                if (boardData.players[i] === username) {
-                    console.log('grę opuścił ten kto siedział przy stole')
-                    io.in(id).emit('stopGame', username);
-                    clearInterval(gameTime);
-                }
-                i++;
-                }
-        }
-
-        if (!io.sockets.adapter.rooms[id]) {
-            board.deleteEmptyBoard(id);
-            clearInterval(gameTime);
-            const boards = board.updateBoardsList();
-            socket.broadcast.emit('updateBoardsList', boards);
-        }
-    });
-
-    socket.on('sitDown', (username, room, seat) => {
-        board.addPlayer(room, seat, username);
+    socket.on('sitDown', (room, username, seat) => {
+        board.addPlayer(room, username, seat);
         io.in(room).emit('sitDown', username, seat);
-        console.log(username + ' zajął miejsce');
+        const alert = username + ' zajął miejsce przy stole.';
+        io.in(room).emit('chatAlert', alert);
+        console.log(username + ' zajął miejsce przy stole.');
     });
 
-    socket.on('getUp', (username, room, seat) => {
+    socket.on('getUp', (room, username, seat) => {
         board.removePlayer(room, seat);
         io.in(room).emit('getUp', seat);
-        console.log(username + ' wstał od stołu');
+        const alert = username + ' wstał od stołu.';
+        io.in(room).emit('chatAlert', alert);
+        console.log(username + ' wstał od stołu.');
+    });  
+
+    socket.on('kickPlayer', (room, username, seat) => {
+        board.removePlayer(room, seat);
+        io.in(room).emit('kickPlayer', seat);
+        const alert = username + ' został wyrzucony ze stołu.';
+        io.in(room).emit('chatAlert', alert);
+        console.log(username + ' został wyrzucony ze stołu.');
+    });
+
+    socket.on('changePlayersNumber', (room, newPlayerNumber) => {
+        board.changePlayersNumber(room, newPlayerNumber);
+
+        for (let i = newPlayerNumber; i < 4; i++)
+            board.removePlayer(room, i); //i === seat
+
+        const testBoard = board.giveBoardSocket(room);
+
+        for (let i = 0; i < 4; i++)
+            console.log(testBoard.players[i]);
+
+        io.in(room).emit('changePlayersNumber', newPlayerNumber);
+    });
+
+    socket.on('changeRoundsNumber', (room, newRoundsNumber) => {
+        board.changeRoundsNumber(room, newRoundsNumber);
+        io.in(room).emit('changeRoundsNumber', newRoundsNumber);
+    });
+
+    socket.on('changeGameType', (room, newGameType) => {
+        const updatedBoard = board.changeGameType(room, newGameType);
+
+        socket.broadcast.emit('updateBoard', updatedBoard);
+        io.in(room).emit('changeGameType', newGameType);
+
+        if (newGameType === 'private')
+            socket.emit('getPassword', updatedBoard.password);            
     });
 
     socket.on('passLeaderPrivileges', (room, newLeader) => {
         board.changeLeader(room, newLeader);
         socket.broadcast.emit('updateBoard', newLeader);
         io.in(room).emit('passLeaderPrivileges', newLeader);
-        console.log(newLeader + ' został nowym przywódcą stołu');
-    });
-
-    //trzeba walidację tu jeszcze zrobić
-
-    socket.on('changePlayersNumber', (room, newPlayerNumber) => {
-        board.changePlayersNumber(room, newPlayerNumber);
-
-        for (let i = 0; i < newPlayerNumber; i++) {
-            board.removePlayer(room, i); //i === seat
-        }
-
-        io.in(room).emit('changePlayersNumber', newPlayerNumber);
+        const alert = newLeader + ' został nowym przywódcą stołu.';
+        io.in(room).emit('chatAlert', alert);
+        console.log(newLeader + ' został nowym przywódcą stołu.');
     });
 
     socket.on('startGame', (room) => {
@@ -187,29 +287,6 @@ io.on('connection', (socket) => {
                 io.in(room).emit('endRound', data);
             }
         }
-    });
-
-    socket.on('changeRoundsNumber', (room, roundsNumber) => {
-        board.changeRoundsNumber(room, roundsNumber);
-        io.in(room).emit('changeRoundsNumber', roundsNumber);
-    });
-
-    socket.on('changeGameType', (room, isPublic) => {
-        if (isPublic) {
-            const public = board.setGameType(room, isPublic);
-            socket.broadcast.emit('updateBoard', public);
-            io.in(room).emit('changeGameType', public.type);
-        }
-        else {
-            const private = board.setGameType(room, isPublic);
-            socket.emit('getPassword', private.password);
-            socket.broadcast.emit('updateBoard', private);
-            io.in(room).emit('changeGameType', private.type);
-        }
-    });
-
-    socket.on('kickOthers', (room) => {
-        io.in(room).emit('kickOthers');
     });
 });
 

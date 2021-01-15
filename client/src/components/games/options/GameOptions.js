@@ -2,16 +2,12 @@ import React, { Component } from 'react';
 import PlayersNumber from './PlayersNumber';
 import RoundsNumber from './RoundsNumber';
 import GameType from './GameType';
-import DoubleButtonAlert from '../../alerts/DoubleButtonAlert';
 import Button from '../../buttons/Button';
 import configStyle from '../../../css/config.module.css';
 
 class GameOptions extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            doubleButtonAlertMessage: ''
-        }
     }
 
     render() {
@@ -50,28 +46,8 @@ class GameOptions extends Component {
                                 text='Start!'
                             />
                         </div>
-
-                        <div className={configStyle.divColumn}>
-                            <Button
-                                className='dismissive'
-                                disabled={this.props.leader === this.props.username ? false : true}
-                                action={() => this.setState({ doubleButtonAlertMessage: 'Czy na pewno chcesz usunąć ten stół?' })}
-                                text='Usuń stół'
-                            />
-                        </div>
-
                     </fieldset>
                 </form>
-                {
-                    this.state.doubleButtonAlertMessage !== '' &&
-                    <DoubleButtonAlert
-                        text={this.state.doubleButtonAlertMessage}
-                        button1='Tak'
-                        button2='Nie'
-                        handleButton1={this.props.handleDeleteBoard}
-                        handleButton2={() => this.setState({ doubleButtonAlertMessage: '' })}
-                    />
-                }
             </>
         );
     }
