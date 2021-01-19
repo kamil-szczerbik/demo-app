@@ -59,7 +59,6 @@ io.on('connection', (socket) => {
                     io.in(socket.room).emit('getUp', seat);
                     const alert = socket.username + ' wstał od stołu i opuścił pokój.';
                     io.in(room).emit('chatAlert', alert);
-                    console.log(socket.username + ' wstał od stołu i opuścił pokój.');
 
                     if (boardData.started) {
                         io.in(socket.room).emit('stopGame', socket.username);
@@ -69,7 +68,6 @@ io.on('connection', (socket) => {
                 else {
                     const alert = socket.username + ' opuścił pokój.';
                     io.in(room).emit('chatAlert', alert);
-                    console.log(socket.username + ' opuścił pokój.');
                 }
                     
 
@@ -93,7 +91,6 @@ io.on('connection', (socket) => {
                     io.in(socket.room).emit('passLeaderPrivileges', newLeader);
                     const alert = newLeader + ' został nowym przywódcą stołu.';
                     io.in(room).emit('chatAlert', alert);
-                    console.log(newLeader + ' został nowym przywódcą stołu.');
                 }
             }
         }
@@ -129,7 +126,6 @@ io.on('connection', (socket) => {
                 io.in(room).emit('getUp', seat);
                 const alert = username + ' wstał od stołu i opuścił pokój.';
                 io.in(room).emit('chatAlert', alert);
-                console.log(username + ' wstał od stołu i opuścił pokój.');
 
                 if (boardData.started) {
                     io.in(room).emit('stopGame', username);
@@ -139,7 +135,6 @@ io.on('connection', (socket) => {
             else {
                 const alert = username + ' opuścił pokój.';
                 io.in(room).emit('chatAlert', alert);
-                console.log(username + ' opuścił pokój.');
             }
                 
 
@@ -153,7 +148,6 @@ io.on('connection', (socket) => {
                 io.in(room).emit('passLeaderPrivileges', newLeader);
                 const alert = newLeader + ' został nowym przywódcą stołu.';
                 io.in(room).emit('chatAlert', alert);
-                console.log(newLeader + ' został nowym przywódcą stołu.');
             }
         }
     });
@@ -165,7 +159,6 @@ io.on('connection', (socket) => {
         socket.room = room;
         const alert = username + ' dołączył do pokoju.';
         io.in(room).emit('chatAlert', alert);
-        console.log(username + ' dołączył do pokoju.');
     });
 
     socket.on('updateBoardsList', () => {
@@ -178,7 +171,6 @@ io.on('connection', (socket) => {
         io.in(room).emit('sitDown', username, seat);
         const alert = username + ' zajął miejsce przy stole.';
         io.in(room).emit('chatAlert', alert);
-        console.log(username + ' zajął miejsce przy stole.');
     });
 
     socket.on('getUp', (room, username, seat) => {
@@ -186,7 +178,6 @@ io.on('connection', (socket) => {
         io.in(room).emit('getUp', seat);
         const alert = username + ' wstał od stołu.';
         io.in(room).emit('chatAlert', alert);
-        console.log(username + ' wstał od stołu.');
     });  
 
     socket.on('kickPlayer', (room, username, seat) => {
@@ -194,7 +185,6 @@ io.on('connection', (socket) => {
         io.in(room).emit('kickPlayer', seat);
         const alert = username + ' został wyrzucony ze stołu.';
         io.in(room).emit('chatAlert', alert);
-        console.log(username + ' został wyrzucony ze stołu.');
     });
 
     socket.on('changePlayersNumber', (room, newPlayerNumber) => {
@@ -230,9 +220,9 @@ io.on('connection', (socket) => {
         board.changeLeader(room, newLeader);
         socket.broadcast.emit('updateBoard', newLeader);
         io.in(room).emit('passLeaderPrivileges', newLeader);
+
         const alert = newLeader + ' został nowym przywódcą stołu.';
         io.in(room).emit('chatAlert', alert);
-        console.log(newLeader + ' został nowym przywódcą stołu.');
     });
 
     socket.on('startGame', (room) => {
@@ -246,7 +236,8 @@ io.on('connection', (socket) => {
         data.started = updatedBoard.started;
 
         io.in(room).emit('startGame', data);
-        console.log('Gra przy stole ' + room + ' rozpoczęła się');
+        const alert = 'Gra się rozpoczęła.';
+        io.in(room).emit('chatAlert', alert);
 
         timer = 300;
 

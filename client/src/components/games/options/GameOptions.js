@@ -38,14 +38,13 @@ class GameOptions extends Component {
                             handleGameType={this.props.handleGameType}
                         />
 
-                        <div className={configStyle.divColumn}>
-                            <Button
+                        <Button
                                 className='affirmative'
                                 disabled={this.props.leader === this.props.username ? false : true}
                                 action={this.props.startGame}
                                 text='Start!'
-                            />
-                        </div>
+                        />
+
                     </fieldset>
                 </form>
             </>

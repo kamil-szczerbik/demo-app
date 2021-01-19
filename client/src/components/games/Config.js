@@ -1,13 +1,43 @@
 import React, { Component } from 'react';
+import { nanoid } from 'nanoid';
 import PlayerSeats from './PlayerSeats';
 import Timer from './Timer';
+import Tab from './Tab';
 import GameOptions from './options/GameOptions';
 import Chatbox from './Chatbox';
+import socket from '../../nonUI/socketIO';
 import configStyle from '../../css/config.module.css';
 
 class Config extends Component {
     constructor(props) {
         super(props);
+
+        this.state = {
+            showedTab: 'Chat',
+            alerts: [
+                {
+                    id: 'alert-' + nanoid(),
+                    alert: 'Założono nowy stół'
+                }
+            ]
+        }
+
+        this.changeTab = this.changeTab.bind(this);
+    }
+
+    componentDidMount() {
+        socket.on('chatAlert', (alert) => {
+            const newAlert = {
+                id: 'alert-' + nanoid(),
+                alert: alert
+            };
+
+            this.setState({ alerts: [...this.state.alerts, newAlert] });
+        });
+    }
+
+    changeTab(name) {
+        this.setState({ showedTab: name });
     }
 
     render() {
@@ -34,22 +64,30 @@ class Config extends Component {
 
                     <hr />
 
-                    <GameOptions
-                        username={this.props.username}
-                        leader={this.props.leader}
-                        started={this.props.started}
-                        playersNumber={this.props.playersNumber}
-                        roundsNumber={this.props.roundsNumber}
-                        gameType={this.props.gameType}
-                        password={this.props.password}
-                        handlePlayersNumber={this.props.handlePlayersNumber}
-                        handleRoundsNumber={this.props.handleRoundsNumber}
-                        handleGameType={this.props.handleGameType}
-                        startGame={this.props.startGame}
-                        handleDeleteBoard={this.props.handleDeleteBoard}
-                    />
+                    <div className={configStyle.tabs}>
+                        <Tab name='Ustawienia' handleClick={this.changeTab} />
+                        <Tab name='Chat' handleClick={this.changeTab} />
+                    </div>                    
 
-                    <Chatbox />
+                    {this.state.showedTab === 'Chat'
+                        ?
+                        <Chatbox alerts={this.state.alerts} />
+                        :
+                        <GameOptions
+                            username={this.props.username}
+                            leader={this.props.leader}
+                            started={this.props.started}
+                            playersNumber={this.props.playersNumber}
+                            roundsNumber={this.props.roundsNumber}
+                            gameType={this.props.gameType}
+                            password={this.props.password}
+                            handlePlayersNumber={this.props.handlePlayersNumber}
+                            handleRoundsNumber={this.props.handleRoundsNumber}
+                            handleGameType={this.props.handleGameType}
+                            startGame={this.props.startGame}
+                            handleDeleteBoard={this.props.handleDeleteBoard}
+                        />
+                    }
 
                 </div>
                 <p className={configStyle.testInfo}>

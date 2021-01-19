@@ -1,8 +1,26 @@
 .chatbox {
     margin-left: auto;
     margin-right: auto;
-    width: 290px;
-    height: 120px;
-    background-color: white;
-    border-radius: 5px;
+    margin-top: 10px;
+    width: 296px;
+    height: 286px;
+    border: 2px solid #595959;
+    overflow-y: scroll;
+}
+
+.list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.alert {
+    padding-top: 10px;
+    padding-bottom:10px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.alert:nth-child(2n+1) {
+    background-color: #898989;
 }

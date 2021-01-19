@@ -1,7 +1,10 @@
 .affirmative {
+    position: relative;
+    left: 50%;
+    -ms-transform: translate(-50%);
+    transform: translate(-50%);
     margin-top: 10px;
     margin-bottom: 10px;
-    margin-left: 25px;
     height: 40px;
     width: 100px;
     font-size: 16px;

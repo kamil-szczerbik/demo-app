@@ -9,6 +9,7 @@
     margin-left: auto;
     margin-right: auto;
     width: 300px;
+    height: 658px;
     background-color: #b9b9b9;
 }
 
@@ -86,6 +87,12 @@
     text-align:center;
 }
 
+.optionsPlayers {
+    margin-top: 10px;
+    height: 286px;
+    border: 2px solid #595959;
+}
+
 .optionsPlayers input {
     margin-top: 0;
     margin-bottom: 7px;
@@ -104,54 +111,24 @@
     margin-right: 0;
 }
 
-.startButton {
+.tabs {
     margin-top: 10px;
-    margin-bottom: 10px;
-    margin-left: 25px;
-    height: 40px;
-    width: 100px;
-    font-size: 16px;
-    color: white;
-    background-color: #36b03c;
-    border: none;
-    border-radius: 5px;
+    text-align: center;
 }
 
-.startButton:hover:enabled {
-    background-color: #3abd41;
+.tabs div {
+    display: inline;
     cursor: pointer;
 }
 
-.startButton:disabled {
-    background-color: #3abd41;
-    cursor: default;
-}
-
-.cancelButton {
-    margin-top: 10px;
-    margin-bottom: 10px;
-    margin-left: 25px;
-    height: 40px;
-    width: 100px;
-    font-size: 16px;
-    color: white;
-    background-color: #ac3020;
-    border: none;
-    border-radius: 5px;
-}
-
-.cancelButton:hover:enabled {
-    background-color: #bd4028;
-    cursor: pointer;
-}
-
-.cancelButton:disabled {
-    background-color: #b44a2a;
-    cursor: default;
+.tabs div:first-child {
+    border-right: solid 1px;
+    margin-right: 5px;
+    padding-right: 5px;
 }
 
 .testInfo {
     overflow: hidden;
     font-size: 10px;
-    margin-top: 170px;
+    margin-top: 20px;
 }
