@@ -4,7 +4,7 @@ import PlayerSeats from './PlayerSeats';
 import Timer from './Timer';
 import Tab from './Tab';
 import GameOptions from './options/GameOptions';
-import Chatbox from './Chatbox';
+import Chatbox from '../chatbox/Chatbox';
 import socket from '../../nonUI/socketIO';
 import configStyle from '../../css/config.module.css';
 
@@ -17,6 +17,7 @@ class Config extends Component {
             alerts: [
                 {
                     id: 'alert-' + nanoid(),
+                    username: false,
                     alert: 'Założono nowy stół'
                 }
             ]
@@ -26,18 +27,34 @@ class Config extends Component {
     }
 
     componentDidMount() {
-        socket.on('chatAlert', (alert) => {
-            const newAlert = {
-                id: 'alert-' + nanoid(),
-                alert: alert
+        socket.on('chatboxAlert', (notification) => {
+            const newNotification = {
+                id: 'notification-' + nanoid(),
+                username: false,
+                alert: notification
             };
 
-            this.setState({ alerts: [...this.state.alerts, newAlert] });
+            this.setState({ alerts: [...this.state.alerts, newNotification] });
+        });
+
+        socket.on('chatboxMessage', (username, message) => {
+            const newMessage = {
+                id: 'message-' + nanoid(),
+                username: username,
+                alert: message
+            };
+
+            this.setState({ alerts: [...this.state.alerts, newMessage] });
         });
     }
 
     changeTab(name) {
         this.setState({ showedTab: name });
+    }
+
+    componentWillUnmount() {
+        socket.off('chatboxAlert');
+        socket.off('chatboxMessage');
     }
 
     render() {
@@ -71,7 +88,10 @@ class Config extends Component {
 
                     {this.state.showedTab === 'Chat'
                         ?
-                        <Chatbox alerts={this.state.alerts} />
+                        <Chatbox
+                            alerts={this.state.alerts}
+                            sendChatboxMessage={this.props.sendChatboxMessage}
+                        />
                         :
                         <GameOptions
                             username={this.props.username}

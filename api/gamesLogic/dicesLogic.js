@@ -1,115 +1,133 @@
-let dots = []; //6 mo¿liwych wartoœci - ile razy powtarza siê dana wartoœæ
-let firstPartValues = []; //wartoœæ danych oczek do tabelki
-let secondPartValues = []; //x3 x4 x32 mStrit dStrut gen chance
-let proposedValues = [];
+let dicesOfAKind = Array(6);
+let upperSectionPoints = Array(6);
+let lowerSectionPoints = Array(7);
+let possiblePoints = Array(13);
 
-//Obliczanie wszystkich wartoœci
-function calculate(dices) {
-    let x3 = 0, x4 = 0, x32 = 0, mStrit = 0, dStrit = 0, gen = 0, chance = 0;
+let x3, x4, x32, smallStraight, largeStraight, general, chance; 
+let x32Chance1, x32Chance2, smallStraightChance, largeStraightChance, oneOfAKind, twoOfAKind, oneAndTwoIterator;
 
-    let chance1 = false, chance2 = false; //chance1 dla 2, chance2 dla 3 powtórzeñ
-    let chanceMS = true, chanceDS = true; //szanse dla ma³ego i du¿ego strita
-    let was1 = false, was2 = false;
-    let pom = 0;
+function calculate(thrownDices) {
+    setInitialValues();
 
-    //Pocz¹tkowa to 0 w tabelce
-    for (let i = 0; i < 6; i++) {
-        dots[i] = 0;
-    }
+    calculateDicesOfAKind(thrownDices);
+    fillUpperSection();
 
-    //Ile razy dana wartoœæ siê powtarza w rzucie
-    for (let i = 0; i < 5; i++) {
-        for (let j = 1; j < 7; j++) {
-            if (dices[i] === j) {
-                dots[j - 1] += 1;
-            }
-        }
-    }
+    calculateChance();
+    calculateXsAndGeneral();
+    calculateStraights();
 
-    //Wyliczenie sumy danego oczka
-    firstPartValues = dots.map(function (x, i) {
+    fillLowerSection();
+
+    possiblePoints = upperSectionPoints.concat(lowerSectionPoints);
+
+    return possiblePoints;
+}
+
+function setInitialValues() {
+    x3 = 0;
+    x4 = 0;
+    x32 = 0;
+    smallStraight = 0;
+    largeStraight = 0;
+    general = 0;
+    chance = 0;
+
+    x32Chance1 = false;
+    x32Chance2 = false;
+
+    smallStraightChance = true;
+    largeStraightChance = true;
+
+    oneOfAKind = false;
+    twoOfAKind = false;
+    oneAndTwoIterator = 0;
+
+    dicesOfAKind.fill(0);
+}
+
+function calculateDicesOfAKind(thrownDices) {
+    for (let i = 0; i < 5; i++)
+        for (let j = 0; j < 6; j++)
+            if (thrownDices[i] === j + 1)
+                dicesOfAKind[j] += 1;
+}
+
+function fillUpperSection() {
+    upperSectionPoints = dicesOfAKind.map((x, i) => {
         return (x * (i + 1));
     });
+}
 
-    //Suma wszystkich oczek
-    for (let i = 1; i < 7; i++) {
-        chance += dots[i - 1] * i;
-    }
+function calculateChance() {
+    for (let i = 0; i < 6; i++)
+        chance += upperSectionPoints[i];
+}
 
-    //Wyliczenie 3x, 4x, genera³a i sprawdzenie szansy na 3+2
+function calculateXsAndGeneral() {
     for (let i = 0; i < 6; i++) {
-
-        if (dots[i] === 2) {
-            chance1 = true;
-        }
-        if (dots[i] > 2) {
+        if (dicesOfAKind[i] === 2)
+            x32Chance1 = true;
+        else if (dicesOfAKind[i] > 2) {
             x3 = chance;
-            chance2 = true;
-            chanceMS = false;
-            if (dots[i] > 3) {
+            x32Chance2 = true;
+            smallStraightChance = false;
+
+            if (dicesOfAKind[i] > 3) {
                 x4 = x3;
-                chance2 = false;
-                if (dots[i] === 5)
-                    gen = 50;
+                x32Chance2 = false;
+
+                if (dicesOfAKind[i] === 5)
+                    general = 50;
             }
         }
     }
 
-    //Sprawdzenie czy jest 3+2
-    if (chance1 && chance2)
+    if (x32Chance1 && x32Chance2)
         x32 = 25;
+}
 
-    //Sprawdzenie Ma³ego Strita i Du¿ego Strita
-    if (chanceMS === true) {
+function calculateStraights() {
+    if (smallStraightChance) {
         for (let i = 0; i < 6; i++) {
-            /*console.log(`dots[${i + 1}] = ${dots[i]}`);*/
-            if (dots[i] === 1) {
-                was1 = true;
-                pom += 1;
-                /*console.log(`${i + 1}. 1`);*/
+            if (dicesOfAKind[i] === 1) {
+                oneOfAKind = true;
+                oneAndTwoIterator += 1;
             }
-            else if (dots[i] === 2) {
-                if (was2 === true) {
-                    chanceMS = false;
-                    /*console.log(`${i + 1}. 2 - Nie ma juz szans!`);*/
-                }
-                was2 = true;
-                pom += 1;
-                chanceDS = false;
-                /*console.log(`${i + 1}. 2`);*/
+            else if (dicesOfAKind[i] === 2) {
+                largeStraightChance = false;
+                oneAndTwoIterator += 1;
+                
+                if (twoOfAKind === true)
+                    smallStraightChance = false;
+
+                twoOfAKind = true;
             }
-            if ((was1 || was2) && dots[i] === 0) {
-                /*console.log(`${i + 1}. 2 - Brak takiej wartosci`);*/
-                if (pom !== 5) {
-                    chanceDS = false;
-                    if (pom < 4) {
-                        /*console.log(`${i + 1}. 0 - Przerwany ciag`);*/
-                        chanceMS = false;
-                    }
+            if ((oneOfAKind || twoOfAKind) && dicesOfAKind[i] === 0) {
+                if (oneAndTwoIterator !== 5) {
+                    largeStraightChance = false;
+                    if (oneAndTwoIterator < 4)
+                        smallStraightChance = false;
                 }
             }
         }
-        if (chanceMS === true) {
-            mStrit = 30;
-            /*console.log("Maly Strit~!");*/
 
-            if (chanceDS === true) {
-                dStrit = 40;
-                /*console.log("Duzy Strit~!");*/
-            }
+        if (smallStraightChance) {
+            smallStraight = 30;
+
+            if (largeStraightChance)
+                largeStraight = 40;
         }
     }
+}
 
-    secondPartValues[0] = x3;
-    secondPartValues[1] = x4;
-    secondPartValues[2] = x32;
-    secondPartValues[3] = mStrit;
-    secondPartValues[4] = dStrit;
-    secondPartValues[5] = gen;
-    secondPartValues[6] = chance;
-
-    proposedValues = firstPartValues.concat(secondPartValues);
-    return proposedValues;
+function fillLowerSection() {
+    lowerSectionPoints[0] = x3;
+    lowerSectionPoints[1] = x4;
+    lowerSectionPoints[2] = x32;
+    lowerSectionPoints[3] = smallStraight;
+    lowerSectionPoints[4] = largeStraight;
+    lowerSectionPoints[5] = general;
+    lowerSectionPoints[6] = chance;
 }
 
 module.exports = calculate;

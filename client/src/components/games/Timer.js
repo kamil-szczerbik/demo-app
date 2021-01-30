@@ -32,7 +32,7 @@ class Timer extends Component {
         return (
             <>
                 <p className={configStyle.time}>
-                    ⏰ {this.state.remainedTime}
+                    &#9200; {this.state.remainedTime}
                 </p>
                 {
                     this.state.alertMessage &&

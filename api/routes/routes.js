@@ -1,18 +1,15 @@
-//Baza routów serwera. Przez jak¹ funkcjê ma byæ obs³u¿one zapytanie na dany URL
-
 const express = require('express');
 const router = express.Router();
-const pagesController = require('../controllers/pagesController');
+const RLLController = require('../controllers/pageControllers/RLLController');
 const board = require('../controllers/boardsController');
-const authentication = require('../controllers/authentication');
-const logout = require('../controllers/logout');
+const authenticationController = require('../controllers/pageControllers/authenticationController');
 
-router.post('/api/register', pagesController.validate('register'), pagesController.register);
-router.post('/api/login', pagesController.login);
-router.get('/api/logout', logout);
+router.post('/api/register', RLLController.validate('register'), RLLController.register);
+router.post('/api/login', RLLController.validate('login'), RLLController.login);
+router.get('/api/logout', RLLController.logout);
 
-router.get('/api/authenticate', authentication.authentication);
-router.get('/api/getUsername', authentication.getUsername);
+router.get('/api/authenticate', authenticationController.authenticateUser);
+router.get('/api/getUsername', authenticationController.getUsername);
 
 router.post('/api/newBoard', board.createBoard);
 router.get('/api/boardsList', board.giveBoardsList);

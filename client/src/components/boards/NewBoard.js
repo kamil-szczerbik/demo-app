@@ -17,9 +17,8 @@ class NewBoard extends Component {
     async handleCreatingBoard() {
         const authenticationResponse = await authentication.authMe(); // ← zmienić authMe na authenticateUser (wszędzie trzeba)
 
-        if (authenticationResponse.status === 200) {
+        if (authenticationResponse.status === 200)
             this.tryCreateBoard(authenticationResponse);
-        }
         else
             this.showAlert('Aby utworzyć stół, musisz być zalogowany.');
     }

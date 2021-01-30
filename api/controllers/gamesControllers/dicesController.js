@@ -1,173 +1,190 @@
-const calculate = require('../../gamesLogic/dicesLogic');
+const dicesLogic = require('../../gamesLogic/dicesLogic');
 
 let playersNumber;
 let playersUsernames = [];
-let roundsNumber;
-let victories;
 let activePlayer;
-let dicesReroll = [];
+
+let turnNumber;
+let rollNumber;
+
 const dices = [];
 const grid = [];
-const posArray = [[], []];
-const rotArray = [];
-let proposedValues = [];
-let score = [];
-let rollNumber;
-let endIndicator;
+const dicesPosition = [[], []];
+const dicesRotation = [];
+let dicesToReroll = [];
 
-let data = {};
+let proposedPoints = [];
+let score = [[], []];
 
-/*
- Łańcuch 1 (Start gry) --- prepareData -> rollTheDices (-> randomizeDicesPositions -> calculate) -> Przypisujemy odpowiednie wartości do możliwych punktów do wzięcia
-*/
+const winners = [];
+let highestScore;
+let winnerMessage;
+let tie;
 
-//Przypisujemy dane jakie dostajemy z zewnątrz, czyli liczba graczy oraz nazwy użytkowników
-function prepareData(newPlayersNumber, newPlayersUsernames, newRoundsNumber) {
+let roundsNumber;
+let victories;
+
+function startNewGame(newPlayersNumber, newPlayersUsernames, newRoundsNumber) {
+    setInitialValues(newPlayersNumber, newPlayersUsernames, newRoundsNumber);
+    return data = manageRoll();
+}
+
+function rerollDices(newDicesToReroll) {
+    dicesToReroll = newDicesToReroll;
+    rollNumber++;
+    return data = manageRoll();
+}
+
+function endTurn(pointsIndex) {
+    addPoints(pointsIndex);
+    const roundEnd = checkTurnNumber();
+
+    if (!roundEnd) {
+        prepareDataForNextTurn();
+        setNextPlayer();
+        return data = manageRoll();
+    }
+    else
+        return data = endRound();
+}
+
+function setInitialValues(newPlayersNumber, newPlayersUsernames, newRoundsNumber) {
     playersNumber = newPlayersNumber;
     playersUsernames = newPlayersUsernames;
     roundsNumber = newRoundsNumber;
+
     victories = Array(playersNumber).fill(0);
+    dicesToReroll = Array(5).fill(true);
 
     activePlayer = 0;
-    rollNumber = 0;
+    turnNumber = 0;
     endIndicator = 0;
-    dicesReroll = [true, true, true, true, true];
 
     for (let i = 0; i < playersNumber; i++)
         score[i] = Array(15).fill(null);
+}
 
+function manageRoll() {
     rollDices();
-    data.proposedValues = proposedValues;
-    data.posArray = posArray;
-    data.rotArray = rotArray;
-    data.rollNumber = rollNumber;
-    data.dices = dices;
-    data.activePlayer = activePlayer;
-    data.score = score;                 //głupie to
-    return data;
+    randomizeGrids();
+    randomizePositionAndRotation();
+    proposedPoints = dicesLogic(dices);
+    checkProposedPointsAgainstScore();
+    return data = prepareDataToReturn();
 }
 
-//Przerzucamy wybrane kości
-function rerollDices(newDicesReroll) {
-    dicesReroll = newDicesReroll;
-    rollNumber++;
-
-    rollDices();
-    data.proposedValues = proposedValues;
-    data.posArray = posArray;
-    data.rotArray = rotArray;
-    data.rollNumber = rollNumber;
-    data.dices = dices;
-    data.activePlayer = activePlayer;
-    data.score = score;
-    return data;
-}
-
-
-function setScore(chosenValue) {
-    const newScore = score;
-    newScore[activePlayer][chosenValue] = proposedValues[chosenValue];
-
-    if (chosenValue < 6) {
-        newScore[activePlayer][13] += newScore[activePlayer][chosenValue];
-        if (newScore[activePlayer][13] > 62)
-            newScore[activePlayer][13] += 30;
-    }
-
-    newScore[activePlayer][14] += newScore[activePlayer][chosenValue];
-    score = newScore;
-
-    if (activePlayer === playersNumber - 1) {
-        endIndicator++;
-        if (endIndicator === 13) {
-            const summary = endGame();
-            return summary;
-        }
-    }
-
-    data.score = score;
-
-    grid.fill(undefined);
-    dicesReroll.fill(true);
-    dices.fill(undefined);
-    rollNumber = 0;
-
-    nextPlayer();
-
-    data.rollNumber = rollNumber;
-    data.posArray = posArray;
-    data.rotArray = rotArray;
-    data.dices = dices;
-    data.proposedValues = proposedValues;
-    data.activePlayer = activePlayer;
-    data.end = false;
-
-    return data;
-}
-
-//Losujemy wartości pięciu kości, oddelogowujemy do działania 2 funkcje i sprawdzamy, czy gracz, który rzucił koścmi ma już jakieś wartości w tabelce
 function rollDices() {
     for (let i = 0; i < 5; i++)
-        if (dicesReroll[i] === true)
+        if (dicesToReroll[i])
             dices[i] = Math.floor(Math.random() * 6) + 1;
-
-    randomizeDicesPositions();
-    proposedValues = calculate(dices);
-    
-    for (let i = 0; i < 13; i++) {
-        if (score[activePlayer][i] !== null)
-            proposedValues[i] = score[activePlayer][i];//Nadpisujemy to co wyliczyliśmy, tym co jest już w tabelce
-    }
 }
 
-//Losujemy położenie względne każdej z kości na planszy, później przeliczamy je na współrzędne bezwzględne
-function randomizeDicesPositions() {
+function randomizeGrids() {
     for (let i = 0; i < 5; i++) {
-        if (dicesReroll[i] === true) {
-            let g = Math.floor(Math.random() * 25);                 //Losujemy kwadrat jeden z 25 kwadratów, w którym znajdzie się kość
-            if (grid.indexOf(g) === -1 && g !== 22)                 //Jeśli wylosowana liczba się powtarza z którąś z poprzednich lub jest 22 (kwadrat w którym znajduje się przycisk do przerzucenia kości), powtórz losowanie
-                grid[i] = g;
+        if (dicesToReroll[i]) {
+            let newGrid = Math.floor(Math.random() * 25);
+
+            if (grid.indexOf(newGrid) === -1 && newGrid !== 22)
+                grid[i] = newGrid;
             else
                 i--;
         }
     }
+}
 
-    //Sprawdzić czy nie da się tego zmergewać w jednym ifie.
-
+function randomizePositionAndRotation() {
     for (let i = 0; i < 5; i++) {
-        if (dicesReroll[i] === true) {
-            const rndX = Math.floor(Math.random() * 29) + 36;       //to jest tak wyliczone, że przy kącie 45st. róg kości może się stykać z krawędzią
-            const rndY = Math.floor(Math.random() * 29) + 36;       //kwadratu (ew. 1px różnicy, bo nw jak js przelicza przecinkowe i je zaokrągla)
-            //Na współrzędne bezwzględne
-            posArray[0][i] = rndX + (100 * (grid[i] % 5));
-            posArray[1][i] = rndY + (100 * (Math.floor(grid[i] / 5)));
-            rotArray[i] = Math.floor(Math.random() * 360);
+        if (dicesToReroll[i]) {
+            const rndX = Math.floor(Math.random() * 29) + 36;
+            const rndY = Math.floor(Math.random() * 29) + 36;
+            dicesPosition[0][i] = rndX + (100 * (grid[i] % 5));
+            dicesPosition[1][i] = rndY + (100 * (Math.floor(grid[i] / 5)));
+            dicesRotation[i] = Math.floor(Math.random() * 360);
         }
     }
 }
 
-//Iterujemy zmienną activePlayer
-function nextPlayer() {
+function checkProposedPointsAgainstScore() {
+    for (let i = 0; i < 13; i++)
+        if (score[activePlayer][i] !== null)
+            proposedPoints[i] = score[activePlayer][i];
+}
+
+function prepareDataToReturn() {
+    const data = {};
+
+    data.dices = dices;
+    data.dicesPosition = dicesPosition;
+    data.dicesRotation = dicesRotation;
+    data.rollNumber = rollNumber;
+    data.activePlayer = activePlayer;
+    data.proposedPoints = proposedPoints;
+    data.score = score;
+
+    return data;
+}
+
+function addPoints(pointsIndex) {
+    score[activePlayer][pointsIndex] = proposedPoints[pointsIndex];
+
+    if (pointsIndex < 6)
+        summurizeUpperSection(pointsIndex);
+
+    summurizeBothSections(pointsIndex);
+}
+
+function summurizeUpperSection(pointsIndex) {
+    score[activePlayer][13] += score[activePlayer][pointsIndex];
+
+    if (score[activePlayer][13] > 62)
+        score[activePlayer][13] += 30;
+}
+
+function summurizeBothSections(pointsIndex) {
+    score[activePlayer][14] += score[activePlayer][pointsIndex];
+}
+
+function checkTurnNumber() {
+    turnNumber++;
+
+    if (turnNumber === 13 * playersNumber)
+        return true;
+    else
+        return false;
+}
+
+function prepareDataForNextTurn() {
+    grid.fill(undefined);
+    dicesToReroll.fill(true);
+    dices.fill(undefined);
+    rollNumber = 0;
+}
+
+function setNextPlayer() {
     if (activePlayer === playersNumber - 1)
         activePlayer = 0;
     else
         activePlayer++;
-
-    rollDices();
 }
 
-//Koniec gry - sprawdzamy kto wygrał lub czy jest remis
-function endGame() {
-    const winners = [];
-    let highestScore = score[0][14];
-    let trueEnd = false;
-    let tie;
-    let message;
-    let obj = {};
-    obj.end = true;
+function endRound() {
+    determineWinner();
+    setMessage();
+    const endgame = checkEndgame();
+
+    if (endgame)
+        return finalData = prepareFinalDataToReturn();
+    else {
+        prepareDataForNextRound();
+        setNextPlayer();
+        manageRoll();
+        return endMatchData = prepareEndMatchDataToReturn();
+    }
+}
+
+function determineWinner() {
+    highestScore = score[0][14];
     winners[0] = playersUsernames[0];
-
-
 
     for (let i = 1; i < playersNumber; i++) {
         if (score[i][14] > highestScore) {
@@ -181,69 +198,85 @@ function endGame() {
             tie = true;
         }
     }
+}
 
+function setMessage() {
     if (!tie) {
         for (let i = 0; i < playersNumber; i++) {
             if (winners[i]) {
                 victories[i] += 1;
-                message = `Rundę wygrał ${winners[i]} z wynikiem ${highestScore} punktów!`;
+                winnerMessage = `Rundę wygrał ${winners[i]} z wynikiem ${highestScore} punktów!`;
                 break;
             }
         }
     }
     else {
-        message = `Remis pomiędzy`
+        winnerMessage = `Remis pomiędzy`
         for (let i = 0; i < playersNumber; i++) {
             if (winners[i]) {
                 victories[i] += 1;
-                message += ` ${winners[i]},`;
+                winnerMessage += ` ${winners[i]},`;
             }
         }
-        message += ` , którzy zdobyli po ${highestScore} punktów!`;
+        winnerMessage += ` którzy zdobyli po ${highestScore} punktów!`;
     }
+}
+
+function checkEndgame() {
+    let endgame = false;
 
     for (let i = 0; i < playersNumber; i++) {
         if (victories[i] === roundsNumber) {
-            trueEnd = true;
-            if (roundsNumber !== 1) {
-                message = `Grę wygrał ${winners[i]}!`
-            }
+            if (roundsNumber !== 1)
+                winnerMessage = `Grę wygrał ${winners[i]}!`
+
+            endgame = true;
             break;
         }
     }
 
-    if (!trueEnd) {
-        grid.fill(undefined);
-        dicesReroll.fill(true);
-        dices.fill(undefined);
-        rollNumber = 0;
+    return endgame;
+}
 
-        endIndicator = 0;
-        proposedValues = Array(13).fill(null);
+function prepareFinalDataToReturn() {
+    const finalData = {};
+    finalData.winnerMessage = winnerMessage;
+    finalData.score = score;
+    finalData.victories = victories;
+    return finalData;
+}
 
-        for (let i = 0; i < playersNumber; i++)
-            score[i] = Array(15).fill(null);
+function prepareDataForNextRound() {
+    grid.fill(undefined);
+    dicesToReroll.fill(true);
+    dices.fill(undefined);
+    rollNumber = 0;
 
-        nextPlayer();
-        obj.rollNumber = rollNumber;
-        obj.posArray = posArray;
-        obj.rotArray = rotArray;
-        obj.dices = dices;
-        obj.proposedValues = proposedValues;
-        obj.activePlayer = activePlayer;
-        obj.message = message;
-    }
+    turnNumber = 0;
+    proposedPoints = Array(13).fill(null);
 
-    obj.trueEnd = trueEnd;
-    obj.message = message;
-    obj.score = score;
-    obj.victories = victories;
+    for (let i = 0; i < playersNumber; i++)
+        score[i] = Array(15).fill(null);
+}
 
-    return obj;
+function prepareEndMatchDataToReturn() {
+    const endMatchData = {}
+
+    endMatchData.dices = dices;
+    endMatchData.dicesPosition = dicesPosition;
+    endMatchData.dicesRotation = dicesRotation;
+    endMatchData.rollNumber = rollNumber;
+    endMatchData.activePlayer = activePlayer;
+    endMatchData.proposedPoints = proposedPoints;
+    endMatchData.score = score;
+    endMatchData.victories = victories;
+    endMatchData.winnerMessage = winnerMessage;
+
+    return endMatchData;
 }
 
 module.exports = {
-    prepareData,
+    startNewGame,
     rerollDices,
-    setScore
+    endTurn
 };

@@ -52,7 +52,8 @@ class Game extends Component {
         this.handleRoundsNumber = this.handleRoundsNumber.bind(this);
         this.handleGameType = this.handleGameType.bind(this);
         this.startGame = this.startGame.bind(this);
-        this.setScore = this.setScore.bind(this);
+        this.sendChatboxMessage = this.sendChatboxMessage.bind(this);
+        this.addPoints = this.addPoints.bind(this);
 
         this.restartGame = this.restartGame.bind(this);
         this.quitGame = this.quitGame.bind(this);
@@ -144,43 +145,47 @@ class Game extends Component {
             this.setState({ doubleButtonAlertMessage: `Niestety, użytkownik ${username} opuścił grę.` });
         });
 
-        socket.on('startGame', (initialData) => {
+        socket.on('getNewRollData', (newTurnData) => {
             let newURLs = [];
-            for (let i = 0; i < 5; i++) {
-                newURLs[i] = `/img/dice${initialData.dices[i]}_test.png`;
-            }
+            for (let i = 0; i < 5; i++)
+                newURLs[i] = `/img/dice${newTurnData.dices[i]}_test.png`;
+
             this.setState({
-                activePlayer: initialData.activePlayer,
-                rollNumber: initialData.rollNumber,
-                proposedValues: initialData.proposedValues,
-                posArray: initialData.posArray,
-                rotArray: initialData.rotArray,
-                score: initialData.score,
                 URLs: newURLs,
-                started: initialData.started
+                posArray: newTurnData.dicesPosition,
+                rotArray: newTurnData.dicesRotation,
+                rollNumber: newTurnData.rollNumber,
+                activePlayer: newTurnData.activePlayer,
+                proposedValues: newTurnData.proposedPoints,
+                score: newTurnData.score,
+                started: newTurnData.started
             });
         });
 
         socket.on('endRound', (newRoundData) => {
             let newURLs = [];
-            for (let i = 0; i < 5; i++) {
+            for (let i = 0; i < 5; i++)
                 newURLs[i] = `/img/dice${newRoundData.dices[i]}_test.png`;
-            }
+
             this.setState({
-                activePlayer: newRoundData.activePlayer,
-                rollNumber: newRoundData.rollNumber,
-                proposedValues: newRoundData.proposedValues,
-                posArray: newRoundData.posArray,
-                rotArray: newRoundData.rotArray,
-                score: newRoundData.score,
-                alertMessage: newRoundData.message,
                 URLs: newURLs,
+                posArray: newRoundData.dicesPosition,
+                rotArray: newRoundData.dicesRotation,
+                rollNumber: newRoundData.rollNumber,
+                activePlayer: newRoundData.activePlayer,
+                proposedValues: newRoundData.proposedPoints,
+                score: newRoundData.score,
+                alertMessage: newRoundData.winnerMessage,
                 victories: newRoundData.victories
             });
         });
 
         socket.on('endGame', (finalData) => {
-            this.setState({ score: finalData.score, doubleButtonAlertMessage: finalData.message, victories: finalData.victories });
+            this.setState({
+                score: finalData.score,
+                doubleButtonAlertMessage: finalData.winnerMessage,
+                victories: finalData.victories
+            });
         });
     }
 
@@ -306,6 +311,10 @@ class Game extends Component {
             this.showAlert('Brak wymaganej ilości graczy!')
     }
 
+    sendChatboxMessage(message) {
+        socket.emit('sendChatboxMessage', this.room, this.props.location.state.username, message);
+    }
+
     checkSeats() {
         for (let i = 0; i < this.state.playersNumber; i++)
             if (this.state.sittingPlayers[i] === 'Wolne miejsce')
@@ -314,8 +323,8 @@ class Game extends Component {
         return true;
     }
 
-    setScore(chosenCategory) {
-        socket.emit('setScore', this.room, chosenCategory);
+    addPoints(pointsIndex) {
+        socket.emit('addPoints', this.room, pointsIndex);
     }
 
     restartGame() {
@@ -353,7 +362,7 @@ class Game extends Component {
                     proposedValues={this.state.proposedValues}
                     score={this.state.score}
                     activePlayer={this.state.activePlayer}
-                    setScore={this.setScore}
+                    addPoints={this.addPoints}
                     playersNumber={this.state.playersNumber}
                 />
                 <Dices
@@ -387,6 +396,7 @@ class Game extends Component {
                     kickPlayer={this.kickPlayer}
                     startGame={this.startGame}
                     handleDeleteBoard={this.handleDeleteBoard}
+                    sendChatboxMessage={this.sendChatboxMessage}
                 />
                 {
                     this.state.alertMessage &&
@@ -396,7 +406,7 @@ class Game extends Component {
                     this.state.doubleButtonAlertMessage &&
                     <DoubleButtonAlert
                         text={this.state.doubleButtonAlertMessage}
-                        button1='Rewanż (WIP)'
+                        button1='Rewanż'
                         button2='Wyjdź'
                         handleButton1={this.restartGame}
                         handleButton2={this.quitGame}

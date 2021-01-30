@@ -86,10 +86,9 @@ class RegisterForm extends Component {
     checkErrors() {
         let isError = false;
 
-        for (let i in this.newErrors) {
+        for (let i in this.newErrors)
             if (this.newErrors[i] !== '')
                 isError = true;
-        }
 
         if (isError)
             this.showErrors();
@@ -134,9 +133,11 @@ class RegisterForm extends Component {
     async loadErrorsReceivedFromServer(formValidationResponse) {
         const formValidationResponseJSON = await formValidationResponse.json();
 
-        for (let i in formValidationResponseJSON.errors) {
+        for (let i in this.newErrors)
+            this.newErrors[i] = '';
+
+        for (let i in formValidationResponseJSON.errors)
             this.newErrors[i] = formValidationResponseJSON.errors[i].msg;
-        }
 
         this.showErrors();
     }

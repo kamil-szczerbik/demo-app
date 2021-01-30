@@ -101,8 +101,14 @@ class LoginForm extends Component {
     }
 
     async loadErrorsReceivedFromServer(formValidationResponse) {
-        const formValidationResponseTEXT = await formValidationResponse.text();
-        this.newErrors.password = formValidationResponseTEXT;
+        const formValidationResponseJSON = await formValidationResponse.json();
+
+        for (let i in this.newErrors)
+            this.newErrors[i] = '';
+
+        for (let i in formValidationResponseJSON.errors)
+            this.newErrors[i] = formValidationResponseJSON.errors[i].msg;
+
         this.showErrors();
     }
 

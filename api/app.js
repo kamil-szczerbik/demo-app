@@ -1,6 +1,3 @@
-//Główny plik serwera. Wywoływane na początku przez server.js
-//Inicjuje wszystkie biblioteki.
-
 const express = require('express');
 const app = express();
 const http = require('http').Server(app);
@@ -22,7 +19,7 @@ const board = require('./controllers/boardsController');
 const dices = require('./controllers/gamesControllers/dicesController');
 
 let gameTime;
-let timer = 300; //w sekundach
+let timer; //w sekundach
 
 io.on('connection', (socket) => {
     console.log('a user connected');
@@ -58,7 +55,7 @@ io.on('connection', (socket) => {
                     board.removePlayer(socket.room, seat);
                     io.in(socket.room).emit('getUp', seat);
                     const alert = socket.username + ' wstał od stołu i opuścił pokój.';
-                    io.in(room).emit('chatAlert', alert);
+                    io.in(room).emit('chatboxAlert', alert);
 
                     if (boardData.started) {
                         io.in(socket.room).emit('stopGame', socket.username);
@@ -67,7 +64,7 @@ io.on('connection', (socket) => {
                 }
                 else {
                     const alert = socket.username + ' opuścił pokój.';
-                    io.in(room).emit('chatAlert', alert);
+                    io.in(room).emit('chatboxAlert', alert);
                 }
                     
 
@@ -90,7 +87,7 @@ io.on('connection', (socket) => {
                     socket.broadcast.emit('updateBoard', newLeader);
                     io.in(socket.room).emit('passLeaderPrivileges', newLeader);
                     const alert = newLeader + ' został nowym przywódcą stołu.';
-                    io.in(room).emit('chatAlert', alert);
+                    io.in(room).emit('chatboxAlert', alert);
                 }
             }
         }
@@ -125,7 +122,7 @@ io.on('connection', (socket) => {
                 board.removePlayer(room, seat);
                 io.in(room).emit('getUp', seat);
                 const alert = username + ' wstał od stołu i opuścił pokój.';
-                io.in(room).emit('chatAlert', alert);
+                io.in(room).emit('chatboxAlert', alert);
 
                 if (boardData.started) {
                     io.in(room).emit('stopGame', username);
@@ -134,7 +131,7 @@ io.on('connection', (socket) => {
             }
             else {
                 const alert = username + ' opuścił pokój.';
-                io.in(room).emit('chatAlert', alert);
+                io.in(room).emit('chatboxAlert', alert);
             }
                 
 
@@ -147,7 +144,7 @@ io.on('connection', (socket) => {
                 socket.broadcast.emit('updateBoard', newLeader);
                 io.in(room).emit('passLeaderPrivileges', newLeader);
                 const alert = newLeader + ' został nowym przywódcą stołu.';
-                io.in(room).emit('chatAlert', alert);
+                io.in(room).emit('chatboxAlert', alert);
             }
         }
     });
@@ -158,7 +155,7 @@ io.on('connection', (socket) => {
         socket.username = username;
         socket.room = room;
         const alert = username + ' dołączył do pokoju.';
-        io.in(room).emit('chatAlert', alert);
+        io.in(room).emit('chatboxAlert', alert);
     });
 
     socket.on('updateBoardsList', () => {
@@ -167,24 +164,26 @@ io.on('connection', (socket) => {
     });
 
     socket.on('sitDown', (room, username, seat) => {
-        board.addPlayer(room, username, seat);
-        io.in(room).emit('sitDown', username, seat);
-        const alert = username + ' zajął miejsce przy stole.';
-        io.in(room).emit('chatAlert', alert);
+        const validationResult = board.addPlayer(room, username, seat);
+        if (validationResult) {
+            io.in(room).emit('sitDown', username, seat);
+            const alert = username + ' zajął miejsce przy stole.';
+            io.in(room).emit('chatboxAlert', alert);
+        }
     });
 
     socket.on('getUp', (room, username, seat) => {
         board.removePlayer(room, seat);
         io.in(room).emit('getUp', seat);
         const alert = username + ' wstał od stołu.';
-        io.in(room).emit('chatAlert', alert);
+        io.in(room).emit('chatboxAlert', alert);
     });  
 
     socket.on('kickPlayer', (room, username, seat) => {
         board.removePlayer(room, seat);
         io.in(room).emit('kickPlayer', seat);
         const alert = username + ' został wyrzucony ze stołu.';
-        io.in(room).emit('chatAlert', alert);
+        io.in(room).emit('chatboxAlert', alert);
     });
 
     socket.on('changePlayersNumber', (room, newPlayerNumber) => {
@@ -222,22 +221,23 @@ io.on('connection', (socket) => {
         io.in(room).emit('passLeaderPrivileges', newLeader);
 
         const alert = newLeader + ' został nowym przywódcą stołu.';
-        io.in(room).emit('chatAlert', alert);
+        io.in(room).emit('chatboxAlert', alert);
+    });
+
+    socket.on('sendChatboxMessage', (room, username, message) => {
+        io.in(room).emit('chatboxMessage', username, message);
     });
 
     socket.on('startGame', (room) => {
         const updatedBoard = board.startBoard(room);
         socket.broadcast.emit('updateBoard', updatedBoard);
 
-        const playersNumber = updatedBoard.playersNumber;
-        const playersUsernames = updatedBoard.players;
-        const roundsNumber = updatedBoard.roundsNumber;
-        const data = dices.prepareData(playersNumber, playersUsernames, roundsNumber);
-        data.started = updatedBoard.started;
+        const fistRollData = dices.startNewGame(updatedBoard.playersNumber, updatedBoard.players, updatedBoard.roundsNumber);
+        fistRollData.started = updatedBoard.started;
 
-        io.in(room).emit('startGame', data);
+        io.in(room).emit('getNewRollData', fistRollData);
         const alert = 'Gra się rozpoczęła.';
-        io.in(room).emit('chatAlert', alert);
+        io.in(room).emit('chatboxAlert', alert);
 
         timer = 300;
 
@@ -259,24 +259,22 @@ io.on('connection', (socket) => {
     });
 
     socket.on('rerollDices', (room, newDicesReroll) => {
-        const data = dices.rerollDices(newDicesReroll);
-        io.in(room).emit('startGame', data);
+        const rerollData = dices.rerollDices(newDicesReroll);
+        io.in(room).emit('getNewRollData', rerollData);
     })
 
-    socket.on('setScore', (room, chosenValue) => {
-        const data = dices.setScore(chosenValue);
-        if (!data.end) {
-            io.in(room).emit('startGame', data);
+    socket.on('addPoints', (room, pointsIndex) => {
+        const endTurnData = dices.endTurn(pointsIndex);
+
+        if (!endTurnData.winnerMessage)
+            io.in(room).emit('getNewRollData', endTurnData);
+        else if (endTurnData.dices) {
+            timer = 300;
+            io.in(room).emit('endRound', endTurnData);
         }
         else {
-            if (data.trueEnd) {
-                clearInterval(gameTime);
-                io.in(room).emit('endGame', data);
-            }
-            else {
-                timer = 300;
-                io.in(room).emit('endRound', data);
-            }
+            clearInterval(gameTime);
+            io.in(room).emit('endGame', endTurnData);
         }
     });
 });
