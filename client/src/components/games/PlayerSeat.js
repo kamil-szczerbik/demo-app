@@ -19,7 +19,7 @@ class PlayerSeat extends Component {
     }
 
     handleSitingDown() {
-        if (this.props.availableSeat && !this.props.disabled && !this.props.amISitting) {
+        if (this.props.availableSeat && this.props.seat < this.props.playersNumber && !this.props.amISitting) {
             this.props.sitDown(this.props.seat);
             this.setState({ showButton: true });
         }
@@ -38,7 +38,7 @@ class PlayerSeat extends Component {
             >
                 <h2 className={configStyle.nickname}>{this.props.playerUsername}</h2>
                 {
-                    (this.props.playerUsername === this.props.username && !this.props.disabled && !this.props.started) &&
+                    (this.props.playerUsername === this.props.username && !this.props.started) &&
                     <img src='/img/redX.jpg' className={configStyle.getUp} onClick={this.handleGetUp} alt='Przycisk do wstania od stołu' />
                 }
                 {

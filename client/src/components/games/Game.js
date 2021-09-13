@@ -150,6 +150,10 @@ class Game extends Component {
             for (let i = 0; i < 5; i++)
                 newURLs[i] = `/img/dice${newTurnData.dices[i]}_test.png`;
 
+            const oldScore = this.state.score;
+            console.log(newTurnData.score);
+            oldScore[newTurnData.activePlayer] = newTurnData.score;
+
             this.setState({
                 URLs: newURLs,
                 posArray: newTurnData.dicesPosition,
@@ -157,7 +161,7 @@ class Game extends Component {
                 rollNumber: newTurnData.rollNumber,
                 activePlayer: newTurnData.activePlayer,
                 proposedValues: newTurnData.proposedPoints,
-                score: newTurnData.score,
+                score: oldScore,
                 started: newTurnData.started
             });
         });
@@ -230,9 +234,6 @@ class Game extends Component {
         };
 
         updatedData.newPlayersNumber = parseInt(boardDataResponseJSON.playersNumber);
-
-        for (let i = 0; i < 4; i++)
-            console.log(boardDataResponseJSON.players[i]);
 
         for (let i = 0; i < 4; i++) {
             if (boardDataResponseJSON.players[i]) {

@@ -20,7 +20,8 @@ class Config extends Component {
                     username: false,
                     alert: 'Założono nowy stół'
                 }
-            ]
+            ],
+            alertsLength: 1
         }
 
         this.changeTab = this.changeTab.bind(this);
@@ -34,7 +35,8 @@ class Config extends Component {
                 alert: notification
             };
 
-            this.setState({ alerts: [...this.state.alerts, newNotification] });
+            const newAlertLength = this.state.alertsLength + 1;
+            this.setState({ alerts: [...this.state.alerts, newNotification], alertsLength: newAlertLength });
         });
 
         socket.on('chatboxMessage', (username, message) => {
@@ -44,7 +46,8 @@ class Config extends Component {
                 alert: message
             };
 
-            this.setState({ alerts: [...this.state.alerts, newMessage] });
+            const newAlertLength = this.state.alertsLength + 1;
+            this.setState({ alerts: [...this.state.alerts, newMessage], alertsLength: newAlertLength });
         });
     }
 
@@ -90,6 +93,7 @@ class Config extends Component {
                         ?
                         <Chatbox
                             alerts={this.state.alerts}
+                            alertsLength={this.state.alertsLength}
                             sendChatboxMessage={this.props.sendChatboxMessage}
                         />
                         :

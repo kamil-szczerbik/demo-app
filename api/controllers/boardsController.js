@@ -86,12 +86,12 @@ function changeLeader(room, newLeader) {
 }
 
 function addPlayer(room, username, seat) {
-    if (!boards[room].players[seat]) {
+/*    if (!boards[room].players[seat]) {*/
         boards[room].players[seat] = username;
-        return true;
+/*        return true;
     }
     else
-        return false;
+        return false;*/
 }
 
 function removePlayer(room, seat) {

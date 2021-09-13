@@ -164,12 +164,12 @@ io.on('connection', (socket) => {
     });
 
     socket.on('sitDown', (room, username, seat) => {
-        const validationResult = board.addPlayer(room, username, seat);
-        if (validationResult) {
+        /*const validationResult =*/ board.addPlayer(room, username, seat);
+        /*if (validationResult) {*/
             io.in(room).emit('sitDown', username, seat);
             const alert = username + ' zajął miejsce przy stole.';
             io.in(room).emit('chatboxAlert', alert);
-        }
+        /*}*/
     });
 
     socket.on('getUp', (room, username, seat) => {

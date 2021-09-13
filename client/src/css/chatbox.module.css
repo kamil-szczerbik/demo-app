@@ -8,10 +8,26 @@
 }
 
 .conversation {
+    position: relative;
     width: 296px;
-    height: 236px;
-    overflow-y: scroll;
 }
+
+    .conversation p {
+        position: absolute;
+        bottom: 0px;
+        left: 0;
+        right: 0;
+        margin: 0;
+        padding: 3px 0;
+        text-align: center;
+        font-size: 12px;
+        cursor: pointer;
+        background-color: #36b03c;
+    }
+
+        .conversation p:hover {
+            background-color: #3abd41;
+        }
 
 .userInput {
     width: 296px;
@@ -47,10 +63,19 @@
     }
 
 .list {
+    width: 296px;
+    height: 236px;
     list-style-type: none;
     padding: 0;
     margin: 0;
+    overflow-y: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
+
+    .list::-webkit-scrollbar {
+        display: none;
+    }
 
 .alert {
     padding-top: 10px;

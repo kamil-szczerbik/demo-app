@@ -11,10 +11,11 @@ class Chatbox extends Component {
     render() {
         return (
             <div className={chatboxStyle.chatbox}>
-                <ChatboxConversation alerts={this.props.alerts}/>
-                <ChatboxUserInput sendChatboxMessage={this.props.sendChatboxMessage}/>
+                <ChatboxConversation alerts={this.props.alerts} alertsLength={this.props.alertsLength} />
+                <ChatboxUserInput sendChatboxMessage={this.props.sendChatboxMessage} />
             </div>
         );
     }
 }
+
 export default Chatbox;

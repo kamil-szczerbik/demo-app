@@ -119,7 +119,7 @@ function prepareDataToReturn() {
     data.rollNumber = rollNumber;
     data.activePlayer = activePlayer;
     data.proposedPoints = proposedPoints;
-    data.score = score;
+    data.score = score[activePlayer];
 
     return data;
 }
