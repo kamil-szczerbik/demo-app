@@ -53,7 +53,7 @@ class ScrollThumb extends Component {
         }
         else {
             this.props.showNewMessagesInfo();
-            this.setState({ thumbHeight: newThumbHeight }); 
+            this.setState({ thumbHeight: newThumbHeight });
         }
     }
 

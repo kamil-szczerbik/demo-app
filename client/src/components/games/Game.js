@@ -10,8 +10,8 @@ class Game extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            playersNumber: 2,       
-            roundsNumber: 1,        
+            playersNumber: 2,
+            roundsNumber: 1,
 
             activePlayer: 0,
             rollNumber: 0,
@@ -412,9 +412,9 @@ class Game extends Component {
                         handleButton1={this.restartGame}
                         handleButton2={this.quitGame}
                     />
-                }  
+                }
             </div>
-            );
+        );
     }
 }
 
