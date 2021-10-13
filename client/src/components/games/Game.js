@@ -151,8 +151,8 @@ class Game extends Component {
                 newURLs[i] = `/img/dice${newTurnData.dices[i]}_test.png`;
 
             const oldScore = this.state.score;
-            console.log(newTurnData.score);
-            oldScore[newTurnData.activePlayer] = newTurnData.score;
+
+            oldScore[newTurnData.prevActivePlayer] = newTurnData.score;
 
             this.setState({
                 URLs: newURLs,

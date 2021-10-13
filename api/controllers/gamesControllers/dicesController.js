@@ -113,13 +113,21 @@ function checkProposedPointsAgainstScore() {
 function prepareDataToReturn() {
     const data = {};
 
+    let prevActivePlayer;
+
+    if (activePlayer === 0)
+        prevActivePlayer = playersNumber - 1;
+    else
+        prevActivePlayer = activePlayer - 1;
+
     data.dices = dices;
     data.dicesPosition = dicesPosition;
     data.dicesRotation = dicesRotation;
     data.rollNumber = rollNumber;
     data.activePlayer = activePlayer;
+    data.prevActivePlayer = prevActivePlayer;
     data.proposedPoints = proposedPoints;
-    data.score = score[activePlayer];
+    data.score = score[prevActivePlayer];
 
     return data;
 }
