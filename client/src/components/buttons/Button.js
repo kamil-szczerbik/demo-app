@@ -2,10 +2,6 @@ import React, { Component } from 'react';
 import buttonStyle from '../../css/button.module.css';
 
 class Button extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         let className;
         if (this.props.className === 'affirmative')

@@ -32,7 +32,12 @@ class Timer extends Component {
         return (
             <>
                 <p className={configStyle.time}>
-                    &#9200; {this.state.remainedTime}
+                    <span
+                        role="img"
+                        aria-label="Alarm Clock"
+                    >
+                        &#9200; {this.state.remainedTime}
+                    </span>
                 </p>
                 {
                     this.state.alertMessage &&

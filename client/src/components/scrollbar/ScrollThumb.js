@@ -45,9 +45,9 @@ class ScrollThumb extends Component {
         let newThumbHeight = thumbPercentage * clientHeight;
         newThumbHeight = Math.max(Math.round(newThumbHeight), 10);
 
-        const scrollAtBottom = this.checkScrollAtBottom();
+        const scrollToBottom = this.checkScrollToBottom();
 
-        if (scrollAtBottom) {
+        if (scrollToBottom) {
             const newThumbTop = this.scrollToBottom(scrollHeight, clientHeight, newThumbHeight);
             this.setState({ thumbHeight: newThumbHeight, thumbTop: newThumbTop, prevScrollTop: this.props.scrollableElementRef.current.scrollTop });
         }
@@ -57,7 +57,7 @@ class ScrollThumb extends Component {
         }
     }
 
-    checkScrollAtBottom() {
+    checkScrollToBottom() {
         if (this.state.thumbTop === this.props.scrollableElementRef.current.clientHeight - this.state.thumbHeight)
             return true;
 

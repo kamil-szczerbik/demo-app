@@ -6,10 +6,6 @@ import Button from '../../buttons/Button';
 import configStyle from '../../../css/config.module.css';
 
 class GameOptions extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         return (
             <>

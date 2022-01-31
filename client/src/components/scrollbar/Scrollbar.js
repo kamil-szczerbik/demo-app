@@ -3,10 +3,6 @@ import ScrollThumb from './ScrollThumb';
 import scrollStyle from '../../css/scroll.module.css';
 
 class Scrollbar extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         return (
             <div

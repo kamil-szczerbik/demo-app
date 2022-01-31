@@ -265,7 +265,6 @@ io.on('connection', (socket) => {
 
     socket.on('addPoints', (room, pointsIndex) => {
         const endTurnData = dices.endTurn(pointsIndex);
-        console.log(endTurnData.score);
 
         if (!endTurnData.winnerMessage)
             io.in(room).emit('getNewRollData', endTurnData);

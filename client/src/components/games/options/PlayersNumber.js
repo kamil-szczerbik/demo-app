@@ -2,10 +2,6 @@ import React, { Component } from 'react';
 import configStyle from '../../../css/config.module.css';
 
 class PlayersNumber extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         return (
             <div className={configStyle.divColumn}>

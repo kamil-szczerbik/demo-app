@@ -2,10 +2,6 @@ import React, { Component } from 'react';
 import configStyle from '../../../css/config.module.css';
 
 class GameType extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         return (
             <>

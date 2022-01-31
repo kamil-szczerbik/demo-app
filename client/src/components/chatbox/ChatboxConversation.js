@@ -51,10 +51,9 @@ class ChatboxConversation extends Component {
                 className={chatboxStyle.conversation}
                 onMouseOver={this.onMouseOver}
                 onMouseOut={this.onMouseOut}
-                
             >
                 <ul
-                    class={chatboxStyle.list}
+                    className={chatboxStyle.list}
                     onScroll={this.handleScroll}
                     ref={this.scrollableElementRef}
                 >

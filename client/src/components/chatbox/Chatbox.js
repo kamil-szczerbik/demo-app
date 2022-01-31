@@ -4,10 +4,6 @@ import ChatboxUserInput from './ChatboxUserInput';
 import chatboxStyle from '../../css/chatbox.module.css';
 
 class Chatbox extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         return (
             <div className={chatboxStyle.chatbox}>
