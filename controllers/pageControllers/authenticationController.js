@@ -32,7 +32,7 @@ function tryDecodeToken(token, res, gettingUsername) {
 }
 
 function decodeToken(token, res) {
-    const decoded = jwt.verify(token, process.env.AUTH_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     res.status(200).send({
         username: decoded.un
     });

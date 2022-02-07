@@ -157,7 +157,7 @@ function loginUser(req, res) {
 
     //TOKEN
     const payload = { un };
-    const token = jwt.sign(payload, process.env.RLL_SECRET, {
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
         expiresIn: '7 days' //to nie jest ważność ciasteczka!
 
     });
