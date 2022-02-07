@@ -8,7 +8,7 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const io = require('socket.io')(http);
 
-app.use(express.static(path.join(__dirname, '../client/build')));
+app.use(express.static(path.join(__dirname, 'client/build')));
 app.use(cors());
 app.use(bodyParser.json());
 app.use(cookieParser());

@@ -26,7 +26,7 @@ router.get('/api/test2', (req, res) => {
 });
 
 router.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname + '/../../client/build/index.html'));
+    res.sendFile(path.join(__dirname + '/../client/build/index.html'));
 });
 
 module.exports = router;
