@@ -1,0 +1,126 @@
+﻿.divFixed {
+    position: fixed; /* Sit on top of the page content */ 
+    width: 100%; /* Full width (cover the whole page) */
+    height: 100%; /* Full height (cover the whole page) */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.5); /* Black background with opacity */
+    z-index: 2;
+}
+
+.divForm {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+
+    width: 300px;
+    
+    padding-bottom: 30px;
+
+    background-color: white;
+
+    -webkit-box-shadow: 10px 10px 13px 0px rgba(71,71,71,1);
+    -moz-box-shadow: 10px 10px 13px 0px rgba(71,71,71,1);
+    box-shadow: 10px 10px 13px 0px rgba(71,71,71,1);
+}
+
+/*^^^^ ABSOLUTNIE DO POPRAWKI!!!*/
+
+.form {
+    text-align: center;
+    font-size: 24px;
+    margin-top: 15px;
+    color:black;
+}
+
+.input {
+    font-size: 20px;
+
+    width: 250px;
+    height: 36px;
+    margin-bottom: 0px;
+    margin-top: 5px;
+    padding: 5px;
+
+    color: #636363;
+    background-color: #d7d7d7;
+
+    border: solid 2px #a0a0a0;
+    border-radius: 5px;
+
+    outline: none;
+}
+
+.input:focus {
+    color: #128d12;
+    background-color: #c7eabe;
+    border-color: #36b03c;
+}
+
+.submit {
+    font-size: 20px;
+    color: white;
+    background-color: #36b03c;
+    
+    height: 50px;
+    width: 264px;
+
+    margin-top: 10px;
+
+    border: none;
+    border-radius: 5px;
+}
+
+.submit:hover {
+    cursor: pointer;
+    background-color: #3abd41;
+
+}
+
+.cancel {
+    font-size: 20px;
+    color: white;
+    background-color: #b03d25;
+    height: 50px;
+    width: 264px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 5px;
+}
+
+.cancel:hover {
+    background-color: #bd4028;
+    cursor: pointer;
+}
+
+.checkboxLabel {
+    font-size: 16px;
+    display:inline-block;
+    width: 242px;
+    text-align: left;
+}
+
+.checkbox {
+    margin: 0 5px 0 0;
+    display: inline-block;
+    text-align: left;
+}
+
+.error {
+    display: block;
+    width: 277px;
+    min-height: 15px;
+
+    margin-left: auto;
+    margin-right: auto;
+
+    font-size: 12px;
+    color: red;
+    margin-bottom: 15px;
+    margin-top: 3px;
+    padding: 0;
+}

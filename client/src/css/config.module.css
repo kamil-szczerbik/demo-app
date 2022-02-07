@@ -1,0 +1,134 @@
+.divSettings {
+    float: left;
+    width: 350px;
+    height: 688px;
+    background-color: #c9c9c9;
+}
+
+.innerSettings {
+    margin-left: auto;
+    margin-right: auto;
+    width: 300px;
+    height: 658px;
+    background-color: #b9b9b9;
+}
+
+.playerBarActive {
+    margin-top: 15px;
+    width: 296px;
+    height: 56px;
+    border: 2px solid #595959;
+    background-color: #898989;
+    cursor: pointer;
+}
+
+.playerBarDisabled {
+    margin-top: 15px;
+    width: 296px;
+    height: 56px;
+    border: 2px solid #595959;
+    background-color: #898989;
+    cursor: default;
+    opacity: 0.5;
+}
+
+.playerBar {
+    margin-top: 15px;
+    width: 296px;
+    height: 56px;
+    border: 2px solid #595959;
+    background-color: #898989;
+    cursor: default;
+}
+
+.nickname {
+    margin: auto;
+    padding-left: 10px;
+    float: left;
+    line-height: 60px;
+}
+
+.avatar {
+    float: right;
+    width: 56px;
+    height: 56px;
+}
+
+.getUp {
+    margin-left: 5px;
+    margin-top: 5px;
+    cursor: pointer;
+}
+
+.time {
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 0;
+    font-size: 20px;
+}
+
+.innerSettings hr {
+    border: 1px solid #898989;
+    width: 100px;
+    margin-top: 2px;
+    margin-bottom: 0;
+}
+
+.divColumn {
+    display: inline-block;
+    vertical-align: middle; /*niby dzia³a, ale jakbym da³ bottom albo top, to by by³o tak samo. W sumie ustawiam div, a nie zawartoœæ*/
+    width: 50%;
+    min-height:52px;
+}
+
+.divColumn p {
+    margin-bottom: 0;
+    margin-top: 10px;
+    text-align:center;
+}
+
+.optionsPlayers {
+    margin-top: 10px;
+    height: 286px;
+    border: 2px solid #595959;
+}
+
+.optionsPlayers input {
+    margin-top: 0;
+    margin-bottom: 7px;
+}
+
+.optionsPlayers fieldset {
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+.optionsPlayers h2 {
+    margin-top: 10px;
+    margin-bottom: 0;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.tabs {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.tabs div {
+    display: inline;
+    cursor: pointer;
+}
+
+.tabs div:first-child {
+    border-right: solid 1px;
+    margin-right: 5px;
+    padding-right: 5px;
+}
+
+.testInfo {
+    overflow: hidden;
+    font-size: 10px;
+    margin-top: 20px;
+}

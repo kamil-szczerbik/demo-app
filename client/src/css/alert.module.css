@@ -1,0 +1,96 @@
+﻿.divFixed {
+    position: fixed; /* Sit on top of the page content */
+    width: 100%; /* Full width (cover the whole page) */
+    height: 100%; /* Full height (cover the whole page) */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0); /* Black background with opacity */
+    z-index: 2;
+}
+
+.divAlert {
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+    background-color: white;
+    -webkit-box-shadow: 10px 10px 13px 0px rgba(71,71,71,1);
+    -moz-box-shadow: 10px 10px 13px 0px rgba(71,71,71,1);
+    box-shadow: 10px 10px 13px 0px rgba(71,71,71,1);
+    text-align: initial;
+    line-height: initial;
+    /*Pasowałoby jakoś komponent alert wyświetlać z poziomu top komponentu, bo on mi dziedziczy style i jest problem*/
+}
+
+/*^^^^ ABSOLUTNIE DO POPRAWKI!!!*/
+
+.text {
+    color: black;
+    font-size: 20px;
+    text-align: center;
+    padding-left: 20px;
+    padding-right: 20px;
+    max-width: 400px;
+}
+
+.button {
+    height: 40px;
+    width: 100px;
+    position: relative;
+    left: 50%;
+    -ms-transform: translate(-50%);
+    transform: translate(-50%);
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: white;
+    background-color: #36b03c;
+    border: none;
+    border-radius: 5px;
+}
+
+.button:hover {
+    background-color: #3abd41;
+    cursor: pointer;
+}
+
+.divAlert div {
+    text-align:center;
+}
+
+.button1 {
+    height: 40px;
+    width: 100px;
+    position: relative;
+    margin: 10px;
+    font-size: 16px;
+    color: white;
+    background-color: #36b03c;
+    border: none;
+    border-radius: 5px;
+}
+
+.button1:hover {
+    background-color: #3abd41;
+    cursor: pointer;
+}
+
+.button2 {
+    height: 40px;
+    width: 100px;
+    position: relative;
+    margin: 10px;
+    font-size: 16px;
+    color: white;
+    background-color: #b03d25;
+    border: none;
+    border-radius: 5px;
+}
+
+.button2:hover {
+    background-color: #bd4028;
+    cursor: pointer;
+}

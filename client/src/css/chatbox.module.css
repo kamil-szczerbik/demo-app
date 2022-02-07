@@ -1,0 +1,93 @@
+.chatbox {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
+    width: 296px;
+    height: 286px;
+    border: 2px solid #595959;
+}
+
+.conversation {
+    position: relative;
+    width: 296px;
+}
+
+    .conversation p {
+        position: absolute;
+        bottom: 0px;
+        left: 0;
+        right: 0;
+        margin: 0;
+        padding: 3px 0;
+        text-align: center;
+        font-size: 12px;
+        cursor: pointer;
+        background-color: #36b03c;
+    }
+
+        .conversation p:hover {
+            background-color: #3abd41;
+        }
+
+.userInput {
+    width: 296px;
+}
+
+    .userInput input[type='text'] {
+        width: 250px;
+        height: 48px;
+        padding: 0 0 0 10px;
+        border-top: 2px solid #595959;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+        background-color: inherit;
+    }
+
+        .userInput input:focus {
+            outline: none;
+        }
+
+    .userInput input[type='submit'] {
+        width: 36px;
+        line-height: 38px;
+        font-size: 48px;
+        margin: 0;
+        border-top: 2px solid #595959;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+        float: right;
+        background-color: inherit;
+        cursor: pointer;
+    }
+
+.list {
+    width: 296px;
+    height: 236px;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    overflow-y: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+    .list::-webkit-scrollbar {
+        display: none;
+    }
+
+.alert {
+    padding-top: 10px;
+    padding-bottom:10px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+    .alert:nth-child(2n+1) {
+        background-color: #898989;
+    }
+
+.username {
+    font-style: italic;
+}

@@ -1,0 +1,48 @@
+.affirmative {
+    position: relative;
+    left: 50%;
+    -ms-transform: translate(-50%);
+    transform: translate(-50%);
+    margin-top: 10px;
+    margin-bottom: 10px;
+    height: 40px;
+    width: 100px;
+    font-size: 16px;
+    color: white;
+    background-color: #36b03c;
+    border: none;
+    border-radius: 5px;
+}
+
+    .affirmative:hover:enabled {
+        background-color: #3abd41;
+        cursor: pointer;
+    }
+
+    .affirmative:disabled {
+        background-color: #3abd41;
+        cursor: default;
+    }
+
+.dismissive {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 25px;
+    height: 40px;
+    width: 100px;
+    font-size: 16px;
+    color: white;
+    background-color: #ac3020;
+    border: none;
+    border-radius: 5px;
+}
+
+    .dismissive:hover:enabled {
+        background-color: #bd4028;
+        cursor: pointer;
+    }
+
+    .dismissive:disabled {
+        background-color: #b44a2a;
+        cursor: default;
+    }
