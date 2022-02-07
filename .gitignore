@@ -2,6 +2,8 @@
 
 # visual-studio
 /.vs
+client/inne
+
 
 # dependencies
 client/node_modules

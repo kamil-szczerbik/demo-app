@@ -1,0 +1,24 @@
+docker run -it -p 3306:3306 -e MYSQL_DATABASE=default -e MYSQL_ROOT_PASSWORD=admin --name mysql --net db mysql
+docker run -it -p 8080:8080 --name adminer --net db adminer
+docker run -it -p 4000:4000 --name demo-api --net db demo-api:0.50
+docker run -it -p 3000:3000 --name demo-app --net db demo-app:0.50
+
+docker stop mysql
+docker stop adminer
+docker stop demo-app
+docker stop demo-api
+
+docker rm mysql
+docker rm adminer
+docker rm demo-app
+docker rm demo-api
+
+docker stop henhouse-mysql-1
+docker stop henhouse-adminer-1
+docker stop henhouse-demo-app-1
+docker stop henhouse-demo-api-1
+
+docker rm henhouse-mysql-1
+docker rm henhouse-adminer-1
+docker rm henhouse-demo-app-1
+docker rm henhouse-demo-api-1

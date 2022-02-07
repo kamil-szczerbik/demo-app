@@ -1,6 +1,6 @@
 {
-  "name": "dices",
-  "version": "0.1.0",
+  "name": "demo-app",
+  "version": "0.50",
   "private": true,
   "proxy": "http://localhost:4000",
   "dependencies": {

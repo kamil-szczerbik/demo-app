@@ -1,11 +1,14 @@
 const Sequelize = require('sequelize');
 
 const sequelize = new Sequelize(
-	'sys',
+	/*process.env.MYSQL_DATABASE,
+	process.env.MYSQL_ROOT_USERNAME,
+	process.env.MYSQL_ROOT_PASSWORD,*/
+	'default',
 	'root',
 	'admin',
 	{
-		host: 'localhost',
+		host: 'localhost'/*process.env.MYSQL_HOST*/,
 		dialect: 'mysql',
 		logging: true
 	}
