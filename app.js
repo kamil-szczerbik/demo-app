@@ -241,7 +241,7 @@ io.on('connection', (socket) => {
         const alert = 'Gra się rozpoczęła.';
         io.in(room).emit('chatboxAlert', alert);
 
-        timer = 300;
+        timer = 1200;
 
         gameTime = setInterval(() => {
             minutes = parseInt(timer / 60, 10);
