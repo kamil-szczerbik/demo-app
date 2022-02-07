@@ -22,7 +22,12 @@ module.exports = (sequelize) => {
         password: {
             type: DataTypes.STRING,
             allowNull: false
-        }
-    });
+        },
+    },
+        {
+            timestamps: true,
+            createdAt: 'createdat',
+            updatedAt: 'updatedat',
+        });
     return user;
 }
