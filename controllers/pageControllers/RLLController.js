@@ -154,7 +154,6 @@ function tryLoginUser(req, res) {
 
 function loginUser(req, res) {
     let un = req.body.username;
-
     //TOKEN
     const payload = { un };
     const token = jwt.sign(payload, process.env.JWT_SECRET, {

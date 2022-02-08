@@ -1,2 +1,7 @@
+client/node_modules
+client/stuff
+client/README.md
 /node_modules
+/docker
+/.vs
 README.md
