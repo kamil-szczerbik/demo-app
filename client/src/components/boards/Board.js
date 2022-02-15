@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import Alert from '../alerts/Alert';
 import PasswordAlert from '../alerts/PasswordAlert';
-import * as auth from '../../nonUI/authMe';
+import * as getUsername from '../../nonUI/getUsername';
 import socket from '../../nonUI/socketIO';
 import boardStyle from '../../css/board.module.css';
 
@@ -21,11 +21,10 @@ class Board extends Component {
     }
 
     async handleJoiningBoard() {
-        const usernameResponse = await auth.getUsername();
-
-        if (usernameResponse.status === 200) {
-            const usernameResponseJSON = await usernameResponse.json();
-            this.username = usernameResponseJSON.username;
+        const response = await getUsername.getUsername();
+        if (response.status === 200) {
+            const responseJSON = await response.json();
+            this.username = responseJSON.username;
             this.checkPermissions();
         }
         else
@@ -111,7 +110,7 @@ class Board extends Component {
                 </div>
                 {
                     this.state.showPasswordAlert &&
-                    <PasswordAlert error={this.state.passwordError} checkPassword={this.checkPassword} cancel={() => this.setState({error: '', showPasswordAlert: false})}/>
+                    <PasswordAlert error={this.state.passwordError} checkPassword={this.checkPassword} cancel={() => this.setState({passwordError: '', showPasswordAlert: false})}/>
                 }
                 {
                     this.state.alertMessage &&

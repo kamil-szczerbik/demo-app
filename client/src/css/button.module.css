@@ -12,6 +12,10 @@
     background-color: #36b03c;
     border: none;
     border-radius: 5px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
     .affirmative:hover:enabled {
@@ -35,6 +39,10 @@
     background-color: #ac3020;
     border: none;
     border-radius: 5px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
     .dismissive:hover:enabled {

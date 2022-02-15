@@ -4,4 +4,5 @@ client/README.md
 /node_modules
 /docker
 /.vs
+message.txt
 README.md

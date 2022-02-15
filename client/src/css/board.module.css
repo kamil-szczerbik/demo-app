@@ -19,6 +19,10 @@
     text-align: center;
     border-radius: 10px;
     cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .newBoard:hover {
@@ -36,6 +40,10 @@
     text-align: center;
     border-radius: 10px;
     cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .board:hover {

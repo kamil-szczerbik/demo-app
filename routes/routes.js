@@ -2,15 +2,17 @@ const express = require('express');
 const router = express.Router();
 const path = require('path');
 const RLLController = require('../controllers/pageControllers/RLLController');
-const board = require('../controllers/boardsController');
 const authenticationController = require('../controllers/pageControllers/authenticationController');
+const usernameController = require('../controllers/pageControllers/usernameController');
+const board = require('../controllers/boardsController');
 
 router.post('/api/register', RLLController.validate('register'), RLLController.register);
 router.post('/api/login', RLLController.validate('login'), RLLController.login);
 router.get('/api/logout', RLLController.logout);
 
 router.get('/api/authenticate', authenticationController.authenticateUser);
-router.get('/api/getUsername', authenticationController.getUsername);
+
+router.get('/api/getUsername', usernameController.getUsername);
 
 router.post('/api/newBoard', board.createBoard);
 router.get('/api/boardsList', board.giveBoardsList);

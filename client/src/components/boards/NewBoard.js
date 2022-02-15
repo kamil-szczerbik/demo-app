@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
+import Cookies from 'js-cookie';
 import Alert from '../alerts/Alert';
-import * as authentication from '../../nonUI/authMe';
+import * as authentication from '../../nonUI/authenticateUser';
 import socket from '../../nonUI/socketIO';
 import boardStyle from '../../css/board.module.css';
 
@@ -15,26 +16,25 @@ class NewBoard extends Component {
     }
 
     async handleCreatingBoard() {
-        const authenticationResponse = await authentication.authMe(); // ← zmienić authMe na authenticateUser (wszędzie trzeba)
+        const response = await authentication.authenticateUser();
+        const username = Cookies.get('username');
 
-        if (authenticationResponse.status === 200)
-            this.tryCreateBoard(authenticationResponse);
+        if (response.status === 200 && username)
+            this.tryCreateBoard(username);
         else
             this.showAlert('Aby utworzyć stół, musisz być zalogowany.');
     }
 
-    async tryCreateBoard(authenticationResponse) {
-        const authenticationResponseJSON = await authenticationResponse.json();
-
+    async tryCreateBoard(username) {
         try {
-            this.createBoard(authenticationResponseJSON);
+            this.createBoard(username);
         }
         catch (err) {
             console.log('Coś poszło nie tak: ' + err);
         }
     }
 
-    async createBoard(authenticationResponseJSON) {
+    async createBoard(username) {
         const newBoardResponse = await fetch('/api/newBoard', {
         method: 'POST',
         headers: {
@@ -43,7 +43,7 @@ class NewBoard extends Component {
         },
         body: JSON.stringify({
             game: 'dices', //póki co z tego nie korzystam, bo mam jedną grę
-            leader: authenticationResponseJSON.username
+            leader: username
         })
         });
 

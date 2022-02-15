@@ -40,7 +40,7 @@ class GameType extends Component {
                         <>
                             Hasło:
                             <br />
-                            <b>{this.props.password}</b>
+                            <b className={configStyle.password}>{this.props.password}</b>
                         </>
                         }
                     </p>

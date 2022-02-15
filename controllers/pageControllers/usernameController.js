@@ -1,12 +1,13 @@
+const { nanoid } = require('nanoid');
 const jwt = require('jsonwebtoken');
 
-function authenticateUser(req, res) {
+function getUsername(req, res) {
     const token = req.cookies.session;
-
     if (!token)
-        res.status(401).send('U¿ytkownik nieuwierzytelniony');
-    else 
+        generateAndSendUsername(res);
+    else
         tryDecodeToken(token, res);
+
 }
 
 function tryDecodeToken(token, res) {
@@ -20,10 +21,14 @@ function tryDecodeToken(token, res) {
 
 function decodeToken(token, res) {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    res.cookie('username', decoded.username, { secure: true /*samesite*/ })
-       .sendStatus(200);
+    res.status(200).send({ username: decoded.username });
+}
+
+function generateAndSendUsername(res) {
+    tempUsername = 'rnd' + nanoid(6);
+    res.status(200).send({ username: tempUsername });
 }
 
 module.exports = {
-    authenticateUser
+    getUsername
 };

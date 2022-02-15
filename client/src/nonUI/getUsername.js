@@ -1,6 +1,6 @@
-export async function logoutMe() {
+export async function getUsername() {
     try {
-        const response = await fetch('/api/logout', {
+        const response = await fetch('/api/getUsername', {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',

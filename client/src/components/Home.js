@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import TopBar from './TopBar';
+import Header from './Header';
 import GamesList from './GameList';
 import Footer from './Footer';
 
@@ -7,7 +7,7 @@ class Home extends Component {
     render() {
         return (
             <>
-                <TopBar />
+                <Header username={this.props.username}/>
                 <GamesList />
                 <Footer />
             </>

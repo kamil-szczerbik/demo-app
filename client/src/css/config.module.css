@@ -46,18 +46,30 @@
     padding-left: 10px;
     float: left;
     line-height: 60px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .avatar {
     float: right;
     width: 56px;
     height: 56px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .getUp {
     margin-left: 5px;
     margin-top: 5px;
     cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .time {
@@ -65,6 +77,10 @@
     margin-top: 10px;
     margin-bottom: 0;
     font-size: 20px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .innerSettings hr {
@@ -81,11 +97,15 @@
     min-height:52px;
 }
 
-.divColumn p {
-    margin-bottom: 0;
-    margin-top: 10px;
-    text-align:center;
-}
+    .divColumn p {
+        margin-bottom: 0;
+        margin-top: 10px;
+        text-align: center;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
 
 .optionsPlayers {
     margin-top: 10px;
@@ -114,6 +134,10 @@
 .tabs {
     margin-top: 10px;
     text-align: center;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .tabs div {
@@ -125,6 +149,13 @@
     border-right: solid 1px;
     margin-right: 5px;
     padding-right: 5px;
+}
+
+.password {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
 }
 
 .testInfo {

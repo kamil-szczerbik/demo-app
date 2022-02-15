@@ -11,7 +11,7 @@ class LoginForm extends Component {
                 username: '',
                 password: ''
             },
-            userRemembered: false            
+            rememberUser: false            
         };
 
         this.newErrors = {
@@ -39,7 +39,12 @@ class LoginForm extends Component {
     handleForm() {
         this.newErrors.username = this.checkUsername();
         this.newErrors.password = this.checkPassword();
-        this.checkErrors();
+        const isError = this.checkErrors();
+
+        if (isError)
+            this.showErrors();
+        else
+            this.tryLogin();
     }
 
     checkUsername() {
@@ -57,32 +62,27 @@ class LoginForm extends Component {
     }
 
     checkErrors() {
-        let isError = false;
-
         if (this.newErrors.username !== '' || this.newErrors.password !== '')
-            isError = true;
-
-        if (isError)
-            this.showErrors();
+            return true;
         else
-            this.tryValidateFormOnServer();
+            return false;
     }
 
     showErrors() {
         this.setState({ errors: this.newErrors });
     }
 
-    tryValidateFormOnServer() {
+    tryLogin() {
         try {
-            this.validateFormOnServer()
+            this.login()
         }
         catch (err) {
             console.log('Coś poszło nie tak: ' + err);
         }
     }
 
-    async validateFormOnServer() {
-        const formValidationResponse = await fetch('/api/login', {
+    async login() {
+        const loginResponse = await fetch('/api/login', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -91,23 +91,24 @@ class LoginForm extends Component {
             body: JSON.stringify({
                 username: this.state.username,
                 password: this.state.password,
+                rememberUser: this.state.rememberUser
             })
         });
 
-        if (formValidationResponse.status === 200)
-            this.props.loginUser(this.state.userRemembered);
+        if (loginResponse.status === 200)
+            this.props.showUserHeader(this.state.username);
         else
-            this.loadErrorsReceivedFromServer(formValidationResponse);
+            this.loadServerErrors(loginResponse);
     }
 
-    async loadErrorsReceivedFromServer(formValidationResponse) {
-        const formValidationResponseJSON = await formValidationResponse.json();
+    async loadServerErrors(loginResponse) {
+        const loginResponseJSON = await loginResponse.json();
 
         for (let i in this.newErrors)
             this.newErrors[i] = '';
 
-        for (let i in formValidationResponseJSON.errors)
-            this.newErrors[i] = formValidationResponseJSON.errors[i].msg;
+        for (let i in loginResponseJSON.errors)
+            this.newErrors[i] = loginResponseJSON.errors[i].msg;
 
         this.showErrors();
     }
@@ -143,12 +144,12 @@ class LoginForm extends Component {
                         <input
                             className={formStyle.checkbox}
                             type='checkbox'
-                            id='userRemembered'
-                            name='userRemembered'
-                            value={this.state.rememberMe}
+                            id='rememberUser'
+                            name='rememberUser'
+                            value={this.state.rememberUser}
                             onChange={this.handleCheckbox}
                         />
-                        <label htmlFor='userRemembered' className={formStyle.checkboxLabel}>Zapamiętaj mnie</label>
+                        <label htmlFor='rememberUser' className={formStyle.checkboxLabel}>Zapamiętaj mnie</label>
 
                         <input className={formStyle.submit} type="button" value="Zaloguj"  onClick={this.handleForm} />
                         <input className={formStyle.cancel} type="button" value="Anuluj"   onClick={() => this.props.hideForm('')} />

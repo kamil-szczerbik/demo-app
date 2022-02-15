@@ -11,6 +11,10 @@
     float: left;
     font-size: 20px;
     width: 350px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .table {

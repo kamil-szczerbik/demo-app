@@ -153,20 +153,33 @@ function tryLoginUser(req, res) {
 }
 
 function loginUser(req, res) {
-    let un = req.body.username;
-    //TOKEN
-    const payload = { un };
+    const payload = {
+        username: req.body.username,
+    };
     const token = jwt.sign(payload, process.env.JWT_SECRET, {
-        expiresIn: '7 days' //to nie jest ważność ciasteczka!
-
+        algorithm: "HS256",
+        expiresIn: '7d' //token ważny 7 dni
     });
 
-    res.cookie('token', token, { httpOnly: true, maxAge: 604800000 }).sendStatus(200);
+    if (req.body.rememberUser) //ciasteczko ważne rok (ms)
+    {
+        res.cookie('session', token, { maxAge: 31536000000, httpOnly: true, secure: true /*sameSite*/ })
+            .cookie('username', req.body.username)
+            .sendStatus(200);
+    }
+    else //ciasteczko ważne tylko do zamknięcia przeglądarki
+    {
+        res.cookie('session', token, { httpOnly: true, secure: true /*sameSite*/ })
+           .cookie('username', req.body.username)
+           .sendStatus(200);
+    }
+        
 }
 
 function logout(req, res) {
-    res.cookie('token', 'deleted');
-    res.sendStatus(200);
+    res.clearCookie('session', { httpOnly: true, secure: true /*sameSite*/ })
+       .clearCookie('username', { secure: true /*sameSite*/ })
+       .sendStatus(200);
 }
 
 module.exports = {

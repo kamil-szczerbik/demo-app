@@ -8,7 +8,7 @@ class Timer extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            remainedTime: '05:00',
+            remainedTime: '20:00',
             alertMessage: ''
         }
     }
