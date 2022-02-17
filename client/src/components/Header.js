@@ -65,7 +65,7 @@ class Header extends Component {
 
     render() {
         return (
-            <div className={globalStyle.container}>          
+            <div className={globalStyle.header}>          
                     <h1 className={globalStyle.siteName}>Nazwa</h1>
                     {
                         this.state.username

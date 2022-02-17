@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
+import Header from '../Header';
 import NewBoard from './NewBoard';
 import Board from './Board';
+import Footer from '../Footer';
 import Alert from '../alerts/Alert';
 import boardStyle from '../../css/board.module.css';
 import socket from '../../nonUI/socketIO';
@@ -90,16 +92,16 @@ class BoardsList extends Component {
     render() {
         return (
             <>
-                <div className={boardStyle.boardContainer}>
+                <Header />
+                <div className={boardStyle.container}>
                     <NewBoard />
-                {
-                    this.state.boardsList
-                }
+                    {this.state.boardsList}
                 </div>
                 {
                     this.state.alertMessage &&
                     <Alert text={this.state.alertMessage} cancel={() => this.setState({ alertMessage: '' })} />
                 }
+                <Footer />
             </>
         );
     }

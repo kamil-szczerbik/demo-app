@@ -103,10 +103,28 @@ class Board extends Component {
     render() {
         return (
             <>
-                <div className={boardStyle.board} onClick={this.handleJoiningBoard}>
-                    <h1>{this.props.id}</h1>
-                    <img src={`/placeholders/${this.props.type === 'public' ? 'unlock' : 'lock'}.png`} alt='ikona kłódki' />
-                    <h1>{this.props.leader}</h1>
+                <div className={boardStyle.boardContainer}>
+
+                    <div className={boardStyle.info}>
+                        <h1>Stół #{this.props.id} - {this.props.leader}</h1>
+                    </div>
+
+                    {
+                        this.props.type === 'public'
+                            ?
+                            <div className={boardStyle.unlock}>
+                                <img src={'/placeholders/unlock.svg'} alt='ikona kłódki' />
+                            </div>
+                            :
+                            <div className={boardStyle.lock}>
+                                <img src={'/placeholders/lock.svg'} alt='ikona kłódki' />
+                            </div>
+                    }
+
+                    <div className={boardStyle.enter} onClick={this.handleJoiningBoard}>
+                        <img src={'/placeholders/enter.svg'} alt='symbol wejścia do gry' />
+                    </div>
+
                 </div>
                 {
                     this.state.showPasswordAlert &&

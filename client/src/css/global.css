@@ -1,10 +1,12 @@
-﻿#root {
-    max-width: 1200px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 20px;
-}
-
-body, button {
+﻿body, button {
+    position: relative; /*dzięki temu stopka jest na swoim miejscu*/
+    min-height: 100vh; /*dzięki temu stopka jest zawsze na dole*/
+    margin: 0;
     font-family: 'Lato', sans-serif;
 }
+
+/* 
+    więcej o stopce - bo oprócz tego wyżej, musi być w stylach ostatniego elementu, który
+    wyjeżdża poza stronę, padding bottom = footer height + to co chcemy dodatkowo
+    https://www.freecodecamp.org/news/how-to-keep-your-footer-where-it-belongs-59c6aa05c59c/
+*/

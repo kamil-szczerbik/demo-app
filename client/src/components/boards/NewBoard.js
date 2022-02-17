@@ -13,6 +13,7 @@ class NewBoard extends Component {
             alertMessage: ''
         };
         this.handleCreatingBoard = this.handleCreatingBoard.bind(this);
+        this.redirectHome = this.redirectHome.bind(this);
     }
 
     async handleCreatingBoard() {
@@ -57,7 +58,7 @@ class NewBoard extends Component {
         const newBoardResponseJSON = await newBoardResponse.json();
 
         this.emitSockets(newBoardResponseJSON);
-        this.redirectUser(newBoardResponseJSON);
+        this.redirectNewBoard(newBoardResponseJSON);
     }
 
     emitSockets(newBoardResponseJSON) {
@@ -65,13 +66,19 @@ class NewBoard extends Component {
         socket.emit('updateBoardsList');
     }
 
-    redirectUser(newBoardResponseJSON) {
+    redirectNewBoard(newBoardResponseJSON) {
         this.props.history.push({
             pathname: 'kosci/s/' + newBoardResponseJSON.id,
             state: {
                 boardId: newBoardResponseJSON.id,
                 username: newBoardResponseJSON.leader
             }
+        });
+    }
+
+    redirectHome() {
+        this.props.history.push({
+            pathname: '/'
         });
     }
 
@@ -82,8 +89,13 @@ class NewBoard extends Component {
     render() {
         return (
             <>
-                <div className={boardStyle.newBoard}>
-                    <h1 className={boardStyle.title} onClick={this.handleCreatingBoard}>Załóż nowy stół</h1>
+                <div className={boardStyle.newBoardContainer}>
+                    <div className={boardStyle.back} onClick={this.redirectHome}>
+                        <img src={'/placeholders/back.svg'} alt='symbol powrotu na stronę główną'/>
+                    </div>
+                    <div className={boardStyle.newBoard}>
+                        <h1 onClick={this.handleCreatingBoard}>Załóż nowy stół</h1>
+                    </div>
                 </div>
                 {
                     this.state.alertMessage &&

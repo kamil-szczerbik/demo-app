@@ -5,28 +5,34 @@ class RegisterForm extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            email: '',
             username: '',
+            email: '',
             password: '',
             passwordConfirmation: '',
 
             errors: {
-                email: '',
                 username: '',
+                email: '',
                 password: '',
                 passwordConfirmation: ''
             }
         };
 
         this.newErrors = {
-            email: '',
             username: '',
+            email: '',
             password: '',
             passwordConfirmation: ''
         }
 
+        this.usernameInput = React.createRef();
+
         this.handleInput = this.handleInput.bind(this);
         this.handleForm = this.handleForm.bind(this);
+    }
+
+    componentDidMount() {
+        this.usernameInput.current.focus();
     }
 
     handleInput(e) {
@@ -35,12 +41,23 @@ class RegisterForm extends Component {
         this.setState(newState);
     }
 
-    async handleForm() {
-        this.newErrors.email = this.checkEmail();
+    async handleForm(e) {
+        e.preventDefault();
+
         this.newErrors.username = this.checkUsername();
+        this.newErrors.email = this.checkEmail();
         this.newErrors.password = this.checkPassword();
         this.newErrors.passwordConfirmation = this.checkPasswordConfirmation();
         this.checkErrors();
+    }
+
+    checkUsername() {
+        if (this.state.username === '')
+            return 'Nie podano nazwy użytkownika';
+        else if (this.state.username.length < 4 || this.state.username.length > 14)
+            return 'Nazwa użytkownika musi mieć od 4 do 14 znaków';
+        else
+            return '';
     }
 
     //Dokładniejsza walidacja emaila na serwerze.
@@ -50,15 +67,6 @@ class RegisterForm extends Component {
             return 'Nie podano adresu email';
         else if (this.state.email.indexOf('@') < 1 || this.state.email.indexOf('.') < 1)
             return 'To nie jest adres email';
-        else
-            return '';
-    }
-
-    checkUsername() {
-        if (this.state.username === '')
-            return 'Nie podano nazwy użytkownika';
-        else if (this.state.username.length < 4 || this.state.username.length > 14)
-            return 'Nazwa użytkownika musi mieć od 4 do 14 znaków';
         else
             return '';
     }
@@ -117,8 +125,8 @@ class RegisterForm extends Component {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                email: this.state.email,
                 username: this.state.username,
+                email: this.state.email,
                 password: this.state.password,
                 passwordConfirmation: this.state.passwordConfirmation
             })
@@ -146,55 +154,54 @@ class RegisterForm extends Component {
         return (
             <div className={formStyle.divFixed}>
                 <div className={formStyle.divForm}>
-                                <form className={formStyle.form}>
-                            <label htmlFor="email">E-mail:</label><br />
-                            <input
-                                className={formStyle.input}
-                                type="text"
-                                id="email"
-                                name="email"
-                                value={this.state.email}
-                                onChange={this.handleInput}
-                            />
-                            <span className={formStyle.error}>{this.state.errors.email}</span>
+                    <form className={formStyle.form} onSubmit={this.handleForm}>
+                        <label htmlFor="username">Nazwa użytkownika:</label><br />
+                        <input
+                            className={formStyle.input}
+                            type="text"
+                            id="username"
+                            name="username"
+                            value={this.state.username}
+                            ref={this.usernameInput}
+                            onChange={this.handleInput}
+                        />
+                        <span className={formStyle.error}>{this.state.errors.username}</span>
 
-                            <label htmlFor="username">Nazwa użytkownika:</label><br />
-                            <input
-                                className={formStyle.input}
-                                type="text"
-                                id="username"
-                                name="username"
-                                value={this.state.username}
-                                onChange={this.handleInput}
-                            />
-                            <span className={formStyle.error}>{this.state.errors.username}</span>
+                        <label htmlFor="email">E-mail:</label><br />
+                        <input
+                            className={formStyle.input}
+                            type="text"
+                            id="email"
+                            name="email"
+                            value={this.state.email}
+                            onChange={this.handleInput}
+                        />
+                        <span className={formStyle.error}>{this.state.errors.email}</span>
 
+                        <label htmlFor="password">Hasło:</label><br />
+                        <input
+                            className={formStyle.input}
+                            type="password"
+                            id="password"
+                            name="password"
+                            value={this.state.password}
+                            onChange={this.handleInput}
+                        />
+                        <span className={formStyle.error}>{this.state.errors.password}</span>
 
-                            <label htmlFor="password">Hasło:</label><br />
-                            <input
-                                className={formStyle.input}
-                                type="password"
-                                id="password"
-                                name="password"
-                                value={this.state.password}
-                                onChange={this.handleInput}
-                            />
-                            <span className={formStyle.error}>{this.state.errors.password}</span>
+                        <label htmlFor="passwordConfirmation">Powtórz hasło:</label><br />
+                        <input
+                            className={formStyle.input}
+                            type="password"
+                            id="passwordConfirmation"
+                            name="passwordConfirmation"
+                            value={this.state.passwordConfirmation}
+                            onChange={this.handleInput}
+                        />
+                        <span className={formStyle.error}>{this.state.errors.passwordConfirmation}</span>
 
-
-                            <label htmlFor="passwordConfirmation">Powtórz hasło:</label><br />
-                            <input
-                                className={formStyle.input}
-                                type="password"
-                                id="passwordConfirmation"
-                                name="passwordConfirmation"
-                                value={this.state.passwordConfirmation}
-                                onChange={this.handleInput}
-                            />
-                            <span className={formStyle.error}>{this.state.errors.passwordConfirmation}</span>
-
-                            <input className={formStyle.submit} type="button" value="Zarejestruj" onClick={this.handleForm} />
-                            <input className={formStyle.cancel} type="button" value="Anuluj" onClick={() => this.props.hideForm('')} />
+                        <input className={formStyle.submit} type="submit" value="Zarejestruj" />
+                        <input className={formStyle.cancel} type="button" value="Anuluj" onClick={() => this.props.hideForm('')} />
                     </form>
                 </div>
             </div>

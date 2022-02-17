@@ -19,9 +19,15 @@ class LoginForm extends Component {
             password: '',
         }
 
+        this.usernameInput = React.createRef();
+
         this.handleInput = this.handleInput.bind(this);
         this.handleCheckbox = this.handleCheckbox.bind(this);
         this.handleForm = this.handleForm.bind(this);
+    }
+
+    componentDidMount() {
+        this.usernameInput.current.focus();
     }
 
     handleInput(e) {
@@ -36,7 +42,8 @@ class LoginForm extends Component {
         this.setState(newState);
     }
 
-    handleForm() {
+    handleForm(e) {
+        e.preventDefault();
         this.newErrors.username = this.checkUsername();
         this.newErrors.password = this.checkPassword();
         const isError = this.checkErrors();
@@ -117,7 +124,9 @@ class LoginForm extends Component {
         return (
             <div className={formStyle.divFixed}>
                 <div className={formStyle.divForm}>
-                    <form className={formStyle.form}>
+                    <form
+                        className={formStyle.form}
+                        onSubmit={this.handleForm}>
 
                         <label htmlFor="username">Nazwa użytkownika:</label><br />
                         <input
@@ -126,6 +135,7 @@ class LoginForm extends Component {
                             id="username"
                             name="username"
                             value={this.state.username}
+                            ref={this.usernameInput}
                             onChange={this.handleInput}
                         />
                         <span className={formStyle.error}>{this.state.errors.username}</span>
@@ -151,7 +161,7 @@ class LoginForm extends Component {
                         />
                         <label htmlFor='rememberUser' className={formStyle.checkboxLabel}>Zapamiętaj mnie</label>
 
-                        <input className={formStyle.submit} type="button" value="Zaloguj"  onClick={this.handleForm} />
+                        <input className={formStyle.submit} type="submit" value="Zaloguj" />
                         <input className={formStyle.cancel} type="button" value="Anuluj"   onClick={() => this.props.hideForm('')} />
                     </form>
                 </div>

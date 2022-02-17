@@ -41,8 +41,8 @@ class App extends Component {
                         {/*<Route path="*" component={NotFound} albo 404*/}
                     </Switch>
 
-                    <Link to="/">Strona Główna</Link>
-                    <Link to="/kosci">Stoły</Link>
+                    {/*<Link to="/">Strona Główna</Link>
+                    <Link to="/kosci">Stoły</Link>*/}
                 </div>
             </Router>
         );

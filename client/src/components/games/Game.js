@@ -5,6 +5,7 @@ import Config from './Config';
 import Alert from '../alerts/Alert';
 import DoubleButtonAlert from '../alerts/DoubleButtonAlert';
 import socket from '../../nonUI/socketIO';
+import gameStyle from '../../css/game.module.css';
 
 class Game extends Component {
     constructor(props) {
@@ -357,7 +358,7 @@ class Game extends Component {
 
     render() {
         return (
-            <div>
+            <div className={gameStyle.container} >
                 <Table
                     mySeat={this.state.mySeat}
                     proposedValues={this.state.proposedValues}
