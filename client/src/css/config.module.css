@@ -1,5 +1,4 @@
 .divSettings {
-    float: left;
     width: 350px;
     height: 688px;
     background-color: #c9c9c9;
@@ -162,4 +161,8 @@
     overflow: hidden;
     font-size: 10px;
     margin-top: 20px;
+}
+
+.tempButtons {
+    min-height: initial;
 }

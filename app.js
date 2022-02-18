@@ -271,7 +271,7 @@ io.on('connection', (socket) => {
         if (!endTurnData.winnerMessage)
             io.in(room).emit('getNewRollData', endTurnData);
         else if (endTurnData.dices) {
-            timer = 300;
+            timer = 12000;
             io.in(room).emit('endRound', endTurnData);
         }
         else {

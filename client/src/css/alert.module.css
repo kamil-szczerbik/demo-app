@@ -10,19 +10,27 @@
     z-index: 2;
 }
 
+.container {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .divAlert {
-    position: fixed;
-    top: 40%;
-    left: 50%;
-    transform: translate(-50%,-50%);
-    -ms-transform: translate(-50%,-50%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     background-color: white;
     -webkit-box-shadow: 10px 10px 13px 0px rgba(71,71,71,1);
     -moz-box-shadow: 10px 10px 13px 0px rgba(71,71,71,1);
     box-shadow: 10px 10px 13px 0px rgba(71,71,71,1);
-    text-align: initial;
-    line-height: initial;
-    /*Pasowałoby jakoś komponent alert wyświetlać z poziomu top komponentu, bo on mi dziedziczy style i jest problem*/
+    margin-bottom: 200px;
 }
 
 /*^^^^ ABSOLUTNIE DO POPRAWKI!!!*/
@@ -31,18 +39,15 @@
     color: black;
     font-size: 20px;
     text-align: center;
-    padding-left: 20px;
-    padding-right: 20px;
-    max-width: 400px;
+    max-width: 200px;
+    margin: 0;
+    padding: 10px;
 }
 
 .button {
     height: 40px;
     width: 100px;
-    position: relative;
-    left: 50%;
-    -ms-transform: translate(-50%);
-    transform: translate(-50%);
+    min-height: initial;
     margin-top: 10px;
     margin-bottom: 10px;
     font-size: 16px;
@@ -64,7 +69,7 @@
 .button1 {
     height: 40px;
     width: 100px;
-    position: relative;
+    min-height: initial;
     margin: 10px;
     font-size: 16px;
     color: white;
@@ -81,7 +86,7 @@
 .button2 {
     height: 40px;
     width: 100px;
-    position: relative;
+    min-height: initial;
     margin: 10px;
     font-size: 16px;
     color: white;

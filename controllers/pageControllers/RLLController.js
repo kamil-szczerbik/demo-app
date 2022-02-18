@@ -156,7 +156,7 @@ function loginUser(req, res) {
     const payload = {
         username: req.body.username,
     };
-    const secret = 'secret';
+    /*const secret = 'secret';*/
     const token = jwt.sign(payload, /*secret,*/ process.env.JWT_SECRET, {
         algorithm: "HS256",
         expiresIn: '7d' //token ważny 7 dni

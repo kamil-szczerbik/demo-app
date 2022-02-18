@@ -1,8 +1,10 @@
+.buttonsContainer {
+    display: flex;
+    justify-content: space-evenly;
+}
+
 .affirmative {
-    position: relative;
-    left: 50%;
-    -ms-transform: translate(-50%);
-    transform: translate(-50%);
+    min-height: initial;
     margin-top: 10px;
     margin-bottom: 10px;
     height: 40px;
@@ -29,6 +31,7 @@
     }
 
 .dismissive {
+    min-height: initial;
     margin-top: 10px;
     margin-bottom: 10px;
     margin-left: 25px;
