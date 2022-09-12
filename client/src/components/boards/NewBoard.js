@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import Alert from '../alerts/Alert';
+import BackButton from '../buttons/BackButton';
 import * as authentication from '../../nonUI/authenticateUser';
 import socket from '../../nonUI/socketIO';
 import boardStyle from '../../css/board.module.css';
@@ -13,7 +14,6 @@ class NewBoard extends Component {
             alertMessage: ''
         };
         this.handleCreatingBoard = this.handleCreatingBoard.bind(this);
-        this.redirectHome = this.redirectHome.bind(this);
     }
 
     async handleCreatingBoard() {
@@ -76,12 +76,6 @@ class NewBoard extends Component {
         });
     }
 
-    redirectHome() {
-        this.props.history.push({
-            pathname: '/'
-        });
-    }
-
     showAlert(message) {
         this.setState({ alertMessage: message });
     }
@@ -90,9 +84,7 @@ class NewBoard extends Component {
         return (
             <>
                 <div className={boardStyle.newBoardContainer}>
-                    <div className={boardStyle.back} onClick={this.redirectHome}>
-                        <img src={'/placeholders/back.svg'} alt='symbol powrotu na stronę główną'/>
-                    </div>
+                    <BackButton />
                     <div className={boardStyle.newBoard}>
                         <h1 onClick={this.handleCreatingBoard}>Załóż nowy stół</h1>
                     </div>

@@ -14,9 +14,7 @@ class GameOptions extends Component {
     }
 
     redirectBoardsList() {
-        this.props.history.push({
-            pathname: '/kosci'
-        });
+        this.props.history.goBack();
     }
 
     render() {

@@ -7,19 +7,12 @@ class LoginForm extends Component {
         this.state = {
             username: '',
             password: '',
-            errors: {
-                username: '',
-                password: ''
-            },
-            rememberUser: false            
+            rememberUser: false,
+            errors: {}        
         };
 
-        this.newErrors = {
-            username: '',
-            password: '',
-        }
-
-        this.usernameInput = React.createRef();
+        this.newErrors = {};
+        this.usernameInput = React.createRef(); //focus na username
 
         this.handleInput = this.handleInput.bind(this);
         this.handleCheckbox = this.handleCheckbox.bind(this);
@@ -44,6 +37,7 @@ class LoginForm extends Component {
 
     handleForm(e) {
         e.preventDefault();
+
         this.newErrors.username = this.checkUsername();
         this.newErrors.password = this.checkPassword();
         const isError = this.checkErrors();
@@ -55,24 +49,24 @@ class LoginForm extends Component {
     }
 
     checkUsername() {
-        if (this.state.username === '')
+        if (!this.state.username)
             return 'Nie podano nazwy użytkownika';
 
         return '';
     }
 
     checkPassword() {
-        if (this.state.password === '')
+        if (!this.state.password)
             return 'Nie podano hasła';
 
         return '';
     }
 
     checkErrors() {
-        if (this.newErrors.username !== '' || this.newErrors.password !== '')
+        if (this.newErrors.username || this.newErrors.password)
             return true;
-        else
-            return false;
+
+        return false;
     }
 
     showErrors() {
@@ -89,7 +83,7 @@ class LoginForm extends Component {
     }
 
     async login() {
-        const loginResponse = await fetch('/api/login', {
+        const response = await fetch('/api/login', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -102,20 +96,17 @@ class LoginForm extends Component {
             })
         });
 
-        if (loginResponse.status === 200)
+        if (response.status === 200)
             this.props.showUserHeader(this.state.username);
         else
-            this.loadServerErrors(loginResponse);
+            this.handleServerErrors(response);
     }
 
-    async loadServerErrors(loginResponse) {
-        const loginResponseJSON = await loginResponse.json();
+    async handleServerErrors(response) {
+        const responseJSON = await response.json();
 
-        for (let i in this.newErrors)
-            this.newErrors[i] = '';
-
-        for (let i in loginResponseJSON.errors)
-            this.newErrors[i] = loginResponseJSON.errors[i].msg;
+        for (let i in responseJSON.errors)
+            this.newErrors[i] = responseJSON.errors[i].msg;
 
         this.showErrors();
     }

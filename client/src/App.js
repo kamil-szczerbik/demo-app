@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, /*Link,*/ Switch } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import Home from './components/Home';
 import Game from './components/games/Game';
 import BoardsList from './components/boards/BoardsList';
+import Profile from './components/profile/Profile';
 import * as authentication from './nonUI/authenticateUser';
 import './css/global.css';
 
@@ -38,6 +39,7 @@ class App extends Component {
                         </Route>
                         <Route path="/kosci/s" component={Game} />
                         <Route path="/kosci" component={BoardsList} />
+                        <Route path='/profil' component={Profile} />
                         {/*<Route path="*" component={NotFound} albo 404*/}
                     </Switch>
 

@@ -13,7 +13,7 @@ class Board extends Component {
             passwordError: '',
             alertMessage: '',
             showPasswordAlert: false
-        }
+        };
         this.username = '';
 
         this.handleJoiningBoard = this.handleJoiningBoard.bind(this);

@@ -1,0 +1,181 @@
+.userHeader {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 30px;
+    min-width: 540px; /*przewijalne*/
+    /*
+    100px back button
+    100px avatar
+    300px username box
+    20px gap
+    20px (po 10px na ka¿d¹ stronê) extra, ¿eby nie styka³o siê z krawêdzi¹ ekranu
+    */
+    /*flex-wrap: wrap;*/ /*divy wpadaj¹ jeden pod drugi*/
+}
+
+.avatarContainer {
+    width: 100px;
+    height: 100px;
+    border-radius: 15px;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+    .avatarContainer img {
+        position: absolute;
+        border-radius: 15px;
+        transition: all 0.5s ease;
+    }
+
+    .avatarContainer img:hover {
+        opacity: 0;
+    }
+
+    .avatarContainer div {
+        width: 100px;
+        height: 100px;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: rgb(216, 216, 216, 0.7);
+        border-radius: 15px;
+        opacity: 0;
+        transition: all 0.5s ease;
+    }
+
+    .avatarContainer div:hover {
+        opacity: 1;
+    }
+
+    .avatarContainer span {
+        font-size: 24px;
+    }
+
+.usernameBox {
+    width: 300px;
+    height: 100px;
+    background-color: #68E4fd;
+    border-radius: 15px;
+    text-align: center;
+    cursor: default;
+    /*    
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    */
+}
+
+    .usernameBox h1 {
+        margin: 0;
+        line-height: 100px; 
+    }
+
+.infoContainer {
+    width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
+    display: flex;
+    border-radius: 15px;
+    background-color: rgba(104, 228, 253, 0.3);
+}
+
+.infoLeftSide {
+    margin-left: 1em;
+    margin-right: 54px;
+    width: 150px;
+}
+
+    /*default <p> tag values*/
+    .infoLeftSide label {
+        display: block;
+        margin-top: 1em;
+        margin-bottom: 2.2em; /*pi razy drzwi na razie*/
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+/*nie wiem jak to dzia³a*/
+.infoRightSide p:empty:before {
+    content: ' ';
+    white-space: pre;
+}
+
+.userDataForm {
+
+}
+
+    .userDataForm input,
+    .userDataForm select {
+        display: block;
+        margin-top: 1em;
+        margin-bottom: 1em;
+        margin-left: 0;
+        margin-right: 0;
+
+        padding: 0;
+        border: 0;
+        font-size: 16px;
+
+        width: 200px;
+    }
+
+    .userDataForm textarea {
+        display: block;
+        margin-top: 1em;
+        margin-bottom: 1em;
+        margin-left: 0;
+        margin-right: 0;
+        padding: 0;
+        border: 0;
+        font-size: 16px;
+        height: 55px;
+        width: 200px;
+        min-width: 200px;
+        max-width: 284px;
+    }
+
+.error {
+    display: block;
+    width: 284px;
+    min-height: 5px;
+    font-size: 12px;
+    color: red;
+}
+
+.userFooter {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+    padding-bottom: 70px;
+    min-width: 540px; /*przewijalne*/
+}
+
+.dataChangeButton {
+    width: 300px;
+    height: 100px;
+    background-color: #fcb203;
+    border-radius: 15px;
+    text-align: center;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+    .dataChangeButton:hover {
+        background-color: #fec20b;
+    }
+
+    .dataChangeButton h1 {
+        margin: 0;
+        line-height: 100px;
+    }

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import * as validation from '../../nonUI/validation';
 import formStyle from '../../css/form.module.css';
 
 class RegisterForm extends Component {
@@ -9,23 +10,11 @@ class RegisterForm extends Component {
             email: '',
             password: '',
             passwordConfirmation: '',
-
-            errors: {
-                username: '',
-                email: '',
-                password: '',
-                passwordConfirmation: ''
-            }
+            errors: {}
         };
 
-        this.newErrors = {
-            username: '',
-            email: '',
-            password: '',
-            passwordConfirmation: ''
-        }
-
-        this.usernameInput = React.createRef();
+        this.newErrors = {};
+        this.usernameInput = React.createRef(); //focus na username
 
         this.handleInput = this.handleInput.bind(this);
         this.handleForm = this.handleForm.bind(this);
@@ -41,67 +30,27 @@ class RegisterForm extends Component {
         this.setState(newState);
     }
 
-    async handleForm(e) {
+    handleForm(e) {
         e.preventDefault();
 
-        this.newErrors.username = this.checkUsername();
-        this.newErrors.email = this.checkEmail();
-        this.newErrors.password = this.checkPassword();
-        this.newErrors.passwordConfirmation = this.checkPasswordConfirmation();
-        this.checkErrors();
-    }
-
-    checkUsername() {
-        if (this.state.username === '')
-            return 'Nie podano nazwy użytkownika';
-        else if (this.state.username.length < 4 || this.state.username.length > 14)
-            return 'Nazwa użytkownika musi mieć od 4 do 14 znaków';
-        else
-            return '';
-    }
-
-    //Dokładniejsza walidacja emaila na serwerze.
-    //Ciekawy wątek o walidacji maili https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
-    checkEmail() {
-        if (this.state.email === '')
-            return 'Nie podano adresu email';
-        else if (this.state.email.indexOf('@') < 1 || this.state.email.indexOf('.') < 1)
-            return 'To nie jest adres email';
-        else
-            return '';
-    }
-
-    checkPassword() {
-        if (this.state.password === '')
-            return 'Nie podano hasła';
-        else if (this.state.password.length < 8 || this.state.password.length > 30)
-            return 'Hasło musi się składać z przynajmniej 8 znaków';
-        else if (!this.state.password.match(/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])/))
-            return 'Hasło musi zawierać małą i wielką literę oraz cyfrę';
-        else
-            return '';
-    }
-
-    checkPasswordConfirmation() {
-        if (this.state.passwordConfirmation === '')
-            return 'Potwierdź hasło';
-        else if (this.state.passwordConfirmation !== this.state.password)
-            return 'Podane hasła nie są takie same';
-        else
-            return '';
-    }
-
-    checkErrors() {
-        let isError = false;
-
-        for (let i in this.newErrors)
-            if (this.newErrors[i] !== '')
-                isError = true;
+        this.newErrors.username = validation.checkUsername(this.state.username);
+        this.newErrors.email = validation.checkEmail(this.state.email);
+        this.newErrors.password = validation.checkPassword(this.state.password);
+        this.newErrors.passwordConfirmation = validation.checkPasswordConfirmation(this.state.password, this.state.passwordConfirmation);
+        const isError = this.checkErrors();
 
         if (isError)
             this.showErrors();
         else
             this.tryValidateFormOnServer();
+    }
+
+    checkErrors() {
+        for (let i in this.newErrors)
+            if (this.newErrors[i])
+                return true;
+
+        return false;
     }
 
     showErrors() {
@@ -118,7 +67,7 @@ class RegisterForm extends Component {
     }
 
     async validateFormOnServer() {
-        const formValidationResponse = await fetch('/api/register', {
+        const response = await fetch('/api/register', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -132,21 +81,22 @@ class RegisterForm extends Component {
             })
         });
 
-        if (formValidationResponse.status === 201)
+        if (response.status === 201)
             this.props.hideForm('Konto zostało pomyślnie zarejestrowane.');
         else
-            this.loadErrorsReceivedFromServer(formValidationResponse);
+            this.handleServerErrors(response);
     }
 
-    async loadErrorsReceivedFromServer(formValidationResponse) {
-        const formValidationResponseJSON = await formValidationResponse.json();
+    async handleServerErrors(response) {
+        const responseJSON = await response.json();
 
-        for (let i in this.newErrors)
-            this.newErrors[i] = '';
+        console.log(this.newErrors);
 
-        for (let i in formValidationResponseJSON.errors)
-            this.newErrors[i] = formValidationResponseJSON.errors[i].msg;
 
+        for (let i in responseJSON.errors)
+            this.newErrors[i] = responseJSON.errors[i].msg;
+
+        console.log(this.newErrors);
         this.showErrors();
     }
 

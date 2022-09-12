@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import LoginForm from './forms/LoginForm';
 import RegisterForm from './forms/RegisterForm';
@@ -21,6 +22,7 @@ class Header extends Component {
         this.hideForm = this.hideForm.bind(this);
         this.showUserHeader = this.showUserHeader.bind(this);
         this.showGuestHeader = this.showGuestHeader.bind(this);
+        this.redirectProfile = this.redirectProfile.bind(this);
         this.handleLogout = this.handleLogout.bind(this);
     }
 
@@ -55,10 +57,27 @@ class Header extends Component {
     this.setState({ loginForm: false, registerForm: false, alertMessage: message });
     }
 
+    redirectProfile() {
+        this.props.history.push({
+            pathname: '/profil'
+        });
+    }
+
+    showAlert(message) {
+        this.setState({ alertMessage: message });
+    }
+
     async handleLogout() {
         const response = await loggingout.logoutUser();
         if (response.status === 200)
-            this.showGuestHeader();
+        {
+            if (this.props.location.pathname !== '/profil')
+                this.showGuestHeader();
+            else
+                this.props.history.replace({
+                    pathname: '/'
+                });
+        }
         else
             this.setState({ alertMessage: 'Coś poszło nie tak. Spróbuj odświeżyć stronę.' });
     }
@@ -73,7 +92,7 @@ class Header extends Component {
                         <>
                             <p className={globalStyle.optionsWrapper}>
                                 Witaj&nbsp;
-                                <span className={globalStyle.options}>{this.state.username}!</span>
+                                <span className={globalStyle.options} onClick={this.redirectProfile}>{this.state.username}!</span>
                                 <span className={globalStyle.options} onClick={this.handleLogout}>Wyloguj</span>
                             </p>
                            
@@ -103,4 +122,4 @@ class Header extends Component {
     }
 }
 
-export default Header;
+export default withRouter(Header);

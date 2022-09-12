@@ -1,6 +1,3 @@
-//Rejestracja oraz logowanie. Logowanie też autentykuje token, choć to nie jest wymagane raczej, a bezpieczeństwa
-//wydaje mi się też nie poprawia :P
-
 const db = require('../../config/db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -20,18 +17,18 @@ function validate(method) {
             return [
                 body('id')
                     .not().exists({ checkFalsy: true }).withMessage('ID jest przydzielane automatycznie przez bazę danych'),
-                body('email')
-                    .exists({ checkFalsy: true }).withMessage('Nie podano adresu email')
-                    .bail()
-                    .isEmail().withMessage('To nie jest adres email')
-                    .bail()
-                    .custom(value => checkEmailInDB(value)),
                 body('username')
                     .exists({ checkFalsy: true }).withMessage('Nie podano nazwy użytkownika')
                     .bail()
                     .isLength({ min: 4, max: 14 }).withMessage('Nazwa użytkownika musi mieć od 4 do 14 znaków')
                     .bail()
                     .custom(value => checkUsernameInDB(value)),
+                body('email')
+                    .exists({ checkFalsy: true }).withMessage('Nie podano adresu email')
+                    .bail()
+                    .isEmail().withMessage('To nie jest adres email')
+                    .bail()
+                    .custom(value => checkEmailInDB(value)),
                 body('password')
                     .exists({ checkFalsy: true }).withMessage('Nie podano hasła')
                     .bail()
@@ -52,8 +49,44 @@ function validate(method) {
                     .exists({ checkFalsy: true }).withMessage('Nie podano hasła')
             ];
         }
+        case 'changeData': {
+            return [
+/*                body('username')
+                    .exists({ checkFalsy: true }).withMessage('Nie podano nazwy użytkownika')
+                    .bail()
+                    .isLength({ min: 4, max: 14 }).withMessage('Nazwa użytkownika musi mieć od 4 do 14 znaków')
+                    .bail()
+                    .custom(value => checkUsernameInDB(value)),
+                body('email')
+                    .exists({ checkFalsy: true }).withMessage('Nie podano adresu email')
+                    .bail()
+                    .isEmail().withMessage('To nie jest adres email')
+                    .bail()
+                    .custom(value => checkEmailInDB(value)),
+                body('password')
+                    .exists({ checkFalsy: true }).withMessage('Nie podano hasła')
+                    .bail()
+                    .isLength({ min: 8, max: 30 }).withMessage('Hasło musi się składać z przynajmniej 8 znaków')
+                    .bail()
+                    .matches(/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])/).withMessage('Hasło musi zawierać małą i wielką literę oraz cyfrę'),
+                body('passwordConfirmation')
+                    .exists({ checkFalsy: true }).withMessage('Potwierdź hasło')
+                    .bail()
+                    .custom((value, { req }) => value === req.body.password).withMessage('Podane hasła nie są takie same'),*/
+                body('name')
+                    .isLength({ min: 2, max: 35 }).withMessage('Imię musi mieć od 2 do 35 znaków'),
+                body('gender')
+                    .not().equals('M' || 'F' || 'O' || '').withMessage('Wybierz jedną z dostępnych możliwości'),
+                body('birthdate')
+                    .isDate().withMessage('Podaj prawidłową datę'),
+                body('aboutme')
+                    .isLength({ max: 255 }).withMessage('Opis może mieć maksymalnie 255 znaków')
+            ];
+        }
     }
 }
+
+//dupa bo mail, username, hasło wcale nie musi istnieć, tak samo birthdate może być puste, więc w tym wypadku nie jest datą
 
 async function checkEmailInDB(value) {
     //try?
@@ -156,21 +189,20 @@ function loginUser(req, res) {
     const payload = {
         username: req.body.username,
     };
-    /*const secret = 'secret';*/
-    const token = jwt.sign(payload, /*secret,*/ process.env.JWT_SECRET, {
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
         algorithm: "HS256",
         expiresIn: '7d' //token ważny 7 dni
     });
 
     if (req.body.rememberUser) //ciasteczko ważne rok (ms)
     {
-        res.cookie('session', token, { maxAge: 31536000000, httpOnly: true, secure: true /*sameSite*/ })
+        res.cookie('session', token, { maxAge: 31536000000, httpOnly: true, secure: true })
             .cookie('username', req.body.username)
             .sendStatus(200);
     }
     else //ciasteczko ważne tylko do zamknięcia przeglądarki
     {
-        res.cookie('session', token, { httpOnly: true, secure: true /*sameSite*/ })
+        res.cookie('session', token, { httpOnly: true, secure: true })
            .cookie('username', req.body.username)
            .sendStatus(200);
     }
@@ -178,14 +210,53 @@ function loginUser(req, res) {
 }
 
 function logout(req, res) {
-    res.clearCookie('session', { httpOnly: true, secure: true /*sameSite*/ })
-       .clearCookie('username', { secure: true /*sameSite*/ })
+    res.clearCookie('session', { httpOnly: true, /*secure: true*/ /*sameSite*/ })
+       .clearCookie('username', { /*secure: true*/ /*sameSite*/ })
        .sendStatus(200);
+}
+
+function checkUserDataValidation(req, res) {
+    const errors = validationResult(req);
+
+    console.log(req.body);
+    console.log(errors);
+
+    if (!errors.isEmpty())
+        res.status(400).json({ errors: errors.mapped() });
+    else
+        tryChangeUserData(req, res);
+}
+
+function tryChangeUserData(req, res) {
+    try {
+        changeUserData(req, res);
+    }
+    catch (err) {
+        console.log('Coś poszło nie tak: ' + err);
+    }
+}
+
+function changeUserData(req, res) {
+    const user = findUserInDB(req.body.userid);
+    console.log(req.body.userid);
+    console.log(user);
+    console.log(user.username);
+    console.log(user.email);
+    console.log(user.name);
+    console.log(user.password);
+    /*const hash = await bcrypt.hash(newUser.password, 10);
+
+    newUser.password = hash;
+    await newUser.save();*/
+
+    console.log('Pomyślnie zmieniono dane użytkownika: ' + req.body.username);
+    res.sendStatus(201);
 }
 
 module.exports = {
     validate,
     register,
     login,
-    logout
+    logout,
+    checkUserDataValidation
 };

@@ -7,14 +7,12 @@ class GamesList extends Component {
         return (
             <div className={tilesStyle.container}>
                 <GameTile name='KOŚCI' path='/img/main/dices.jpg' redirect='/kosci'/>
-                <GameTile name='WIP1' path='/img/main/WIP1.jpg' redirect='/kosci'/>
-                <GameTile name='WIP2' path='/img/main/WIP2.jpg' redirect='/kosci'/>
-                <GameTile name='WIP3' path='/img/main/WIP3.jpg' redirect='/kosci'/>
-                <GameTile name='WIP4' path='/img/main/WIP4.jpg' redirect='/kosci'/>
-                <GameTile name='WIP5' path='/img/main/WIP5.jpg' redirect='/kosci'/>
-                <GameTile name='WIP6' path='/img/main/WIP6.jpg' redirect='/kosci'/>
-                <GameTile name='WIP7' path='/img/main/WIP7.jpg' redirect='/kosci'/>
-                <GameTile name='WIP8' path='/img/main/WIP8.jpg' redirect='/kosci'/>
+                <GameTile name='WORK IN PROGRESS' path='/img/main/WIP1.jpg' redirect='/kosci' />
+                <p>
+                    Testowe konto:  <br />
+                    login - user    <br />
+                    haslo - Test123
+                </p>
             </div>
         );
     }

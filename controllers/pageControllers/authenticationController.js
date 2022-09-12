@@ -19,9 +19,8 @@ function tryDecodeToken(token, res) {
 }
 
 function decodeToken(token, res) {
-    /*const secret = 'secret';*/
-    const decoded = jwt.verify(token, /*secret*/ process.env.JWT_SECRET);
-    res.cookie('username', decoded.username, { secure: true /*samesite*/ })
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    res.cookie('username', decoded.username, { secure: true})
        .sendStatus(200);
 }
 

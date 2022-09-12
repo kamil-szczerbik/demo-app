@@ -57,3 +57,72 @@
         background-color: #b44a2a;
         cursor: default;
     }
+
+.back {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 15px;
+    background-color: #fcb203;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+    .back:hover {
+        background-color: #fec20b;
+    }
+
+    .back img {
+        height: 30px;
+    }
+
+.save {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 15px;
+    background-color: #36b03c;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+    .save:hover {
+        background-color: #3abd41;
+    }
+
+    .save img {
+        height: 50px;
+    }
+
+.cancel {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 15px;
+    background-color: #ac3020;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+    .cancel:hover {
+        background-color: #bd4028;
+    }
+
+    .cancel img {
+        height: 70px;
+    }
