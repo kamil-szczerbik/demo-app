@@ -31,8 +31,7 @@ function tryDecodeToken(token, res) {
 }
 
 function decodeToken(token, res) {
-    const secret = 'secret';
-    return jwt.verify(token, secret /*process.env.JWT_SECRET*/);
+    return jwt.verify(token, process.env.JWT_SECRET);
 }
 
 module.exports = {
