@@ -19,7 +19,7 @@ a couple of functionalities implemented such as:
 Demo app is available [here](https://demo-app-1996.herokuapp.com/)  
 There is a test account, so app can be tested without registration:  
 login		- user  
-password	- Test123
+password	- Test1234
 
 ## Technologies
 Project is created with:

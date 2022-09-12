@@ -11,7 +11,7 @@ class GamesList extends Component {
                 <p>
                     Testowe konto:  <br />
                     login - user    <br />
-                    haslo - Test123
+                    haslo - Test1234
                 </p>
             </div>
         );
