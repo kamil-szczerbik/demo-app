@@ -11,14 +11,14 @@ Created with React, Express.js, postgreSQL.
 ## General info
 Prototype allow to play Yahtzee online up to 4 players. There are
 a couple of functionalities implemented such as:
-* register/login forms with full validation,
-* game rooms with possibility to make them private, set numbers of players and more,
-* live chats in rooms,  
+* register/login forms with full validation
+* game rooms with possibility to make them private, set numbers of players and more
+* live chats in rooms  
 * user profile
 
-Demo app is available [here](https://demo-app-1996.herokuapp.com/)
-There is a test account, so app can be tested without registration:
-login		- user
+Demo app is available [here](https://demo-app-1996.herokuapp.com/)  
+There is a test account, so app can be tested without registration:  
+login		- user  
 password	- Test123
 
 ## Technologies
@@ -43,5 +43,5 @@ Project is created with:
 
 ## Screenshots
 ![list of game rooms](https://cdn.discordapp.com/attachments/928605167945908274/1018892960173129728/screen1.JPG)
-![Yahtzee](http://url/to/img.png)
+![Yahtzee](https://cdn.discordapp.com/attachments/928605167945908274/1018892992007913562/screen2.JPG)
 ![user profile](https://cdn.discordapp.com/attachments/928605167945908274/1018893932437966979/screen3.JPG)
